@@ -4,6 +4,8 @@ import java.util.Properties;
 
 public class AudioFilesConfigProperties {
 
+    // TODO this class should be removed after implementing @Value annotation
+
     private String inputFilesDirectoryPath;
     private String outputFilesDirectoryPath;
     private String audioFileGroupSeparator2Channels44100;

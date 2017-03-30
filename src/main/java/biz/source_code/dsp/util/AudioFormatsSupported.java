@@ -1,9 +1,10 @@
 package biz.source_code.dsp.util;
 
 import net.sourceforge.javaflacencoder.FLACFileWriter;
+import org.apache.tika.Tika;
 
 import javax.sound.sampled.AudioFileFormat.Type;
-import javax.sound.sampled.UnsupportedAudioFileException;
+import java.nio.file.Path;
 
 public enum AudioFormatsSupported {
 
@@ -11,6 +12,8 @@ public enum AudioFormatsSupported {
     FLAC("audio/x-flac", ".flac", FLACFileWriter.FLAC),
     MP3("audio/mpeg", ".mp3", null),
     MP3_1("audio/x-mpeg-3", ".mp3", null);
+
+    private static final Tika TIKA = new Tika();
 
     private String mimeType;
     private String extension;
@@ -41,6 +44,11 @@ public enum AudioFormatsSupported {
             }
         }
         throw new UnsupportedOperationException("The MIME type '" + mimeType + "' is not supported.");
+    }
+
+    public static boolean isAudioFormatSupported(Path audioFilePath) {
+        String mimeType = TIKA.detect(audioFilePath.toString());
+        return isAudioFormatSupported(mimeType);
     }
 
     public static boolean isAudioFormatSupported(String mimeType) {

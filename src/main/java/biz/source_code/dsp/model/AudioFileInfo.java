@@ -13,7 +13,7 @@ public class AudioFileInfo {
     private List<SingleAudioSoundZoneInfo> singleAudioFileSoundZones;
     private List<GroupAudioSoundZonesInfo> groupedAudioFileSoundZones;
     private AudioSignal audioSignal;
-    private AudioFilesConfigProperties audioFilesConfigProperties;
+    private AudioSignal separatorAudioSignal;
 
     public String getOriginalAudioFileName() {
         return originalAudioFileName;
@@ -76,11 +76,11 @@ public class AudioFileInfo {
                 Files.exists(Paths.get(convertedAudioFileName));
     }
 
-    public void setAudioFilesConfigProperties(AudioFilesConfigProperties audioFilesConfigProperties) {
-        this.audioFilesConfigProperties = audioFilesConfigProperties;
+    public void setSeparatorAudioSignal(AudioSignal separatorAudioSignal) {
+        this.separatorAudioSignal = separatorAudioSignal;
     }
 
-    public AudioFilesConfigProperties getAudioFilesConfigProperties() {
-        return audioFilesConfigProperties;
+    public AudioSignal getSeparatorAudioSignal() {
+        return separatorAudioSignal;
     }
 }
