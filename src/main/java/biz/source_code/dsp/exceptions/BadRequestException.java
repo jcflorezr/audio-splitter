@@ -1,6 +1,6 @@
 package biz.source_code.dsp.exceptions;
 
-public class BadRequestException extends RuntimeException {
+public class BadRequestException extends AudioSplitterCustomException {
 
     private String message;
     private String suggestion;
@@ -33,7 +33,11 @@ public class BadRequestException extends RuntimeException {
         this.suggestion = suggestion;
     }
 
-    //    public BadRequestException(String message) {
-//        super(message);
-//    }
+    @Override
+    public String toString() {
+        return "BadRequestException{" +
+                "message='" + message + '\'' +
+                ", suggestion='" + suggestion + '\'' +
+                '}';
+    }
 }

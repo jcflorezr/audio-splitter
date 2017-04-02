@@ -5,7 +5,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class InternalServerErrorException extends RuntimeException {
+public class InternalServerErrorException extends AudioSplitterCustomException {
 
     private static final String ELEMENTS_DELIMITER = ",";
 
