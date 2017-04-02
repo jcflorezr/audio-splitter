@@ -12,8 +12,8 @@
 
 package biz.source_code.dsp.sound;
 
-import biz.source_code.dsp.model.AudioSignal;
 import biz.source_code.dsp.model.AudioFileWritingResult;
+import biz.source_code.dsp.model.AudioSignal;
 import biz.source_code.dsp.util.AudioFormatsSupported;
 
 import javax.sound.sampled.AudioFileFormat.Type;
@@ -21,9 +21,11 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioFormat.Encoding;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 
 /**
@@ -53,7 +55,7 @@ public class AudioIo {
     public AudioFileWritingResult saveAudioFile(String fileName, String extension, AudioSignal signal, int pos, int len) {
         AudioInputStream audioInputStream = getAudioInputStream(signal, pos, len);
         Type fileType = AudioFormatsSupported.getFileType(extension);
-        return writeAudioFile(audioInputStream, fileType, fileName);
+        return writeAudioFile(audioInputStream, fileType, fileName + extension);
     }
 
     public AudioFileWritingResult saveAudioFile(String fileName, String extension, AudioSignal signal) {
@@ -70,9 +72,9 @@ public class AudioIo {
     private AudioFileWritingResult writeAudioFile(AudioInputStream audioInputStream, Type fileType, String fileName) {
         try {
             AudioSystem.write(audioInputStream, fileType, new File(fileName));
-            return new AudioFileWritingResult(true, "SUCCESS");
+            return AudioFileWritingResult.successful();
         } catch (Exception e) {
-            return new AudioFileWritingResult(false, e.getMessage());
+            return AudioFileWritingResult.unsuccessful(e);
         }
     }
 
@@ -109,56 +111,75 @@ public class AudioIo {
         }
     }
 
-    /**
-     * Loads an audio signal from a WAV file.
-     */
-    public static AudioSignal loadWavFile(String fileName) throws Exception {
-        AudioInputStream stream = null;
-        try {
-            AudioSignal signal = new AudioSignal();
-            stream = AudioSystem.getAudioInputStream(new File(fileName));
-            AudioFormat format = stream.getFormat();
-            signal.setSamplingRate(Math.round(format.getSampleRate()));
-            int frameSize = format.getFrameSize();
-            int channels = format.getChannels();
-            long totalFramesLong = stream.getFrameLength();
-            if (totalFramesLong > Integer.MAX_VALUE) {
-                throw new IOException("Sound file too long.");
-            }
-            int totalFrames = (int) totalFramesLong;
-            signal.setData(new float[channels][]);
-            for (int channel = 0; channel < channels; channel++) {
-                signal.getData()[channel] = new float[totalFrames];
-            }
-            final int blockFrames = 0x4000;
-            byte[] blockBuf = new byte[frameSize * blockFrames];
-            int pos = 0;
-            while (pos < totalFrames) {
-                int reqFrames = Math.min(totalFrames - pos, blockFrames);
-                int trBytes = stream.read(blockBuf, 0, reqFrames * frameSize);
-                if (trBytes <= 0) {
-                    if (format.getEncoding() == Encoding.PCM_FLOAT && pos * frameSize == totalFrames) {
-                        // Workaround for JDK bug JDK-8038139 / JI-9011075.
-                        // http://bugs.java.com/bugdatabase/view_bug.do?bug_id=8038139
-                        // https://bugs.openjdk.java.net/browse/JDK-8038139
-                        truncateSignal(signal, pos);
-                        break;
-                    }
-                    throw new IOException("Unexpected EOF while reading WAV file. totalFrames=" + totalFrames + " pos=" + pos + " frameSize=" + frameSize + ".");
-                }
-                if (trBytes % frameSize != 0) {
-                    throw new IOException("Length of transmitted data is not a multiple of frame size. reqFrames=" + reqFrames + " trBytes=" + trBytes + " frameSize=" + frameSize + ".");
-                }
-                int trFrames = trBytes / frameSize;
-                unpackAudioStreamBytes(format, blockBuf, 0, signal.getData(), pos, trFrames);
-                pos += trFrames;
-            }
-            return signal;
-        } finally {
-            if (stream != null) {
-                stream.close();
-            }
+    public AudioSignal loadWavFile(String fileName) throws IOException, UnsupportedAudioFileException {
+        try (AudioInputStream stream = AudioSystem.getAudioInputStream(new File(fileName))) {
+            return loadWavFile(stream);
         }
+    }
+
+    public AudioSignal loadWavFile(InputStream inputStream) throws IOException, UnsupportedAudioFileException {
+        try (AudioInputStream stream = AudioSystem.getAudioInputStream(inputStream)) {
+            return loadWavFile(stream);
+        }
+    }
+
+    public AudioSignal resampleWavFile(AudioSignal resampleFromSignal, AudioSignal toBeResampledSignal, String resampledSeparatorFileName) throws IOException, URISyntaxException, UnsupportedAudioFileException {
+        AudioFormat resampleFromFormat = getAudioInputStream(resampleFromSignal).getFormat();
+        AudioInputStream toBeResampledStream = getAudioInputStream(toBeResampledSignal);
+        AudioFormat resampledAudioFormat = new AudioFormat(
+                resampleFromFormat.getEncoding(),
+                resampleFromFormat.getSampleRate(),
+                resampleFromFormat.getSampleSizeInBits(),
+                resampleFromFormat.getChannels(),
+                resampleFromFormat.getFrameSize(),
+                resampleFromFormat.getFrameRate(),
+                resampleFromFormat.isBigEndian());
+        InputStream resampledAudioStream = AudioSystem.getAudioInputStream(resampledAudioFormat, toBeResampledStream);
+        String resampledSeparatorPath = ClassLoader.class.getResource(resampledSeparatorFileName).toURI().getPath();
+        AudioSystem.write((AudioInputStream) resampledAudioStream, Type.WAVE, new File(resampledSeparatorPath));
+        resampledAudioStream = ClassLoader.class.getResourceAsStream(resampledSeparatorFileName);
+        return loadWavFile(resampledAudioStream);
+    }
+
+    private AudioSignal loadWavFile(AudioInputStream stream) throws IOException {
+        AudioSignal signal = new AudioSignal();
+        AudioFormat format = stream.getFormat();
+        signal.setSamplingRate(Math.round(format.getSampleRate()));
+        int frameSize = format.getFrameSize();
+        int channels = format.getChannels();
+        long totalFramesLong = stream.getFrameLength();
+        if (totalFramesLong > Integer.MAX_VALUE) {
+            throw new IOException("Sound file too long.");
+        }
+        int totalFrames = (int) totalFramesLong;
+        signal.setData(new float[channels][]);
+        for (int channel = 0; channel < channels; channel++) {
+            signal.getData()[channel] = new float[totalFrames];
+        }
+        final int blockFrames = 0x4000;
+        byte[] blockBuf = new byte[frameSize * blockFrames];
+        int pos = 0;
+        while (pos < totalFrames) {
+            int reqFrames = Math.min(totalFrames - pos, blockFrames);
+            int trBytes = stream.read(blockBuf, 0, reqFrames * frameSize);
+            if (trBytes <= 0) {
+                if (format.getEncoding() == Encoding.PCM_FLOAT && pos * frameSize == totalFrames) {
+                    // Workaround for JDK bug JDK-8038139 / JI-9011075.
+                    // http://bugs.java.com/bugdatabase/view_bug.do?bug_id=8038139
+                    // https://bugs.openjdk.java.net/browse/JDK-8038139
+                    truncateSignal(signal, pos);
+                    break;
+                }
+                throw new IOException("Unexpected EOF while reading WAV file. totalFrames=" + totalFrames + " pos=" + pos + " frameSize=" + frameSize + ".");
+            }
+            if (trBytes % frameSize != 0) {
+                throw new IOException("Length of transmitted data is not a multiple of frame size. reqFrames=" + reqFrames + " trBytes=" + trBytes + " frameSize=" + frameSize + ".");
+            }
+            int trFrames = trBytes / frameSize;
+            unpackAudioStreamBytes(format, blockBuf, 0, signal.getData(), pos, trFrames);
+            pos += trFrames;
+        }
+        return signal;
     }
 
     private static void truncateSignal(AudioSignal signal, int length) {

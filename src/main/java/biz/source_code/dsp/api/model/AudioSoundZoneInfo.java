@@ -1,5 +1,7 @@
 package biz.source_code.dsp.api.model;
 
+import biz.source_code.dsp.model.AudioFileWritingResult;
+
 public interface AudioSoundZoneInfo {
 
     String getSuggestedAudioFileName();
@@ -15,4 +17,8 @@ public interface AudioSoundZoneInfo {
     int getSeconds();
 
     int getMilliseconds();
+
+    AudioFileWritingResult getAudioClipWritingResult();
+
+    void setAudioClipWritingResult(AudioFileWritingResult audioClipWritingResult);
 }

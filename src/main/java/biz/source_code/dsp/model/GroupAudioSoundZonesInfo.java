@@ -16,6 +16,7 @@ public class GroupAudioSoundZonesInfo implements AudioSoundZoneInfo {
     private int milliseconds;
     private int numSoundZones;
     private List<SingleAudioSoundZoneInfo> singleAudioSoundZonesInfo;
+    private AudioFileWritingResult audioClipWritingResult;
 
     public GroupAudioSoundZonesInfo(String suggestedAudioFileName, float startPositionInSeconds, float durationInSeconds, int hours, int minutes, int seconds, int milliseconds, int numSoundZones, List<SingleAudioSoundZoneInfo> singleAudioSoundZonesInfo) {
         this.suggestedAudioFileName = suggestedAudioFileName;
@@ -68,6 +69,16 @@ public class GroupAudioSoundZonesInfo implements AudioSoundZoneInfo {
         return numSoundZones;
     }
 
+    @Override
+    public AudioFileWritingResult getAudioClipWritingResult() {
+        return audioClipWritingResult;
+    }
+
+    @Override
+    public void setAudioClipWritingResult(AudioFileWritingResult audioClipWritingResult) {
+        this.audioClipWritingResult = audioClipWritingResult;
+    }
+
     public List<SingleAudioSoundZoneInfo> getSingleAudioSoundZonesInfo() {
         return Collections.unmodifiableList(singleAudioSoundZonesInfo);
     }
@@ -83,7 +94,6 @@ public class GroupAudioSoundZonesInfo implements AudioSoundZoneInfo {
                 ", seconds=" + seconds +
                 ", milliseconds=" + milliseconds +
                 ", numSoundZones=" + numSoundZones +
-//                ", singleAudioSoundZonesInfo=" + singleAudioSoundZonesInfo +
                 '}';
     }
 

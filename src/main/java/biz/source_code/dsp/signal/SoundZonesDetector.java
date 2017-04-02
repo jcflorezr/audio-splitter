@@ -97,7 +97,7 @@ public class SoundZonesDetector {
      *
      * @return a list with the start position of the sound zones.
      */
-    public List<SingleAudioSoundZoneInfo> getAudioFileSoundZones() {
+    public List<SingleAudioSoundZoneInfo> getAudioSoundZones() {
         List<SingleAudioSoundZoneInfo> singleAudioFileSoundZones = new ArrayList<>();
         pos = 0;
         int activeStartPos = -1;                                // start position of ACTIVE zone or -1

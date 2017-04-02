@@ -1,9 +1,7 @@
-package biz.source_code.dsp.audiofilesgenerator;
+package biz.source_code.dsp.audioclips;
 
-import biz.source_code.dsp.model.AudioSignal;
-import biz.source_code.dsp.model.GroupAudioSoundZonesInfo;
-import biz.source_code.dsp.model.SingleAudioSoundZoneInfo;
-import biz.source_code.dsp.model.AudioFileWritingResult;
+import biz.source_code.dsp.api.audioclips.AudioClipsGenerator;
+import biz.source_code.dsp.model.*;
 import biz.source_code.dsp.sound.AudioIo;
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -14,37 +12,41 @@ import java.util.stream.Stream;
 import static java.util.Arrays.copyOfRange;
 import static java.util.stream.Collectors.toList;
 
-public class AudioSoundZoneSignalGenerator extends AudioSoundZoneSignalGeneratorAbstract {
+public class AudioClipsGeneratorImpl implements AudioClipsGenerator {
 
-    // TODO: this field should be injected with spring
     private AudioIo audioIo = new AudioIo();
 
     @Override
-    public AudioFileWritingResult generateSingleSoundZoneAudioFile(SingleAudioSoundZoneInfo singleAudioSoundZoneInfo, String outputFileDirectoryPath, AudioSignal originalAudioFileSignal, String extension, boolean mono) {
-        AudioSignal soundZoneAudioSignal = mono ? getSingleSoundZoneAudioSignalAsMono(originalAudioFileSignal)
-                                                : originalAudioFileSignal;
-        String outputFileName = outputFileDirectoryPath + singleAudioSoundZoneInfo.getSuggestedAudioFileName();
+    public AudioFileWritingResult generateSingleSoundZoneAudioFile(SingleAudioSoundZoneInfo singleAudioSoundZoneInfo, OutputAudioClipsConfig outputAudioClipsConfig) {
+        AudioSignal originalAudioFileSignal = outputAudioClipsConfig.getAudioContent().getOriginalAudioSignal();
+        boolean asMono = outputAudioClipsConfig.isMono();
+        AudioSignal soundZoneAudioSignal = asMono ? getSingleSoundZoneAudioSignalAsMono(originalAudioFileSignal)
+                                                  : originalAudioFileSignal;
+        String outputFileName = outputAudioClipsConfig.getOutputAudioClipsDirectoryPath() + singleAudioSoundZoneInfo.getSuggestedAudioFileName();
         int startPosition = singleAudioSoundZoneInfo.getStartPosition();
         int soundZoneLength = singleAudioSoundZoneInfo.getEndPosition() - singleAudioSoundZoneInfo.getStartPosition();
-        return audioIo.saveAudioFile(outputFileName, extension, soundZoneAudioSignal, startPosition, soundZoneLength);
+        return audioIo.saveAudioFile(outputFileName, outputAudioClipsConfig.getAudioFormatExtension(), soundZoneAudioSignal, startPosition, soundZoneLength);
     }
 
     @Override
-    public AudioFileWritingResult generateGroupSoundZonesAudioFile(GroupAudioSoundZonesInfo groupAudioSoundZonesInfo, String outputFileDirectoryPath, AudioSignal originalAudioFileSignal, AudioSignal groupSeparatorAudioFileSignal, String extension, boolean mono) {
-        List<float[][]> soundZonesSignalsWithSeparator = getSoundZonesSignalsWithSeparator(groupAudioSoundZonesInfo,
-                originalAudioFileSignal,
-                groupSeparatorAudioFileSignal,
-                mono);
+    public AudioFileWritingResult generateGroupSoundZonesAudioFile(GroupAudioSoundZonesInfo groupAudioSoundZonesInfo, OutputAudioClipsConfig outputAudioClipsConfig) {
+        AudioContent audioContent = outputAudioClipsConfig.getAudioContent();
+        List<float[][]> soundZonesSignalsWithSeparator =
+                generateSoundZonesSignalsWithSeparator(groupAudioSoundZonesInfo,
+                audioContent.getOriginalAudioSignal(),
+                audioContent.getSeparatorAudioSignal(),
+                outputAudioClipsConfig.isMono());
         float[][] groupAudioSignalData = soundZonesSignalsWithSeparator.stream()
                 .reduce((sound, sound2) -> joinSoundZoneWithSeparator(sound, sound2))
                 .orElse(new float[][]{});
-        int audioSamplingRate = originalAudioFileSignal.getSamplingRate();
-        String groupAudioFileNameAndPath = outputFileDirectoryPath + groupAudioSoundZonesInfo.getSuggestedAudioFileName();
+        int audioSamplingRate = audioContent.getOriginalAudioSamplingRate();
+        String groupAudioFileNameAndPath = outputAudioClipsConfig.getOutputAudioClipsDirectoryPath()
+                + groupAudioSoundZonesInfo.getSuggestedAudioFileName();
         AudioSignal groupAudioSignal = new AudioSignal(audioSamplingRate, groupAudioSignalData);
-        return audioIo.saveAudioFile(groupAudioFileNameAndPath, extension, groupAudioSignal);
+        return audioIo.saveAudioFile(groupAudioFileNameAndPath, outputAudioClipsConfig.getAudioFormatExtension(), groupAudioSignal);
     }
 
-    private List<float[][]> getSoundZonesSignalsWithSeparator(GroupAudioSoundZonesInfo groupAudioSoundZonesInfo, AudioSignal originalAudioFileSignal, AudioSignal groupSeparatorAudioFileSignal, boolean mono) {
+    private List<float[][]> generateSoundZonesSignalsWithSeparator(GroupAudioSoundZonesInfo groupAudioSoundZonesInfo, AudioSignal originalAudioFileSignal, AudioSignal groupSeparatorAudioFileSignal, boolean mono) {
         List<SingleAudioSoundZoneInfo> singleAudioSoundZonesInfo = groupAudioSoundZonesInfo.getSingleAudioSoundZonesInfo();
         List<float[][]> soundZonesAudioSignals = singleAudioSoundZonesInfo.stream()
                 .map(audioSoundZoneInfo -> mono ? getSoundZoneAudioSignalDataAsMono(audioSoundZoneInfo, originalAudioFileSignal)

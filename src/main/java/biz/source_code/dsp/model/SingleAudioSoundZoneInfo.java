@@ -4,31 +4,37 @@ import biz.source_code.dsp.api.model.AudioSoundZoneInfo;
 
 public class SingleAudioSoundZoneInfo implements AudioSoundZoneInfo {
 
+    private String suggestedAudioFileName;
     private final int groupNumber;
     private int startPosition;
     private float startPositionInSeconds;
     private int endPosition;
     private float endPositionInSeconds;
     private float durationInSeconds;
-    private String suggestedAudioFileName;
     private int hours;
     private int minutes;
     private int seconds;
     private int milliseconds;
+    private AudioFileWritingResult audioClipWritingResult;
 
 
     public SingleAudioSoundZoneInfo(int groupNumber, int startPosition, float startPositionInSeconds, int endPosition, float endPositionInSeconds, float durationInSeconds, String suggestedAudioFileName, int hours, int minutes, int seconds, int milliseconds) {
+        this.suggestedAudioFileName = suggestedAudioFileName;
         this.groupNumber = groupNumber;
         this.startPosition = startPosition;
         this.startPositionInSeconds = startPositionInSeconds;
         this.endPosition = endPosition;
         this.endPositionInSeconds = endPositionInSeconds;
         this.durationInSeconds = durationInSeconds;
-        this.suggestedAudioFileName = suggestedAudioFileName;
         this.hours = hours;
         this.minutes = minutes;
         this.seconds = seconds;
         this.milliseconds = milliseconds;
+    }
+
+    @Override
+    public String getSuggestedAudioFileName() {
+        return suggestedAudioFileName;
     }
 
     public int getGroupNumber() {
@@ -58,11 +64,6 @@ public class SingleAudioSoundZoneInfo implements AudioSoundZoneInfo {
     }
 
     @Override
-    public String getSuggestedAudioFileName() {
-        return suggestedAudioFileName;
-    }
-
-    @Override
     public int getHours() {
         return hours;
     }
@@ -83,15 +84,25 @@ public class SingleAudioSoundZoneInfo implements AudioSoundZoneInfo {
     }
 
     @Override
+    public AudioFileWritingResult getAudioClipWritingResult() {
+        return audioClipWritingResult;
+    }
+
+    @Override
+    public void setAudioClipWritingResult(AudioFileWritingResult audioClipWritingResult) {
+        this.audioClipWritingResult = audioClipWritingResult;
+    }
+
+    @Override
     public String toString() {
         return "SingleAudioSoundZoneInfo{" +
-                "groupNumber=" + groupNumber +
+                "suggestedAudioFileName='" + suggestedAudioFileName + '\'' +
+                ", groupNumber=" + groupNumber +
                 ", startPosition=" + startPosition +
                 ", startPositionInSeconds=" + startPositionInSeconds +
                 ", endPosition=" + endPosition +
                 ", endPositionInSeconds=" + endPositionInSeconds +
                 ", durationInSeconds=" + durationInSeconds +
-                ", suggestedAudioFileName='" + suggestedAudioFileName + '\'' +
                 ", hours=" + hours +
                 ", minutes=" + minutes +
                 ", seconds=" + seconds +
@@ -101,17 +112,22 @@ public class SingleAudioSoundZoneInfo implements AudioSoundZoneInfo {
 
     public static class SingleAudioSoundZoneInfoBuilder {
 
+        private String suggestedAudioFileName;
         private int groupNumber;
         private int startPosition;
         private float startPositionInSeconds;
         private int endPosition;
         private float endPositionInSeconds;
         private float durationInSeconds;
-        private String suggestedAudioFileName;
         private int hours;
         private int minutes;
         private int seconds;
         private int milliseconds;
+
+        public SingleAudioSoundZoneInfoBuilder suggestedAudioFileName(String suggestedAudioFileName) {
+            this.suggestedAudioFileName = suggestedAudioFileName;
+            return this;
+        }
 
         public SingleAudioSoundZoneInfoBuilder groupNumber(int groupNumber) {
             this.groupNumber = groupNumber;
@@ -140,11 +156,6 @@ public class SingleAudioSoundZoneInfo implements AudioSoundZoneInfo {
 
         public SingleAudioSoundZoneInfoBuilder durationInSeconds(float durationInSeconds) {
             this.durationInSeconds = durationInSeconds;
-            return this;
-        }
-
-        public SingleAudioSoundZoneInfoBuilder suggestedAudioFileName(String suggestedAudioFileName) {
-            this.suggestedAudioFileName = suggestedAudioFileName;
             return this;
         }
 

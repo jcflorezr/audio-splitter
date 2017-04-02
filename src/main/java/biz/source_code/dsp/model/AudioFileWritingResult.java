@@ -1,20 +1,34 @@
 package biz.source_code.dsp.model;
 
+import biz.source_code.dsp.exceptions.InternalServerErrorException;
+
 public class AudioFileWritingResult {
 
     private boolean success;
-    private String message;
+    private InternalServerErrorException exception;
 
-    public AudioFileWritingResult(boolean success, String message) {
+    private AudioFileWritingResult(boolean success) {
         this.success = success;
-        this.message = message;
+    }
+
+    private AudioFileWritingResult(boolean success, InternalServerErrorException exception) {
+        this.success = success;
+        this.exception = exception;
+    }
+
+    public static AudioFileWritingResult successful() {
+        return new AudioFileWritingResult(true);
+    }
+
+    public static AudioFileWritingResult unsuccessful(Exception e) {
+        return new AudioFileWritingResult(false, new InternalServerErrorException(e));
     }
 
     public boolean isSuccess() {
         return success;
     }
 
-    public String getMessage() {
-        return message;
+    public InternalServerErrorException getException() {
+        return exception;
     }
 }

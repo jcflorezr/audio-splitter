@@ -43,7 +43,7 @@ public enum AudioFormatsSupported {
                 return supportedAudioFormat.extension;
             }
         }
-        throw new UnsupportedOperationException("The MIME type '" + mimeType + "' is not supported.");
+        throw new UnsupportedOperationException("The file type '" + mimeType + "' is not supported.");
     }
 
     public static boolean isAudioFormatSupported(Path audioFilePath) {
