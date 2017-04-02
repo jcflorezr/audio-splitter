@@ -5,8 +5,6 @@ public class BadRequestException extends AudioSplitterCustomException {
     private String message;
     private String suggestion;
 
-    public BadRequestException() {}
-
     public BadRequestException(String message) {
         this.message = message;
     }
