@@ -1,6 +1,7 @@
 package biz.source_code.dsp.audioclips;
 
 import biz.source_code.dsp.api.audioclips.AudioClipsGenerator;
+import biz.source_code.dsp.api.model.AudioSoundZoneInfo;
 import biz.source_code.dsp.model.*;
 import biz.source_code.dsp.sound.AudioIo;
 import org.apache.commons.lang3.ArrayUtils;
@@ -17,7 +18,15 @@ public class AudioClipsGeneratorImpl implements AudioClipsGenerator {
     private AudioIo audioIo = new AudioIo();
 
     @Override
-    public AudioFileWritingResult generateSingleSoundZoneAudioFile(SingleAudioSoundZoneInfo singleAudioSoundZoneInfo, OutputAudioClipsConfig outputAudioClipsConfig) {
+    public AudioFileWritingResult generateSoundZoneAudioFile(AudioSoundZoneInfo audioSoundZoneInfo, OutputAudioClipsConfig outputAudioClipsConfig, boolean generateAudioClipsByGroup) {
+        if (generateAudioClipsByGroup) {
+            return generateGroupSoundZonesAudioFile((GroupAudioSoundZonesInfo) audioSoundZoneInfo, outputAudioClipsConfig);
+        } else {
+            return generateSingleSoundZoneAudioFile((SingleAudioSoundZoneInfo) audioSoundZoneInfo, outputAudioClipsConfig);
+        }
+    }
+
+    private AudioFileWritingResult generateSingleSoundZoneAudioFile(SingleAudioSoundZoneInfo singleAudioSoundZoneInfo, OutputAudioClipsConfig outputAudioClipsConfig) {
         AudioSignal originalAudioFileSignal = outputAudioClipsConfig.getAudioContent().getOriginalAudioSignal();
         boolean asMono = outputAudioClipsConfig.isMono();
         AudioSignal soundZoneAudioSignal = asMono ? getSingleSoundZoneAudioSignalAsMono(originalAudioFileSignal)
@@ -28,8 +37,7 @@ public class AudioClipsGeneratorImpl implements AudioClipsGenerator {
         return audioIo.saveAudioFile(outputFileName, outputAudioClipsConfig.getAudioFormatExtension(), soundZoneAudioSignal, startPosition, soundZoneLength);
     }
 
-    @Override
-    public AudioFileWritingResult generateGroupSoundZonesAudioFile(GroupAudioSoundZonesInfo groupAudioSoundZonesInfo, OutputAudioClipsConfig outputAudioClipsConfig) {
+    private AudioFileWritingResult generateGroupSoundZonesAudioFile(GroupAudioSoundZonesInfo groupAudioSoundZonesInfo, OutputAudioClipsConfig outputAudioClipsConfig) {
         AudioContent audioContent = outputAudioClipsConfig.getAudioContent();
         List<float[][]> soundZonesSignalsWithSeparator =
                 generateSoundZonesSignalsWithSeparator(groupAudioSoundZonesInfo,
@@ -101,5 +109,4 @@ public class AudioClipsGeneratorImpl implements AudioClipsGenerator {
         }
         return jointSignalData;
     }
-
 }
