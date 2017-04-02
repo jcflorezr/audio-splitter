@@ -94,6 +94,7 @@ public class GroupAudioSoundZonesInfo implements AudioSoundZoneInfo {
                 ", seconds=" + seconds +
                 ", milliseconds=" + milliseconds +
                 ", numSoundZones=" + numSoundZones +
+                ", audioClipWritingResult=" + audioClipWritingResult +
                 '}';
     }
 

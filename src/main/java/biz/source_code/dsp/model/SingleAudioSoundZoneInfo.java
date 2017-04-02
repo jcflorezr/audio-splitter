@@ -107,6 +107,7 @@ public class SingleAudioSoundZoneInfo implements AudioSoundZoneInfo {
                 ", minutes=" + minutes +
                 ", seconds=" + seconds +
                 ", milliseconds=" + milliseconds +
+                ", audioClipWritingResult=" + audioClipWritingResult +
                 '}';
     }
 

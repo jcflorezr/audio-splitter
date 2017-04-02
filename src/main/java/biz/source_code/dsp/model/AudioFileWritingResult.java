@@ -31,4 +31,12 @@ public class AudioFileWritingResult {
     public InternalServerErrorException getException() {
         return exception;
     }
+
+    @Override
+    public String toString() {
+        return "AudioFileWritingResult{" +
+                "success=" + success +
+                ", exception=" + exception +
+                '}';
+    }
 }
