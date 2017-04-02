@@ -1,7 +1,9 @@
 package biz.source_code.dsp.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AudioMetadata {
@@ -14,6 +16,8 @@ public class AudioMetadata {
     private String artist;
     private String trackNumber;
     private String genre;
+    private String comments;
+    private List<String> rawMetadata;
 
     @JsonGetter("title")
     public String getTitle() {
@@ -44,5 +48,24 @@ public class AudioMetadata {
     public String getGenre() {
         return genre;
     }
+
+    @JsonGetter(PREFIX + "logComment")
+    public String getComments() {
+        return genre;
+    }
+
+    public void setComments(String comments) {
+        this.comments = comments;
+    }
+
+    public List<String> getRawMetadata() {
+        return rawMetadata;
+    }
+
+    public void setRawMetadata(List<String> rawMetadata) {
+        this.rawMetadata = rawMetadata;
+    }
+
+
 
 }

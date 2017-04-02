@@ -1,13 +1,19 @@
 package biz.source_code.dsp.audiofileinfo;
 
 import biz.source_code.dsp.exceptions.SeparatorAudioFileNotFoundException;
-import biz.source_code.dsp.model.*;
+import biz.source_code.dsp.model.AudioContent;
+import biz.source_code.dsp.model.AudioFileInfo;
+import biz.source_code.dsp.model.AudioFileLocation;
+import biz.source_code.dsp.model.AudioMetadata;
+import biz.source_code.dsp.model.AudioSignal;
+import biz.source_code.dsp.model.GroupAudioSoundZonesInfo;
 import biz.source_code.dsp.signal.SoundZonesDetector;
 import biz.source_code.dsp.sound.AudioIo;
 import biz.source_code.dsp.util.AudioFormatsSupported;
 import biz.source_code.dsp.util.AudioUtils;
 import biz.source_code.dsp.util.JsonUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.tika.Tika;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
@@ -24,42 +30,36 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.toMap;
+import static org.apache.commons.lang3.StringUtils.countMatches;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.split;
 
 public class AudioFileInfoService {
 
     private AudioIo audioIo = new AudioIo();
 
-//    private static final String PROPERTIES_FILE = "/audioFiles.properties";
-    private static final String SEPARATOR_FILE_NAME = "/files/separator2channels44100.wav";
-    private static final String RESAMPLED_SEPARATOR_FILE_NAME = "/files/resampledSeparator.wav";
     private static final Tika TIKA = new Tika();
+    //    private static final String PROPERTIES_FILE = "/audioFiles.properties";
+    // TODO I should create global variables with Spring @Value annotation
+    private static final String SEPARATOR_FILE_NAME = "/files/separator2channels44100.wav";
+    // TODO I should create global variables with Spring @Value annotation
+    private static final String RESAMPLED_SEPARATOR_FILE_NAME = "/resampledSeparator.wav";
     private static final String WAV = "wav";
 
     private static Predicate<String> isWav = fileName -> WAV.contains(fileName.toLowerCase());
     private static BiPredicate<AudioSignal, AudioSignal> separatorAudioFileNeedsToBeResampled =
             (originalAudioSignal, separatorAudioSignal) ->
                     (originalAudioSignal.getSamplingRate() != separatorAudioSignal.getSamplingRate());
-
-//    public AudioFilesConfigProperties getAudioFilesConfigProperties() {
-//        // TODO I should create global variables with Spring @Value annotation
-//        Properties properties = new Properties();
-//        try {
-//            // TODO I should create global variables with Spring @Value annotation
-//            properties.load(ClassLoader.class.getResourceAsStream(PROPERTIES_FILE));
-//            return new AudioFilesConfigProperties(properties);
-//        } catch (IOException e) {
-//            throw new InternalServerErrorException(e);
-//        }
-//    }
 
     public AudioFileInfo generateAudioFileInfo(AudioFileLocation audioFileLocation, boolean grouped) throws Exception {
         AudioFileInfo audioFileInfo = new AudioFileInfo(audioFileLocation);
@@ -109,14 +109,25 @@ public class AudioFileInfoService {
     private AudioMetadata extractAudioMetadata(String audioFileName) throws TikaException, SAXException, IOException {
         try (InputStream inputstream = new FileInputStream(new File(audioFileName))) {
             Metadata metadata = new Metadata();
-            new Mp3Parser().parse(inputstream, new BodyContentHandler(), metadata, new ParseContext());
-            return JsonUtils.convertMapToPojo(getRawMetadata(metadata), AudioMetadata.class);
+            BodyContentHandler bodyContentHandler = new BodyContentHandler();
+            new Mp3Parser().parse(inputstream, bodyContentHandler, metadata, new ParseContext());
+            Map<String, String> metadataMap = Stream.of(metadata.names()).collect(toMap(name -> name, name -> metadata.get(name)));
+            AudioMetadata audioMetadata = JsonUtils.convertMapToPojo(metadataMap, AudioMetadata.class);
+            List<String> rawMetadata = Arrays.asList(split(bodyContentHandler.toString(), "\n"));
+            if (isBlank(audioMetadata.getComments())) {
+                audioMetadata.setComments(retrieveFileCommentsFromHandler(rawMetadata));
+            }
+            audioMetadata.setRawMetadata(rawMetadata);
+            return audioMetadata;
         }
     }
 
-    private Map<String, String> getRawMetadata(Metadata metadata) {
-        return Stream.of(metadata.names())
-                .collect(Collectors.toMap(name -> name, name -> metadata.get(name)));
+    // This method retrieve the comments assuming that there is a dash (-) in it
+    private String retrieveFileCommentsFromHandler(List<String> rawMetadata) {
+        return rawMetadata.stream()
+                .filter(element -> element.contains("-"))
+                .filter(element -> countMatches(element, "-") > 1)
+                .findFirst().orElse(StringUtils.EMPTY);
     }
 
     private AudioSignal getSeparatorAudioSignal(AudioSignal originalAudioSignal) throws Exception {
@@ -128,34 +139,5 @@ public class AudioFileInfoService {
         }
         return separatorAudioSignal;
     }
-
-//    private String getGroupSeparatorAudioName(AudioSignal originalAudioSignal) throws IOException {
-//        // TODO I should create global variables with Spring @Value annotation for these properties
-//        Properties properties = new Properties();
-//        properties.load(ClassLoader.class.getResourceAsStream(PROPERTIES_FILE));
-//
-//
-//        if (isAudioCDStereo.test(originalAudioSignal.getSamplingRate(), originalAudioSignal.getChannels())) {
-//            return properties.getProperty("audioFileGroupSeparator2Channels44100");
-//        } // To add more group separator audio files cases
-//        else {
-//            return null;
-//        }
-//    }
-
-    //    private static void p() throws IOException, GeneralSecurityException {
-//        String STORAGE_SCOPE =
-//                "https://www.googleapis.com/auth/devstorage.read_write";
-//        GoogleCredential credential = GoogleCredential.getApplicationDefault().createScoped(Collections.singleton(STORAGE_SCOPE));
-//        HttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
-//        HttpRequestFactory requestFactory = httpTransport.createRequestFactory(credential);
-//        String bucketName = "idmji-152021.appspot.com";
-//        String uri = "https://storage.googleapis.com/"
-//                + URLEncoder.encode(bucketName, "UTF-8");
-//        GenericUrl url = new GenericUrl(uri);
-//        HttpRequest request = requestFactory.buildGetRequest(url);
-//        HttpResponse response = request.execute();
-//        System.out.println(response.parseAsString());
-//    }
 
 }
