@@ -16,6 +16,11 @@ target/
 *.classpath
 .metadata/
 
+# IntelliJ IDEA generated files #
+###############################
+.idea/
+*.iml
+
 # OS generated files #
 ######################
 .DS_Store
