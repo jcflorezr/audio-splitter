@@ -1,5 +1,6 @@
 package net.jcflorezr.audiofileinfo;
 
+import net.jcflorezr.api.audiofileinfo.AudioFileInfoService;
 import net.jcflorezr.exceptions.InternalServerErrorException;
 import net.jcflorezr.exceptions.SeparatorAudioFileNotFoundException;
 import net.jcflorezr.model.AudioContent;
@@ -45,7 +46,7 @@ import static org.apache.commons.lang3.StringUtils.countMatches;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.split;
 
-public class AudioFileInfoService {
+public class AudioFileInfoServiceImpl implements AudioFileInfoService {
 
     private AudioIo audioIo = new AudioIo();
 
@@ -62,6 +63,7 @@ public class AudioFileInfoService {
             (originalAudioSignal, separatorAudioSignal) ->
                     (originalAudioSignal.getSamplingRate() != separatorAudioSignal.getSamplingRate());
 
+    @Override
     public AudioFileInfo generateAudioFileInfo(AudioFileLocation audioFileLocation, boolean grouped) throws Exception {
         AudioFileInfo audioFileInfo = new AudioFileInfo(audioFileLocation);
         try {

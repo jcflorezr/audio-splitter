@@ -1,10 +1,12 @@
 package net.jcflorezr.api.endpoint;
 
+import biz.source_code.dsp.util.AudioFormatsSupported;
 import net.jcflorezr.api.audioclips.AudioClipsGenerator;
+import net.jcflorezr.api.audiofileinfo.AudioFileInfoService;
 import net.jcflorezr.api.model.AudioSoundZoneInfo;
 import net.jcflorezr.api.model.response.AudioSplitterResponse;
 import net.jcflorezr.audioclips.AudioClipsGeneratorImpl;
-import net.jcflorezr.audiofileinfo.AudioFileInfoService;
+import net.jcflorezr.audiofileinfo.AudioFileInfoServiceImpl;
 import net.jcflorezr.exceptions.AudioFileLocationException;
 import net.jcflorezr.exceptions.BadRequestException;
 import net.jcflorezr.exceptions.InternalServerErrorException;
@@ -13,7 +15,6 @@ import net.jcflorezr.model.AudioFileLocation;
 import net.jcflorezr.model.OutputAudioClipsConfig;
 import net.jcflorezr.model.response.ErrorResponse;
 import net.jcflorezr.model.response.SuccessResponse;
-import biz.source_code.dsp.util.AudioFormatsSupported;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.IOException;
@@ -26,7 +27,7 @@ import java.util.stream.Collectors;
 
 public abstract class AudioSplitter {
 
-    protected AudioFileInfoService audioFileInfoService = new AudioFileInfoService();
+    protected AudioFileInfoService audioFileInfoService = new AudioFileInfoServiceImpl();
     protected AudioClipsGenerator audioClipsGenerator = new AudioClipsGeneratorImpl();
 
     protected abstract AudioSplitterResponse generateAudioClips(AudioFileLocation audioFileLocation);
