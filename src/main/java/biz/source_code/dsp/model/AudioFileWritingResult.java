@@ -1,6 +1,6 @@
 package biz.source_code.dsp.model;
 
-import biz.source_code.dsp.exceptions.InternalServerErrorException;
+import net.jcflorezr.exceptions.InternalServerErrorException;
 
 public class AudioFileWritingResult {
 

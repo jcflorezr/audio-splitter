@@ -12,7 +12,6 @@
 
 package biz.source_code.dsp.sound;
 
-import biz.source_code.dsp.exceptions.InternalServerErrorException;
 import biz.source_code.dsp.model.AudioFileWritingResult;
 import biz.source_code.dsp.model.AudioSignal;
 import biz.source_code.dsp.util.AudioFormatsSupported;
@@ -127,31 +126,27 @@ public class AudioIo {
         }
     }
 
-    public AudioSignal resampleWavFile(AudioSignal resampleFromSignal, AudioSignal toBeResampledSignal, String resampledSeparatorFilePathAndName) throws URISyntaxException, UnsupportedAudioFileException {
+    public AudioSignal resampleWavFile(AudioSignal resampleFromSignal, AudioSignal toBeResampledSignal, String resampledSeparatorFilePathAndName) throws URISyntaxException, UnsupportedAudioFileException, IOException {
         String resampledSeparatorPath = FilenameUtils.getFullPath(resampledSeparatorFilePathAndName);
         String resampledSeparatorFullPath = ClassLoader.class.getResource(resampledSeparatorPath).toURI().getPath();
         String resampledSeparatorFullFileName = resampledSeparatorFullPath + FilenameUtils.getName(resampledSeparatorFilePathAndName);
         try {
-            try {
-                AudioFormat resampleFromFormat = getAudioInputStream(resampleFromSignal).getFormat();
-                AudioInputStream toBeResampledStream = getAudioInputStream(toBeResampledSignal);
-                AudioFormat resampledAudioFormat = new AudioFormat(
-                        resampleFromFormat.getEncoding(),
-                        resampleFromFormat.getSampleRate(),
-                        resampleFromFormat.getSampleSizeInBits(),
-                        resampleFromFormat.getChannels(),
-                        resampleFromFormat.getFrameSize(),
-                        resampleFromFormat.getFrameRate(),
-                        resampleFromFormat.isBigEndian());
-                InputStream resampledAudioStream = AudioSystem.getAudioInputStream(resampledAudioFormat, toBeResampledStream);
-                AudioSystem.write((AudioInputStream) resampledAudioStream, Type.WAVE, new File(resampledSeparatorFullFileName));
-                resampledAudioStream = ClassLoader.class.getResourceAsStream(resampledSeparatorFilePathAndName);
-                return loadWavFile(resampledAudioStream);
-            } finally {
-                Files.deleteIfExists(Paths.get(resampledSeparatorFullFileName));
-            }
-        } catch (IOException e) {
-            throw new InternalServerErrorException(e);
+            AudioFormat resampleFromFormat = getAudioInputStream(resampleFromSignal).getFormat();
+            AudioInputStream toBeResampledStream = getAudioInputStream(toBeResampledSignal);
+            AudioFormat resampledAudioFormat = new AudioFormat(
+                    resampleFromFormat.getEncoding(),
+                    resampleFromFormat.getSampleRate(),
+                    resampleFromFormat.getSampleSizeInBits(),
+                    resampleFromFormat.getChannels(),
+                    resampleFromFormat.getFrameSize(),
+                    resampleFromFormat.getFrameRate(),
+                    resampleFromFormat.isBigEndian());
+            InputStream resampledAudioStream = AudioSystem.getAudioInputStream(resampledAudioFormat, toBeResampledStream);
+            AudioSystem.write((AudioInputStream) resampledAudioStream, Type.WAVE, new File(resampledSeparatorFullFileName));
+            resampledAudioStream = ClassLoader.class.getResourceAsStream(resampledSeparatorFilePathAndName);
+            return loadWavFile(resampledAudioStream);
+        } finally {
+            Files.deleteIfExists(Paths.get(resampledSeparatorFullFileName));
         }
     }
 
