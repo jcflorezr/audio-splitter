@@ -1,4 +1,6 @@
-package net.jcflorezr.model;
+package net.jcflorezr.model.audioclips;
+
+import net.jcflorezr.model.audiocontent.AudioContent;
 
 public class OutputAudioClipsConfig {
 

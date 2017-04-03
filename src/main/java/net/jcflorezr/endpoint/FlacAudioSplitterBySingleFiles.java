@@ -1,8 +1,8 @@
 package net.jcflorezr.endpoint;
 
 import net.jcflorezr.api.endpoint.AudioSplitter;
-import net.jcflorezr.api.model.response.AudioSplitterResponse;
-import net.jcflorezr.model.AudioFileLocation;
+import net.jcflorezr.model.response.AudioSplitterResponse;
+import net.jcflorezr.model.request.AudioFileLocation;
 import biz.source_code.dsp.util.AudioFormatsSupported;
 
 public class FlacAudioSplitterBySingleFiles extends AudioSplitter {

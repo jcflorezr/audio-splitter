@@ -1,4 +1,4 @@
-package net.jcflorezr.model;
+package net.jcflorezr.model.request;
 
 public class AudioFileLocation {
 

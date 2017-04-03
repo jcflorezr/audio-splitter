@@ -1,9 +1,8 @@
-package net.jcflorezr.model;
+package net.jcflorezr.model.audioclips;
 
 import biz.source_code.dsp.model.AudioFileWritingResult;
-import net.jcflorezr.api.model.AudioSoundZoneInfo;
 
-public class SingleAudioSoundZoneInfo implements AudioSoundZoneInfo {
+public class SingleAudioClipInfo implements AudioClipInfo {
 
     private String suggestedAudioFileName;
     private final int groupNumber;
@@ -19,7 +18,7 @@ public class SingleAudioSoundZoneInfo implements AudioSoundZoneInfo {
     private AudioFileWritingResult audioClipWritingResult;
 
 
-    public SingleAudioSoundZoneInfo(int groupNumber, int startPosition, float startPositionInSeconds, int endPosition, float endPositionInSeconds, float durationInSeconds, String suggestedAudioFileName, int hours, int minutes, int seconds, int milliseconds) {
+    public SingleAudioClipInfo(int groupNumber, int startPosition, float startPositionInSeconds, int endPosition, float endPositionInSeconds, float durationInSeconds, String suggestedAudioFileName, int hours, int minutes, int seconds, int milliseconds) {
         this.suggestedAudioFileName = suggestedAudioFileName;
         this.groupNumber = groupNumber;
         this.startPosition = startPosition;
@@ -96,7 +95,7 @@ public class SingleAudioSoundZoneInfo implements AudioSoundZoneInfo {
 
     @Override
     public String toString() {
-        return "SingleAudioSoundZoneInfo{" +
+        return "SingleAudioClipInfo{" +
                 "suggestedAudioFileName='" + suggestedAudioFileName + '\'' +
                 ", groupNumber=" + groupNumber +
                 ", startPosition=" + startPosition +
@@ -181,8 +180,8 @@ public class SingleAudioSoundZoneInfo implements AudioSoundZoneInfo {
             return this;
         }
 
-        public SingleAudioSoundZoneInfo build() {
-            return new SingleAudioSoundZoneInfo(
+        public SingleAudioClipInfo build() {
+            return new SingleAudioClipInfo(
                     groupNumber,
                     startPosition,
                     startPositionInSeconds,

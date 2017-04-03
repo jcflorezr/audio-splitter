@@ -1,4 +1,4 @@
-package net.jcflorezr.model;
+package net.jcflorezr.model.audiocontent;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

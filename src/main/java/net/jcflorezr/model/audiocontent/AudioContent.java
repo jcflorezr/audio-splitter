@@ -1,4 +1,4 @@
-package net.jcflorezr.model;
+package net.jcflorezr.model.audiocontent;
 
 import biz.source_code.dsp.model.AudioSignal;
 

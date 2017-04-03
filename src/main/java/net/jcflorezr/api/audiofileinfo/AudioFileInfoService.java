@@ -1,7 +1,7 @@
 package net.jcflorezr.api.audiofileinfo;
 
-import net.jcflorezr.model.AudioFileInfo;
-import net.jcflorezr.model.AudioFileLocation;
+import net.jcflorezr.model.audiocontent.AudioFileInfo;
+import net.jcflorezr.model.request.AudioFileLocation;
 
 public interface AudioFileInfoService {
 

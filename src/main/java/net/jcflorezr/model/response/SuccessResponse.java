@@ -1,7 +1,5 @@
 package net.jcflorezr.model.response;
 
-import net.jcflorezr.api.model.response.AudioSplitterResponse;
-
 public class SuccessResponse implements AudioSplitterResponse {
 
     private Long numOfSuccessSoundZones;

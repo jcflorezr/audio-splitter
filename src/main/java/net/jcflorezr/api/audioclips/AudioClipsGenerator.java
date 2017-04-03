@@ -1,11 +1,11 @@
 package net.jcflorezr.api.audioclips;
 
-import net.jcflorezr.api.model.AudioSoundZoneInfo;
+import net.jcflorezr.model.audioclips.AudioClipInfo;
 import biz.source_code.dsp.model.AudioFileWritingResult;
-import net.jcflorezr.model.OutputAudioClipsConfig;
+import net.jcflorezr.model.audioclips.OutputAudioClipsConfig;
 
 public interface AudioClipsGenerator {
 
-    AudioFileWritingResult generateSoundZoneAudioFile(AudioSoundZoneInfo audioSoundZoneInfo, OutputAudioClipsConfig outputAudioClipsConfig, boolean generateAudioClipsByGroup);
+    AudioFileWritingResult generateAudioClip(AudioClipInfo audioClipInfo, OutputAudioClipsConfig outputAudioClipsConfig, boolean generateAudioClipsByGroup);
 
 }

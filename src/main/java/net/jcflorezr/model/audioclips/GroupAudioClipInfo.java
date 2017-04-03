@@ -1,12 +1,11 @@
-package net.jcflorezr.model;
+package net.jcflorezr.model.audioclips;
 
 import biz.source_code.dsp.model.AudioFileWritingResult;
-import net.jcflorezr.api.model.AudioSoundZoneInfo;
 
 import java.util.Collections;
 import java.util.List;
 
-public class GroupAudioSoundZonesInfo implements AudioSoundZoneInfo {
+public class GroupAudioClipInfo implements AudioClipInfo {
 
     private String suggestedAudioFileName;
     private float startPositionInSeconds;
@@ -16,10 +15,10 @@ public class GroupAudioSoundZonesInfo implements AudioSoundZoneInfo {
     private int seconds;
     private int milliseconds;
     private int numSoundZones;
-    private List<SingleAudioSoundZoneInfo> singleAudioSoundZonesInfo;
+    private List<SingleAudioClipInfo> singleAudioClipsInfo;
     private AudioFileWritingResult audioClipWritingResult;
 
-    public GroupAudioSoundZonesInfo(String suggestedAudioFileName, float startPositionInSeconds, float durationInSeconds, int hours, int minutes, int seconds, int milliseconds, int numSoundZones, List<SingleAudioSoundZoneInfo> singleAudioSoundZonesInfo) {
+    public GroupAudioClipInfo(String suggestedAudioFileName, float startPositionInSeconds, float durationInSeconds, int hours, int minutes, int seconds, int milliseconds, int numSoundZones, List<SingleAudioClipInfo> singleAudioClipsInfo) {
         this.suggestedAudioFileName = suggestedAudioFileName;
         this.startPositionInSeconds = startPositionInSeconds;
         this.durationInSeconds = durationInSeconds;
@@ -28,7 +27,7 @@ public class GroupAudioSoundZonesInfo implements AudioSoundZoneInfo {
         this.seconds = seconds;
         this.milliseconds = milliseconds;
         this.numSoundZones = numSoundZones;
-        this.singleAudioSoundZonesInfo = singleAudioSoundZonesInfo;
+        this.singleAudioClipsInfo = singleAudioClipsInfo;
     }
 
     @Override
@@ -80,13 +79,13 @@ public class GroupAudioSoundZonesInfo implements AudioSoundZoneInfo {
         this.audioClipWritingResult = audioClipWritingResult;
     }
 
-    public List<SingleAudioSoundZoneInfo> getSingleAudioSoundZonesInfo() {
-        return Collections.unmodifiableList(singleAudioSoundZonesInfo);
+    public List<SingleAudioClipInfo> getSingleAudioClipsInfo() {
+        return Collections.unmodifiableList(singleAudioClipsInfo);
     }
 
     @Override
     public String toString() {
-        return "GroupAudioSoundZonesInfo{" +
+        return "GroupAudioClipInfo{" +
                 "suggestedAudioFileName='" + suggestedAudioFileName + '\'' +
                 ", startPositionInSeconds=" + startPositionInSeconds +
                 ", durationInSeconds=" + durationInSeconds +
@@ -109,7 +108,7 @@ public class GroupAudioSoundZonesInfo implements AudioSoundZoneInfo {
         private int seconds;
         private int milliseconds;
         private int numSoundZones;
-        private List<SingleAudioSoundZoneInfo> singleAudioSoundZonesInfo;
+        private List<SingleAudioClipInfo> singleAudioSoundZonesInfo;
 
         public GroupAudioSoundZonesInfoBuilder suggestedAudioFileName(String suggestedAudioFileName) {
             this.suggestedAudioFileName = suggestedAudioFileName;
@@ -151,13 +150,13 @@ public class GroupAudioSoundZonesInfo implements AudioSoundZoneInfo {
             return this;
         }
 
-        public GroupAudioSoundZonesInfoBuilder singleAudioSoundZonesInfo(List<SingleAudioSoundZoneInfo> singleAudioSoundZonesInfo) {
+        public GroupAudioSoundZonesInfoBuilder singleAudioSoundZonesInfo(List<SingleAudioClipInfo> singleAudioSoundZonesInfo) {
             this.singleAudioSoundZonesInfo = singleAudioSoundZonesInfo;
             return this;
         }
 
-        public GroupAudioSoundZonesInfo build() {
-            return new GroupAudioSoundZonesInfo(
+        public GroupAudioClipInfo build() {
+            return new GroupAudioClipInfo(
                     suggestedAudioFileName,
                     startPositionInSeconds,
                     durationInSeconds,

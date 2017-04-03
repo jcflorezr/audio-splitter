@@ -3,15 +3,15 @@ package net.jcflorezr.audiofileinfo;
 import net.jcflorezr.api.audiofileinfo.AudioFileInfoService;
 import net.jcflorezr.exceptions.InternalServerErrorException;
 import net.jcflorezr.exceptions.SeparatorAudioFileNotFoundException;
-import net.jcflorezr.model.AudioContent;
-import net.jcflorezr.model.AudioFileInfo;
-import net.jcflorezr.model.AudioFileLocation;
-import net.jcflorezr.model.AudioMetadata;
 import biz.source_code.dsp.model.AudioSignal;
-import net.jcflorezr.model.GroupAudioSoundZonesInfo;
-import net.jcflorezr.audioclips.SoundZonesDetector;
+import net.jcflorezr.model.audioclips.GroupAudioClipInfo;
+import net.jcflorezr.audioclips.signal.SoundZonesDetector;
 import biz.source_code.dsp.sound.AudioIo;
 import biz.source_code.dsp.util.AudioFormatsSupported;
+import net.jcflorezr.model.audiocontent.AudioContent;
+import net.jcflorezr.model.audiocontent.AudioFileInfo;
+import net.jcflorezr.model.audiocontent.AudioMetadata;
+import net.jcflorezr.model.request.AudioFileLocation;
 import net.jcflorezr.util.AudioUtils;
 import net.jcflorezr.util.JsonUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -78,7 +78,7 @@ public class AudioFileInfoServiceImpl implements AudioFileInfoService {
 
             if (grouped) {
                 audioContent.setSeparatorAudioSignal(getSeparatorAudioSignal(audioSignal));
-                List<GroupAudioSoundZonesInfo> groupedAudioFileSoundZones =
+                List<GroupAudioClipInfo> groupedAudioFileSoundZones =
                         soundZonesDetector.getGroupedAudioFileSoundZones(audioFileInfo.getSingleAudioSoundZones());
                 audioFileInfo.setGroupedAudioFileSoundZones(groupedAudioFileSoundZones);
             }

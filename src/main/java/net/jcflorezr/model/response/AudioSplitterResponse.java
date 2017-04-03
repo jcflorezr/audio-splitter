@@ -1,4 +1,4 @@
-package net.jcflorezr.api.model.response;
+package net.jcflorezr.model.response;
 
 public interface AudioSplitterResponse {
 }

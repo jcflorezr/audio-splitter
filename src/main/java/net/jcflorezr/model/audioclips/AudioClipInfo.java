@@ -1,8 +1,8 @@
-package net.jcflorezr.api.model;
+package net.jcflorezr.model.audioclips;
 
 import biz.source_code.dsp.model.AudioFileWritingResult;
 
-public interface AudioSoundZoneInfo {
+public interface AudioClipInfo {
 
     String getSuggestedAudioFileName();
 

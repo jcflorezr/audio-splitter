@@ -1,6 +1,10 @@
-package net.jcflorezr.model;
+package net.jcflorezr.model.audiocontent;
 
 import biz.source_code.dsp.util.AudioFormatsSupported;
+import net.jcflorezr.model.request.AudioFileLocation;
+import net.jcflorezr.model.audioclips.GroupAudioClipInfo;
+import net.jcflorezr.model.audioclips.OutputAudioClipsConfig;
+import net.jcflorezr.model.audioclips.SingleAudioClipInfo;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -13,8 +17,8 @@ public class AudioFileInfo {
 //    private String outputFileDirectoryPathWithFileName;
     private String convertedAudioFileName;
 //    private float audioDurationInSeconds;
-    private List<SingleAudioSoundZoneInfo> singleAudioSoundZones;
-    private List<GroupAudioSoundZonesInfo> groupedAudioFileSoundZones;
+    private List<SingleAudioClipInfo> singleAudioSoundZones;
+    private List<GroupAudioClipInfo> groupedAudioFileSoundZones;
     private AudioContent audioContent;
 //    private AudioSignal audioSignal;
 //    private AudioSignal separatorAudioSignal;
@@ -60,19 +64,19 @@ public class AudioFileInfo {
 //        this.audioDurationInSeconds = audioDurationInSeconds;
 //    }
 
-    public List<SingleAudioSoundZoneInfo> getSingleAudioSoundZones() {
+    public List<SingleAudioClipInfo> getSingleAudioSoundZones() {
         return singleAudioSoundZones;
     }
 
-    public void setSingleAudioSoundZones(List<SingleAudioSoundZoneInfo> singleAudioSoundZones) {
+    public void setSingleAudioSoundZones(List<SingleAudioClipInfo> singleAudioSoundZones) {
         this.singleAudioSoundZones = singleAudioSoundZones;
     }
 
-    public List<GroupAudioSoundZonesInfo> getGroupedAudioFileSoundZones() {
+    public List<GroupAudioClipInfo> getGroupedAudioFileSoundZones() {
         return groupedAudioFileSoundZones;
     }
 
-    public void setGroupedAudioFileSoundZones(List<GroupAudioSoundZonesInfo> groupedAudioFileSoundZones) {
+    public void setGroupedAudioFileSoundZones(List<GroupAudioClipInfo> groupedAudioFileSoundZones) {
         this.groupedAudioFileSoundZones = groupedAudioFileSoundZones;
     }
 

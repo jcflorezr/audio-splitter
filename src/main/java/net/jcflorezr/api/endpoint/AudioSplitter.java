@@ -3,16 +3,16 @@ package net.jcflorezr.api.endpoint;
 import biz.source_code.dsp.util.AudioFormatsSupported;
 import net.jcflorezr.api.audioclips.AudioClipsGenerator;
 import net.jcflorezr.api.audiofileinfo.AudioFileInfoService;
-import net.jcflorezr.api.model.AudioSoundZoneInfo;
-import net.jcflorezr.api.model.response.AudioSplitterResponse;
+import net.jcflorezr.model.audioclips.AudioClipInfo;
+import net.jcflorezr.model.response.AudioSplitterResponse;
 import net.jcflorezr.audioclips.AudioClipsGeneratorImpl;
 import net.jcflorezr.audiofileinfo.AudioFileInfoServiceImpl;
 import net.jcflorezr.exceptions.AudioFileLocationException;
 import net.jcflorezr.exceptions.BadRequestException;
 import net.jcflorezr.exceptions.InternalServerErrorException;
-import net.jcflorezr.model.AudioFileInfo;
-import net.jcflorezr.model.AudioFileLocation;
-import net.jcflorezr.model.OutputAudioClipsConfig;
+import net.jcflorezr.model.audiocontent.AudioFileInfo;
+import net.jcflorezr.model.request.AudioFileLocation;
+import net.jcflorezr.model.audioclips.OutputAudioClipsConfig;
 import net.jcflorezr.model.response.ErrorResponse;
 import net.jcflorezr.model.response.SuccessResponse;
 import org.apache.commons.io.FilenameUtils;
@@ -40,12 +40,12 @@ public abstract class AudioSplitter {
             validateAudioFileLocationInfo(audioFileLocation);
             AudioFileInfo audioFileInfo = audioFileInfoService.generateAudioFileInfo(audioFileLocation, generateAudioClipsByGroup);
             OutputAudioClipsConfig outputAudioClipsConfig = audioFileInfo.getOutputAudioClipsConfig(audioFormat, asMono);
-            List<? extends AudioSoundZoneInfo> soundZonesInfo =
+            List<? extends AudioClipInfo> audioClipsInfo =
                     generateAudioClipsByGroup ? audioFileInfo.getGroupedAudioFileSoundZones() : audioFileInfo.getSingleAudioSoundZones();
-            soundZonesInfo.stream().forEach(groupedSoundZone ->
-                    groupedSoundZone.setAudioClipWritingResult(audioClipsGenerator.generateSoundZoneAudioFile(groupedSoundZone, outputAudioClipsConfig, generateAudioClipsByGroup)));
-            Map<Boolean, Long> soundZonesGenerationResult = soundZonesInfo.stream()
-                    .collect(Collectors.partitioningBy(soundInfo -> ((AudioSoundZoneInfo)soundInfo).getAudioClipWritingResult().isSuccess(), Collectors.counting()));
+            audioClipsInfo.stream().forEach(groupedSoundZone ->
+                    groupedSoundZone.setAudioClipWritingResult(audioClipsGenerator.generateAudioClip(groupedSoundZone, outputAudioClipsConfig, generateAudioClipsByGroup)));
+            Map<Boolean, Long> soundZonesGenerationResult = audioClipsInfo.stream()
+                    .collect(Collectors.partitioningBy(clipInfo -> ((AudioClipInfo)clipInfo).getAudioClipWritingResult().isSuccess(), Collectors.counting()));
             return new SuccessResponse(soundZonesGenerationResult.get(true), soundZonesGenerationResult.get(false));
         } catch (IOException e) {
             errorResponse = new ErrorResponse(new BadRequestException(e.getMessage()));

@@ -1,6 +1,5 @@
 package net.jcflorezr.model.response;
 
-import net.jcflorezr.api.model.response.AudioSplitterResponse;
 import net.jcflorezr.exceptions.AudioSplitterCustomException;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
