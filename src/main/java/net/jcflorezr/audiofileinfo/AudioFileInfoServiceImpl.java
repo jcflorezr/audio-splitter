@@ -67,22 +67,28 @@ public class AudioFileInfoServiceImpl implements AudioFileInfoService {
     public AudioFileInfo generateAudioFileInfo(AudioFileLocation audioFileLocation, boolean grouped) throws Exception {
         AudioFileInfo audioFileInfo = new AudioFileInfo(audioFileLocation);
         try {
+            // 1. convertFileToWavIfNeeded, audioFileNeedsToBeConverted [AudioConverterService]
             audioFileInfo.setConvertedAudioFileName(convertFileToWavIfNeeded(audioFileLocation.getAudioFileName()));
 
-            AudioContent audioContent = new AudioContent();
-            AudioSignal audioSignal = audioIo.loadWavFile(audioFileInfo.getConvertedAudioFileName());
-            audioContent.setOriginalAudioSignal(audioSignal);
+                // 2. setOriginalAudioSignal [AudioContentService]
+                AudioContent audioContent = new AudioContent();
+                AudioSignal audioSignal = audioIo.loadWavFile(audioFileInfo.getConvertedAudioFileName());
+                audioContent.setOriginalAudioSignal(audioSignal);
 
-            SoundZonesDetector soundZonesDetector = new SoundZonesDetector(audioSignal);
-            audioFileInfo.setSingleAudioSoundZones(soundZonesDetector.getAudioSoundZones());
+                SoundZonesDetector soundZonesDetector = new SoundZonesDetector(audioSignal);
+                audioFileInfo.setSingleAudioSoundZones(soundZonesDetector.getAudioSoundZones());
 
-            if (grouped) {
-                audioContent.setSeparatorAudioSignal(getSeparatorAudioSignal(audioSignal));
-                List<GroupAudioClipInfo> groupedAudioFileSoundZones =
-                        soundZonesDetector.getGroupedAudioFileSoundZones(audioFileInfo.getSingleAudioSoundZones());
-                audioFileInfo.setGroupedAudioFileSoundZones(groupedAudioFileSoundZones);
-            }
-            audioContent.setAudioMetadata(extractAudioMetadata(audioFileLocation.getAudioFileName()));
+                if (grouped) {
+                    audioContent.setSeparatorAudioSignal(getSeparatorAudioSignal(audioSignal));
+                    List<GroupAudioClipInfo> groupedAudioFileSoundZones =
+                            soundZonesDetector.getGroupedAudioSoundZones(audioFileInfo.getSingleAudioSoundZones());
+                    audioFileInfo.setGroupedAudioFileSoundZones(groupedAudioFileSoundZones);
+                }
+
+                // 3. extractAudioMetadata [AudioMetadataService]
+                audioContent.setAudioMetadata(extractAudioMetadata(audioFileLocation.getAudioFileName()));
+
+
             audioFileInfo.setAudioContent(audioContent);
             return audioFileInfo;
         } finally {
