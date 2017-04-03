@@ -17,6 +17,9 @@ import static java.util.stream.Collectors.toList;
 
 public class AudioClipsGeneratorImpl implements AudioClipsGenerator {
 
+    private static final int MONO_CHANNELS = 1;
+    private static final int STEREO_CHANNELS = 2;
+
     private AudioIo audioIo = new AudioIo();
 
     @Override
@@ -81,12 +84,15 @@ public class AudioClipsGeneratorImpl implements AudioClipsGenerator {
     }
 
     private float[][] getSoundZoneAudioSignalData(SingleAudioSoundZoneInfo singleAudioSoundZoneInfo, AudioSignal originalAudioFileSignal, boolean mono) {
-        int channels = mono ? 1 : originalAudioFileSignal.getChannels();
+        int channels = mono ? MONO_CHANNELS : STEREO_CHANNELS;
+        int originalAudioChannels = originalAudioFileSignal.getChannels();
         float[][] soundZoneSignalData = new float[channels][];
         for (int i = 0; i < channels; i++) {
             int startPosition = singleAudioSoundZoneInfo.getStartPosition();
             int endPosition = singleAudioSoundZoneInfo.getEndPosition();
-            soundZoneSignalData[i] = copyOfRange(originalAudioFileSignal.getData()[i], startPosition, endPosition);
+            float[] currentChannelData = originalAudioChannels < channels ? originalAudioFileSignal.getData()[0]
+                                                                          : originalAudioFileSignal.getData()[i];
+            soundZoneSignalData[i] = copyOfRange(currentChannelData, startPosition, endPosition);
         }
         return soundZoneSignalData;
     }

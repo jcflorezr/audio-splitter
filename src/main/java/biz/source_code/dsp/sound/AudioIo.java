@@ -137,8 +137,8 @@ public class AudioIo {
                     resampleFromFormat.getEncoding(),
                     resampleFromFormat.getSampleRate(),
                     resampleFromFormat.getSampleSizeInBits(),
-                    resampleFromFormat.getChannels(),
-                    resampleFromFormat.getFrameSize(),
+                    toBeResampledStream.getFormat().getChannels(),
+                    toBeResampledStream.getFormat().getFrameSize(),
                     resampleFromFormat.getFrameRate(),
                     resampleFromFormat.isBigEndian());
             InputStream resampledAudioStream = AudioSystem.getAudioInputStream(resampledAudioFormat, toBeResampledStream);
