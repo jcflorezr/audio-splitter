@@ -137,7 +137,7 @@ public class SoundZonesDetector {
         return singleAudioFileSoundZones;
     }
 
-    public List<GroupAudioClipInfo> getGroupedAudioSoundZones(List<SingleAudioClipInfo> singleAudioFileSoundZones) {
+    public List<GroupAudioClipInfo> retrieveGroupedAudioSoundZones(List<SingleAudioClipInfo> singleAudioFileSoundZones) {
         Map<Integer, List<SingleAudioClipInfo>> groupedSoundZones = singleAudioFileSoundZones.stream()
                 .collect(Collectors.groupingBy(SingleAudioClipInfo::getGroupNumber));
         return groupedSoundZones.entrySet().stream()

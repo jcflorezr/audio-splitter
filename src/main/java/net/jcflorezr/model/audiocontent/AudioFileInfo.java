@@ -13,16 +13,10 @@ import java.util.List;
 public class AudioFileInfo {
 
     private AudioFileLocation audioFileLocation;
-//    private String originalAudioFileName;
-//    private String outputFileDirectoryPathWithFileName;
     private String convertedAudioFileName;
-//    private float audioDurationInSeconds;
     private List<SingleAudioClipInfo> singleAudioSoundZones;
     private List<GroupAudioClipInfo> groupedAudioFileSoundZones;
     private AudioContent audioContent;
-//    private AudioSignal audioSignal;
-//    private AudioSignal separatorAudioSignal;
-//    private AudioFileWritingResult audioFileWritingResult;
 
     public AudioFileInfo(AudioFileLocation audioFileLocation) {
         this.audioFileLocation = audioFileLocation;
@@ -32,14 +26,6 @@ public class AudioFileInfo {
         return audioFileLocation;
     }
 
-    //    public String getOriginalAudioFileName() {
-//        return originalAudioFileName;
-//    }
-//
-//    public void setOriginalAudioFileName(String originalAudioFileName) {
-//        this.originalAudioFileName = originalAudioFileName;
-//    }
-
     public String getConvertedAudioFileName() {
         return convertedAudioFileName;
     }
@@ -47,22 +33,6 @@ public class AudioFileInfo {
     public void setConvertedAudioFileName(String convertedAudioFileName) {
         this.convertedAudioFileName = convertedAudioFileName;
     }
-
-//    public String getOutputFileDirectoryPathWithFileName() {
-//        return outputFileDirectoryPathWithFileName;
-//    }
-//
-//    public void setOutputFilesDirectoryPathWithFileName(String outputFileDirectoryPathWithFileName) {
-//        this.outputFileDirectoryPathWithFileName = outputFileDirectoryPathWithFileName;
-//    }
-
-//    public float getAudioDurationInSeconds() {
-//        return audioDurationInSeconds;
-//    }
-//
-//    public void setAudioDurationInSeconds(float audioDurationInSeconds) {
-//        this.audioDurationInSeconds = audioDurationInSeconds;
-//    }
 
     public List<SingleAudioClipInfo> getSingleAudioSoundZones() {
         return singleAudioSoundZones;
@@ -91,14 +61,6 @@ public class AudioFileInfo {
     public void setAudioContent(AudioContent audioContent) {
         this.audioContent = audioContent;
     }
-
-//    public void setAudioFileWritingResult(AudioFileWritingResult audioFileWritingResult) {
-//        this.audioFileWritingResult = audioFileWritingResult;
-//    }
-//
-//    public AudioFileWritingResult getAudioFileWritingResult() {
-//        return audioFileWritingResult;
-//    }
 
     public boolean audioFileWasConverted() {
         return !audioFileLocation.getAudioFileName().equals(convertedAudioFileName) &&

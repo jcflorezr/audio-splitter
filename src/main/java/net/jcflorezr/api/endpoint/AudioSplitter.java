@@ -27,8 +27,8 @@ import java.util.stream.Collectors;
 
 public abstract class AudioSplitter {
 
-    protected AudioFileInfoService audioFileInfoService = new AudioFileInfoServiceImpl();
-    protected AudioClipsGenerator audioClipsGenerator = new AudioClipsGeneratorImpl();
+    private AudioFileInfoService audioFileInfoService = new AudioFileInfoServiceImpl();
+    private AudioClipsGenerator audioClipsGenerator = new AudioClipsGeneratorImpl();
 
     protected abstract AudioSplitterResponse generateAudioClips(AudioFileLocation audioFileLocation);
 
@@ -42,8 +42,8 @@ public abstract class AudioSplitter {
             OutputAudioClipsConfig outputAudioClipsConfig = audioFileInfo.getOutputAudioClipsConfig(audioFormat, asMono);
             List<? extends AudioClipInfo> audioClipsInfo =
                     generateAudioClipsByGroup ? audioFileInfo.getGroupedAudioFileSoundZones() : audioFileInfo.getSingleAudioSoundZones();
-            audioClipsInfo.stream().forEach(groupedSoundZone ->
-                    groupedSoundZone.setAudioClipWritingResult(audioClipsGenerator.generateAudioClip(groupedSoundZone, outputAudioClipsConfig, generateAudioClipsByGroup)));
+            audioClipsInfo.stream().forEach(clip ->
+                    clip.setAudioClipWritingResult(audioClipsGenerator.generateAudioClip(clip, outputAudioClipsConfig, generateAudioClipsByGroup)));
             Map<Boolean, Long> soundZonesGenerationResult = audioClipsInfo.stream()
                     .collect(Collectors.partitioningBy(clipInfo -> ((AudioClipInfo)clipInfo).getAudioClipWritingResult().isSuccess(), Collectors.counting()));
             return new SuccessResponse(soundZonesGenerationResult.get(true), soundZonesGenerationResult.get(false));
