@@ -2,6 +2,7 @@ package net.jcflorezr.util;
 
 import javazoom.jl.converter.Converter;
 import javazoom.jl.decoder.JavaLayerException;
+import net.jcflorezr.exceptions.InternalServerErrorException;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -15,8 +16,7 @@ public class AudioUtils {
             converter.convert(originalAudioFilePath, newAudioFilePath);
             return Files.exists(Paths.get(newAudioFilePath));
         } catch (JavaLayerException e) {
-            // TODO implementar una mejor manera de gestionar esta excepcion
-            throw new RuntimeException(e);
+            throw new InternalServerErrorException(e);
         }
     }
 
