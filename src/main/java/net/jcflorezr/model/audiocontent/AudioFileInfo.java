@@ -1,13 +1,11 @@
 package net.jcflorezr.model.audiocontent;
 
 import biz.source_code.dsp.util.AudioFormatsSupported;
-import net.jcflorezr.model.request.AudioFileLocation;
 import net.jcflorezr.model.audioclips.GroupAudioClipInfo;
 import net.jcflorezr.model.audioclips.OutputAudioClipsConfig;
 import net.jcflorezr.model.audioclips.SingleAudioClipInfo;
+import net.jcflorezr.model.request.AudioFileLocation;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
 
 public class AudioFileInfo {
@@ -63,8 +61,7 @@ public class AudioFileInfo {
     }
 
     public boolean audioFileWasConverted() {
-        return !audioFileLocation.getAudioFileName().equals(convertedAudioFileName) &&
-                Files.exists(Paths.get(convertedAudioFileName));
+        return !audioFileLocation.getAudioFileName().equals(convertedAudioFileName);
     }
 
     public OutputAudioClipsConfig getOutputAudioClipsConfig(AudioFormatsSupported audioFormat, boolean asMono) {

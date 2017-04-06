@@ -7,12 +7,13 @@ public class AudioContent {
     private AudioSignal originalAudioSignal;
     private AudioMetadata audioMetadata;
 
-    public AudioSignal getOriginalAudioSignal() {
-        return originalAudioSignal;
+    public AudioContent(AudioSignal originalAudioSignal, AudioMetadata audioMetadata) {
+        this.originalAudioSignal = originalAudioSignal;
+        this.audioMetadata = audioMetadata;
     }
 
-    public void setOriginalAudioSignal(AudioSignal originalAudioSignal) {
-        this.originalAudioSignal = originalAudioSignal;
+    public AudioSignal getOriginalAudioSignal() {
+        return originalAudioSignal;
     }
 
     public float[][] getOriginalAudioData() {
@@ -29,10 +30,6 @@ public class AudioContent {
 
     public AudioMetadata getAudioMetadata() {
         return audioMetadata;
-    }
-
-    public void setAudioMetadata(AudioMetadata audioMetadata) {
-        this.audioMetadata = audioMetadata;
     }
 
     public float getOriginalAudioDurationInSeconds() {

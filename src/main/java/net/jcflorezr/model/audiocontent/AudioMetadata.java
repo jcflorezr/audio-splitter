@@ -51,7 +51,7 @@ public class AudioMetadata {
 
     @JsonGetter(PREFIX + "logComment")
     public String getComments() {
-        return genre;
+        return comments;
     }
 
     public void setComments(String comments) {

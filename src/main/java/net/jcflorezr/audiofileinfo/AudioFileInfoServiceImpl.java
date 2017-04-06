@@ -18,7 +18,7 @@ public class AudioFileInfoServiceImpl implements AudioFileInfoService {
         AudioFileInfo audioFileInfo = new AudioFileInfo(audioFileLocation);
         String convertedAudioFileName = audioConverterService.convertFileToWavIfNeeded(audioFileLocation.getAudioFileName());
         audioFileInfo.setConvertedAudioFileName(convertedAudioFileName);
-        AudioContent audioContent = audioContentService.retrieveAudioContent(audioFileInfo, audioFileLocation);
+        AudioContent audioContent = audioContentService.retrieveAudioContent(audioFileInfo);
         audioFileInfo.setAudioContent(audioContent);
 
         SoundZonesDetector soundZonesDetector = new SoundZonesDetector(audioContent.getOriginalAudioSignal());

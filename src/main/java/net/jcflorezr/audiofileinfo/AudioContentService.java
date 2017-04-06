@@ -5,7 +5,6 @@ import biz.source_code.dsp.sound.AudioIo;
 import net.jcflorezr.model.audiocontent.AudioContent;
 import net.jcflorezr.model.audiocontent.AudioFileInfo;
 import net.jcflorezr.model.audiocontent.AudioMetadata;
-import net.jcflorezr.model.request.AudioFileLocation;
 import net.jcflorezr.util.JsonUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tika.exception.TikaException;
@@ -16,8 +15,6 @@ import org.apache.tika.sax.BodyContentHandler;
 import org.xml.sax.SAXException;
 
 import javax.sound.sampled.UnsupportedAudioFileException;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -29,36 +26,33 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toMap;
-import static org.apache.commons.lang3.StringUtils.countMatches;
-import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.apache.commons.lang3.StringUtils.split;
+import static org.apache.commons.lang3.StringUtils.*;
 
-
-public class AudioContentService {
+class AudioContentService {
 
     private AudioIo audioIo = new AudioIo();
 
-    AudioContent retrieveAudioContent(AudioFileInfo audioFileInfo, AudioFileLocation audioFileLocation) throws IOException, UnsupportedAudioFileException, TikaException, SAXException {
-        AudioContent audioContent = new AudioContent();
+    AudioContent retrieveAudioContent(AudioFileInfo audioFileInfo) throws IOException, UnsupportedAudioFileException, TikaException, SAXException {
         AudioSignal originalAudioSignal = retrieveOriginalAudioSignal(audioFileInfo);
-        audioContent.setOriginalAudioSignal(originalAudioSignal);
-        audioContent.setAudioMetadata(extractAudioMetadata(audioFileLocation.getAudioFileName()));
-        return audioContent;
+        AudioMetadata audioMetadata = extractAudioMetadata(audioFileInfo.getAudioFileLocation().getAudioFileName());
+        return new AudioContent(originalAudioSignal, audioMetadata);
     }
 
     private AudioSignal retrieveOriginalAudioSignal(AudioFileInfo audioFileInfo) throws IOException, UnsupportedAudioFileException {
         try {
             return audioIo.loadWavFile(audioFileInfo.getConvertedAudioFileName());
         } finally {
-            if (audioFileInfo.audioFileWasConverted()) {
-                Path fileConvertedPath = Paths.get(audioFileInfo.getConvertedAudioFileName());
+            String convertedAudioFileName = audioFileInfo.getConvertedAudioFileName();
+            boolean convertedAudioFileExists = Files.exists(Paths.get(convertedAudioFileName));
+            if (audioFileInfo.audioFileWasConverted() && convertedAudioFileExists) {
+                Path fileConvertedPath = Paths.get(convertedAudioFileName);
                 Files.deleteIfExists(fileConvertedPath);
             }
         }
     }
 
     private AudioMetadata extractAudioMetadata(String audioFileName) throws TikaException, SAXException, IOException {
-        try (InputStream inputstream = new FileInputStream(new File(audioFileName))) {
+        try (InputStream inputstream = Files.newInputStream(Paths.get(audioFileName))) {
             Metadata metadata = new Metadata();
             BodyContentHandler bodyContentHandler = new BodyContentHandler();
             new Mp3Parser().parse(inputstream, bodyContentHandler, metadata, new ParseContext());
