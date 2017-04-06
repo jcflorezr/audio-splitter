@@ -2,9 +2,9 @@ package net.jcflorezr.audiofileinfo;
 
 import net.jcflorezr.exceptions.InternalServerErrorException;
 import net.jcflorezr.util.AudioUtils;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -19,12 +19,8 @@ import static org.powermock.api.mockito.PowerMockito.when;
 @PrepareForTest({AudioUtils.class})
 public class AudioConverterServiceTest {
 
+    @InjectMocks
     private AudioConverterService audioConverterService;
-
-    @Before
-    public void setUp() {
-        audioConverterService = new AudioConverterService();
-    }
 
     @Test
     public void shouldConvertFileToWav() throws UnsupportedAudioFileException {
@@ -61,6 +57,5 @@ public class AudioConverterServiceTest {
         when(AudioUtils.convertAudioFile(anyString(), anyString())).thenThrow(new InternalServerErrorException(new Exception()));
         assertEquals(convertedAudioFileName, audioConverterService.convertFileToWavIfNeeded(audioFileName));
     }
-
 
 }
