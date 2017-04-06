@@ -6,11 +6,10 @@ import net.jcflorezr.model.audiocontent.AudioContent;
 import net.jcflorezr.model.audiocontent.AudioFileInfo;
 import net.jcflorezr.model.audiocontent.AudioMetadata;
 import net.jcflorezr.util.JsonUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
+import org.apache.tika.parser.AutoDetectParser;
 import org.apache.tika.parser.ParseContext;
-import org.apache.tika.parser.mp3.Mp3Parser;
 import org.apache.tika.sax.BodyContentHandler;
 import org.xml.sax.SAXException;
 
@@ -26,7 +25,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toMap;
-import static org.apache.commons.lang3.StringUtils.*;
+import static org.apache.commons.lang3.StringUtils.split;
 
 class AudioContentService {
 
@@ -55,24 +54,13 @@ class AudioContentService {
         try (InputStream inputstream = Files.newInputStream(Paths.get(audioFileName))) {
             Metadata metadata = new Metadata();
             BodyContentHandler bodyContentHandler = new BodyContentHandler();
-            new Mp3Parser().parse(inputstream, bodyContentHandler, metadata, new ParseContext());
+            new AutoDetectParser().parse(inputstream, bodyContentHandler, metadata, new ParseContext());
             Map<String, String> metadataMap = Stream.of(metadata.names()).collect(toMap(name -> name, name -> metadata.get(name)));
             AudioMetadata audioMetadata = JsonUtils.convertMapToPojo(metadataMap, AudioMetadata.class);
             List<String> rawMetadata = Arrays.asList(split(bodyContentHandler.toString(), "\n"));
-            if (isBlank(audioMetadata.getComments())) {
-                audioMetadata.setComments(retrieveFileCommentsFromHandler(rawMetadata));
-            }
             audioMetadata.setRawMetadata(rawMetadata);
             return audioMetadata;
         }
-    }
-
-    // This method retrieve the comments assuming that there is a dash (-) in it
-    private String retrieveFileCommentsFromHandler(List<String> rawMetadata) {
-        return rawMetadata.stream()
-                .filter(element -> element.contains("-"))
-                .filter(element -> countMatches(element, "-") > 1)
-                .findFirst().orElse(StringUtils.EMPTY);
     }
 
 }

@@ -2,6 +2,7 @@ package net.jcflorezr.model.audiocontent;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.apache.commons.lang3.StringEscapeUtils;
 
 import java.util.List;
 
@@ -11,7 +12,6 @@ public class AudioMetadata {
     private static final String PREFIX = "xmpDM:";
 
     private String title;
-    private String titleWithPrefix;
     private String album;
     private String artist;
     private String trackNumber;
@@ -22,11 +22,6 @@ public class AudioMetadata {
     @JsonGetter("title")
     public String getTitle() {
         return title;
-    }
-
-    @JsonGetter(PREFIX + "title")
-    public String getTitleWithPrefix() {
-        return titleWithPrefix;
     }
 
     @JsonGetter(PREFIX + "album")
@@ -55,7 +50,8 @@ public class AudioMetadata {
     }
 
     public void setComments(String comments) {
-        this.comments = comments;
+        String[] arr = comments.split("\\n");
+        this.comments = arr.length > 0 ? arr[1] : comments;
     }
 
     public List<String> getRawMetadata() {
@@ -65,7 +61,5 @@ public class AudioMetadata {
     public void setRawMetadata(List<String> rawMetadata) {
         this.rawMetadata = rawMetadata;
     }
-
-
 
 }
