@@ -10,7 +10,7 @@
 // Please contact the author if you need another license.
 // This module is provided "as is", without warranties of any kind.
 
-package net.jcflorezr.audioclips.signal;
+package net.jcflorezr.audiofileinfo.signal;
 
 import biz.source_code.dsp.model.AudioSignal;
 import biz.source_code.dsp.signal.EnvelopeDetector;

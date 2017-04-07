@@ -1,7 +1,7 @@
 package net.jcflorezr.audiofileinfo;
 
 import net.jcflorezr.api.audiofileinfo.AudioFileInfoService;
-import net.jcflorezr.audioclips.signal.SoundZonesDetector;
+import net.jcflorezr.audiofileinfo.signal.SoundZonesDetector;
 import net.jcflorezr.model.audioclips.GroupAudioClipInfo;
 import net.jcflorezr.model.audiocontent.AudioContent;
 import net.jcflorezr.model.audiocontent.AudioFileInfo;
