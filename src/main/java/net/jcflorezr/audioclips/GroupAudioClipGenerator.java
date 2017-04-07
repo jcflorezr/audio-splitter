@@ -11,7 +11,6 @@ import net.jcflorezr.model.audioclips.OutputAudioClipsConfig;
 import net.jcflorezr.model.audioclips.SingleAudioClipInfo;
 import org.apache.commons.lang3.ArrayUtils;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +48,7 @@ class GroupAudioClipGenerator {
                 .orElse(new float[][]{});
         int audioSamplingRate = audioContent.getOriginalAudioSamplingRate();
         String groupAudioFileNameAndPath = outputAudioClipsConfig.getOutputAudioClipsDirectoryPath()
-                + groupAudioClipInfo.getSuggestedAudioFileName();
+                + groupAudioClipInfo.getSuggestedAudioClipName();
         AudioSignal finalAudioSignal = new AudioSignal(audioSamplingRate, finalAudioSignalData);
         return audioIo.saveAudioFile(groupAudioFileNameAndPath, outputAudioClipsConfig.getAudioFormatExtension(), finalAudioSignal);
     }

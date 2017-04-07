@@ -4,7 +4,7 @@ import biz.source_code.dsp.model.AudioFileWritingResult;
 
 public interface AudioClipInfo {
 
-    String getSuggestedAudioFileName();
+    String getSuggestedAudioClipName();
 
     float getStartPositionInSeconds();
 

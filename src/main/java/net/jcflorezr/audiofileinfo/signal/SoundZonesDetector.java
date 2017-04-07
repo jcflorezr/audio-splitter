@@ -187,7 +187,7 @@ public class SoundZonesDetector {
                 .endPosition(endPosition)
                 .endPositionInSeconds(endPositionInSeconds)
                 .durationInSeconds(audioClipDurationInSeconds)
-                .suggestedAudioFileName(suggestedAudioClipName)
+                .suggestedAudioClipName(suggestedAudioClipName)
                 .hours(hours)
                 .minutes(minutes)
                 .seconds(seconds)
@@ -214,7 +214,7 @@ public class SoundZonesDetector {
                 .sum();
         SingleAudioClipInfo firstSoundZone = soundZoneList.get(0);
         return new GroupAudioClipInfo.GroupAudioSoundZonesInfoBuilder()
-                .suggestedAudioFileName(firstSoundZone.getSuggestedAudioFileName())
+                .suggestedAudioFileName(firstSoundZone.getSuggestedAudioClipName())
                 .startPositionInSeconds(firstSoundZone.getStartPositionInSeconds())
                 .durationInSeconds(groupDurationInSeconds)
                 .hours(firstSoundZone.getHours())

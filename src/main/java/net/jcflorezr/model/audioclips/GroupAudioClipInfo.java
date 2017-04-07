@@ -30,8 +30,7 @@ public class GroupAudioClipInfo implements AudioClipInfo {
         this.singleAudioClipsInfo = singleAudioClipsInfo;
     }
 
-    @Override
-    public String getSuggestedAudioFileName() {
+    public String getSuggestedAudioClipName() {
         return suggestedAudioFileName;
     }
 
@@ -86,7 +85,7 @@ public class GroupAudioClipInfo implements AudioClipInfo {
     @Override
     public String toString() {
         return "GroupAudioClipInfo{" +
-                "suggestedAudioFileName='" + suggestedAudioFileName + '\'' +
+                "suggestedAudioClipName='" + suggestedAudioFileName + '\'' +
                 ", startPositionInSeconds=" + startPositionInSeconds +
                 ", durationInSeconds=" + durationInSeconds +
                 ", hours=" + hours +

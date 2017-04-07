@@ -15,7 +15,7 @@ class SingleAudioClipGenerator {
         boolean asMono = outputAudioClipsConfig.isMono();
         AudioSignal soundZoneAudioSignal = asMono ? getSingleSoundZoneAudioSignalAsMono(originalAudioFileSignal)
                                                   : originalAudioFileSignal;
-        String outputFileName = outputAudioClipsConfig.getOutputAudioClipsDirectoryPath() + singleAudioSoundZoneInfo.getSuggestedAudioFileName();
+        String outputFileName = outputAudioClipsConfig.getOutputAudioClipsDirectoryPath() + singleAudioSoundZoneInfo.getSuggestedAudioClipName();
         int startPosition = singleAudioSoundZoneInfo.getStartPosition();
         int soundZoneLength = singleAudioSoundZoneInfo.getEndPosition() - singleAudioSoundZoneInfo.getStartPosition();
         return audioIo.saveAudioFile(outputFileName, outputAudioClipsConfig.getAudioFormatExtension(), soundZoneAudioSignal, startPosition, soundZoneLength);

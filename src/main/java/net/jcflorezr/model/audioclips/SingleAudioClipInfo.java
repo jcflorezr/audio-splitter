@@ -4,7 +4,7 @@ import biz.source_code.dsp.model.AudioFileWritingResult;
 
 public class SingleAudioClipInfo implements AudioClipInfo {
 
-    private String suggestedAudioFileName;
+    private String suggestedAudioClipName;
     private final int groupNumber;
     private int startPosition;
     private float startPositionInSeconds;
@@ -18,8 +18,8 @@ public class SingleAudioClipInfo implements AudioClipInfo {
     private AudioFileWritingResult audioClipWritingResult;
 
 
-    public SingleAudioClipInfo(int groupNumber, int startPosition, float startPositionInSeconds, int endPosition, float endPositionInSeconds, float durationInSeconds, String suggestedAudioFileName, int hours, int minutes, int seconds, int milliseconds) {
-        this.suggestedAudioFileName = suggestedAudioFileName;
+    public SingleAudioClipInfo(int groupNumber, int startPosition, float startPositionInSeconds, int endPosition, float endPositionInSeconds, float durationInSeconds, String suggestedAudioClipName, int hours, int minutes, int seconds, int milliseconds) {
+        this.suggestedAudioClipName = suggestedAudioClipName;
         this.groupNumber = groupNumber;
         this.startPosition = startPosition;
         this.startPositionInSeconds = startPositionInSeconds;
@@ -32,9 +32,8 @@ public class SingleAudioClipInfo implements AudioClipInfo {
         this.milliseconds = milliseconds;
     }
 
-    @Override
-    public String getSuggestedAudioFileName() {
-        return suggestedAudioFileName;
+    public String getSuggestedAudioClipName() {
+        return suggestedAudioClipName;
     }
 
     public int getGroupNumber() {
@@ -96,7 +95,7 @@ public class SingleAudioClipInfo implements AudioClipInfo {
     @Override
     public String toString() {
         return "SingleAudioClipInfo{" +
-                "suggestedAudioFileName='" + suggestedAudioFileName + '\'' +
+                "suggestedAudioClipName='" + suggestedAudioClipName + '\'' +
                 ", groupNumber=" + groupNumber +
                 ", startPosition=" + startPosition +
                 ", startPositionInSeconds=" + startPositionInSeconds +
@@ -113,7 +112,7 @@ public class SingleAudioClipInfo implements AudioClipInfo {
 
     public static class SingleAudioSoundZoneInfoBuilder {
 
-        private String suggestedAudioFileName;
+        private String suggestedAudioClipName;
         private int groupNumber;
         private int startPosition;
         private float startPositionInSeconds;
@@ -125,8 +124,8 @@ public class SingleAudioClipInfo implements AudioClipInfo {
         private int seconds;
         private int milliseconds;
 
-        public SingleAudioSoundZoneInfoBuilder suggestedAudioFileName(String suggestedAudioFileName) {
-            this.suggestedAudioFileName = suggestedAudioFileName;
+        public SingleAudioSoundZoneInfoBuilder suggestedAudioClipName(String suggestedAudioClipName) {
+            this.suggestedAudioClipName = suggestedAudioClipName;
             return this;
         }
 
@@ -188,7 +187,7 @@ public class SingleAudioClipInfo implements AudioClipInfo {
                     endPosition,
                     endPositionInSeconds,
                     durationInSeconds,
-                    suggestedAudioFileName,
+                    suggestedAudioClipName,
                     hours,
                     minutes,
                     seconds,
