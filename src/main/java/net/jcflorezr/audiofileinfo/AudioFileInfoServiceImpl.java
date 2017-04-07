@@ -12,6 +12,7 @@ public class AudioFileInfoServiceImpl implements AudioFileInfoService {
 
     private AudioConverterService audioConverterService = new AudioConverterService();
     private AudioContentService audioContentService = new AudioContentService();
+    private SoundZonesDetector soundZonesDetector = new SoundZonesDetector();
 
     @Override
     public AudioFileInfo generateAudioFileInfo(AudioFileLocation audioFileLocation, boolean grouped) throws Exception {
@@ -20,10 +21,7 @@ public class AudioFileInfoServiceImpl implements AudioFileInfoService {
         audioFileInfo.setConvertedAudioFileName(convertedAudioFileName);
         AudioContent audioContent = audioContentService.retrieveAudioContent(audioFileInfo);
         audioFileInfo.setAudioContent(audioContent);
-
-        SoundZonesDetector soundZonesDetector = new SoundZonesDetector(audioContent.getOriginalAudioSignal());
-        audioFileInfo.setSingleAudioSoundZones(soundZonesDetector.getAudioSoundZones());
-
+        audioFileInfo.setSingleAudioSoundZones(soundZonesDetector.getAudioSoundZones(audioContent.getOriginalAudioSignal()));
         if (grouped) {
             List<GroupAudioClipInfo> groupedAudioFileSoundZones =
                     soundZonesDetector.retrieveGroupedAudioSoundZones(audioFileInfo.getSingleAudioSoundZones());

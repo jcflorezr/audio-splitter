@@ -72,7 +72,7 @@ public class SoundZonesDetector {
     private float[] signalEnvelope;
     private int pos;                          // current position in signal
 
-    public SoundZonesDetector(AudioSignal audioSignal) {
+    private void init(AudioSignal audioSignal) {
         this.samplingRate = audioSignal.getSamplingRate();
         this.minActivityLen = Math.round(minActivityTime * samplingRate);
         this.minSilenceLen = Math.round(minSilenceTime * samplingRate);
@@ -98,7 +98,8 @@ public class SoundZonesDetector {
      *
      * @return a list with the start position of the sound zones.
      */
-    public List<SingleAudioClipInfo> getAudioSoundZones() {
+    public List<SingleAudioClipInfo> getAudioSoundZones(AudioSignal audioSignal) {
+        init(audioSignal);
         List<SingleAudioClipInfo> singleAudioFileSoundZones = new ArrayList<>();
         pos = 0;
         int activeStartPos = -1;                                // start position of ACTIVE zone or -1
