@@ -22,8 +22,8 @@ import static org.powermock.api.mockito.PowerMockito.when;
 public class AudioContentServiceTest {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
-    private static final String EMPTY_AUDIO_METADATA_JSON_FILE = "/audiocontent/emptyAudioMetadata.json";
-    private static final String MP3_AUDIO_METADATA_JSON_FILE = "/audiocontent/mp3AudioMetadata.json";
+    private static final String EMPTY_AUDIO_METADATA_JSON_FILE = "/audiofileinfo/emptyAudioMetadata.json";
+    private static final String MP3_AUDIO_METADATA_JSON_FILE = "/audiofileinfo/mp3AudioMetadata.json";
 
     private String testResourcesPath;
     private Class<? extends AudioContentServiceTest> thisClass;
