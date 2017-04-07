@@ -49,9 +49,10 @@ public class AudioContentServiceTest {
 
         // When
         when(audioIo.loadWavFile(anyString())).thenReturn(dummyAudioSignal);
-        AudioContent actualAudioContent = audioContentService.retrieveAudioContent(dummyAudioFileInfo);
 
         // Then
+        AudioContent actualAudioContent = audioContentService.retrieveAudioContent(dummyAudioFileInfo);
+
         float[][] emptyAudioSignalData = new float[][]{};
         assertEquals(emptyAudioSignalData, actualAudioContent.getOriginalAudioData());
 
@@ -61,7 +62,7 @@ public class AudioContentServiceTest {
     }
 
     @Test
-    public void retrieveEmptyAudioContent() throws Exception {
+    public void audioMetadataIsNotRetrievedForWavFiles() throws Exception {
         // Given
         String audioFileName = testResourcesPath + "test-audio-mono-22050.wav";
         String convertedAudioFileName = "/any-path-to-file/any-file.wav";
@@ -70,9 +71,10 @@ public class AudioContentServiceTest {
 
         // When
         when(audioIo.loadWavFile(anyString())).thenReturn(dummyAudioSignal);
-        AudioContent actualAudioContent = audioContentService.retrieveAudioContent(dummyAudioFileInfo);
 
         // Then
+        AudioContent actualAudioContent = audioContentService.retrieveAudioContent(dummyAudioFileInfo);
+
         float[][] emptyAudioSignalData = new float[][]{};
         assertEquals(emptyAudioSignalData, actualAudioContent.getOriginalAudioData());
 
