@@ -36,7 +36,7 @@ public class AudioContentServiceTest {
     @Before
     public void setUp() {
         thisClass = this.getClass();
-        testResourcesPath = thisClass.getResource("/").getPath();
+        testResourcesPath = thisClass.getResource("/audiofileinfo/").getPath();
     }
 
     @Test
@@ -56,9 +56,9 @@ public class AudioContentServiceTest {
         float[][] emptyAudioSignalData = new float[][]{};
         assertEquals(emptyAudioSignalData, actualAudioContent.getOriginalAudioData());
 
-        JsonNode emptyAudioMetadata = MAPPER.readTree(thisClass.getResourceAsStream(MP3_AUDIO_METADATA_JSON_FILE));
+        JsonNode mp3AudioMetadata = MAPPER.readTree(thisClass.getResourceAsStream(MP3_AUDIO_METADATA_JSON_FILE));
         JsonNode actualAudioMetadata = MAPPER.convertValue(actualAudioContent.getAudioMetadata(), JsonNode.class);
-        assertEquals(emptyAudioMetadata, actualAudioMetadata);
+        assertEquals(mp3AudioMetadata, actualAudioMetadata);
     }
 
     @Test

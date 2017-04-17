@@ -1,11 +1,9 @@
 package net.jcflorezr.model.audioclips;
 
-import biz.source_code.dsp.model.AudioFileWritingResult;
-
-public class SingleAudioClipInfo {
+public class AudioClipInfo {
 
     private String suggestedAudioClipName;
-    private final int groupNumber;
+    private int groupNumber;
     private int startPosition;
     private float startPositionInSeconds;
     private int endPosition;
@@ -15,10 +13,11 @@ public class SingleAudioClipInfo {
     private int minutes;
     private int seconds;
     private int milliseconds;
-    private AudioFileWritingResult audioClipWritingResult;
 
+    public AudioClipInfo() {
+    }
 
-    public SingleAudioClipInfo(int groupNumber, int startPosition, float startPositionInSeconds, int endPosition, float endPositionInSeconds, float durationInSeconds, String suggestedAudioClipName, int hours, int minutes, int seconds, int milliseconds) {
+    public AudioClipInfo(int groupNumber, int startPosition, float startPositionInSeconds, int endPosition, float endPositionInSeconds, float durationInSeconds, String suggestedAudioClipName, int hours, int minutes, int seconds, int milliseconds) {
         this.suggestedAudioClipName = suggestedAudioClipName;
         this.groupNumber = groupNumber;
         this.startPosition = startPosition;
@@ -83,18 +82,8 @@ public class SingleAudioClipInfo {
     }
 
     
-    public AudioFileWritingResult getAudioClipWritingResult() {
-        return audioClipWritingResult;
-    }
-
-    
-    public void setAudioClipWritingResult(AudioFileWritingResult audioClipWritingResult) {
-        this.audioClipWritingResult = audioClipWritingResult;
-    }
-
-    
     public String toString() {
-        return "SingleAudioClipInfo{" +
+        return "AudioClipInfo{" +
                 "suggestedAudioClipName='" + suggestedAudioClipName + '\'' +
                 ", groupNumber=" + groupNumber +
                 ", startPosition=" + startPosition +
@@ -106,7 +95,6 @@ public class SingleAudioClipInfo {
                 ", minutes=" + minutes +
                 ", seconds=" + seconds +
                 ", milliseconds=" + milliseconds +
-                ", audioClipWritingResult=" + audioClipWritingResult +
                 '}';
     }
 
@@ -179,8 +167,8 @@ public class SingleAudioClipInfo {
             return this;
         }
 
-        public SingleAudioClipInfo build() {
-            return new SingleAudioClipInfo(
+        public AudioClipInfo build() {
+            return new AudioClipInfo(
                     groupNumber,
                     startPosition,
                     startPositionInSeconds,

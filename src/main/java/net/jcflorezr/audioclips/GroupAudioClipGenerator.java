@@ -7,7 +7,7 @@ import net.jcflorezr.exceptions.InternalServerErrorException;
 import net.jcflorezr.exceptions.SeparatorAudioFileNotFoundException;
 import net.jcflorezr.model.audiocontent.AudioContent;
 import net.jcflorezr.model.audioclips.OutputAudioClipsConfig;
-import net.jcflorezr.model.audioclips.SingleAudioClipInfo;
+import net.jcflorezr.model.audioclips.AudioClipInfo;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.io.InputStream;
@@ -36,7 +36,7 @@ class GroupAudioClipGenerator {
 
     private AudioIo audioIo = new AudioIo();
 
-    AudioFileWritingResult generateAudioClip(List<SingleAudioClipInfo> groupAudioClipsInfo, OutputAudioClipsConfig outputAudioClipsConfig) {
+    AudioFileWritingResult generateAudioClip(List<AudioClipInfo> groupAudioClipsInfo, OutputAudioClipsConfig outputAudioClipsConfig) {
         AudioContent audioContent = outputAudioClipsConfig.getAudioContent();
         List<float[][]> audioClipsSignalsWithSeparator =
                 generateAudioClipSignalsWithSeparator(groupAudioClipsInfo,
@@ -52,7 +52,7 @@ class GroupAudioClipGenerator {
         return audioIo.saveAudioFile(groupAudioFileNameAndPath, outputAudioClipsConfig.getAudioFormatExtension(), finalAudioSignal);
     }
 
-    private List<float[][]> generateAudioClipSignalsWithSeparator(List<SingleAudioClipInfo> groupAudioClipsInfo, AudioSignal originalAudioFileSignal, boolean mono) {
+    private List<float[][]> generateAudioClipSignalsWithSeparator(List<AudioClipInfo> groupAudioClipsInfo, AudioSignal originalAudioFileSignal, boolean mono) {
         List<float[][]> audioClipsAudioSignals = groupAudioClipsInfo.stream()
                 .map(audioClipInfo -> mono ? getAudioClipSignalDataAsMono(audioClipInfo, originalAudioFileSignal)
                                            : getAudioClipSignalDataAsStereo(audioClipInfo, originalAudioFileSignal))
@@ -64,22 +64,22 @@ class GroupAudioClipGenerator {
         return mergeClipSignalToSeparatorSignal(audioClipsAudioSignals, groupSeparatorSignals);
     }
 
-    private float[][] getAudioClipSignalDataAsStereo(SingleAudioClipInfo singleAudioClipInfo, AudioSignal originalAudioFileSignal) {
-        return getAudioClipSignalData(singleAudioClipInfo, originalAudioFileSignal, false);
+    private float[][] getAudioClipSignalDataAsStereo(AudioClipInfo audioClipInfo, AudioSignal originalAudioFileSignal) {
+        return getAudioClipSignalData(audioClipInfo, originalAudioFileSignal, false);
     }
 
-    private float[][] getAudioClipSignalDataAsMono(SingleAudioClipInfo singleAudioClipInfo, AudioSignal originalAudioFileSignal) {
-        return getAudioClipSignalData(singleAudioClipInfo, originalAudioFileSignal, true);
+    private float[][] getAudioClipSignalDataAsMono(AudioClipInfo audioClipInfo, AudioSignal originalAudioFileSignal) {
+        return getAudioClipSignalData(audioClipInfo, originalAudioFileSignal, true);
     }
 
-    private float[][] getAudioClipSignalData(SingleAudioClipInfo singleAudioClipInfo, AudioSignal originalAudioFileSignal, boolean mono) {
+    private float[][] getAudioClipSignalData(AudioClipInfo audioClipInfo, AudioSignal originalAudioFileSignal, boolean mono) {
         int channels = mono ? MONO_CHANNELS : STEREO_CHANNELS;
         int originalAudioChannels = originalAudioFileSignal.getChannels();
         float[][] audioClipSignalData = new float[channels][];
         for (int i = 0; i < channels; i++) {
             float[] currentChannelData = originalAudioChannels < channels ? originalAudioFileSignal.getData()[0]
                     : originalAudioFileSignal.getData()[i];
-            audioClipSignalData[i] = copyOfRange(currentChannelData, singleAudioClipInfo.getStartPosition(), singleAudioClipInfo.getEndPosition());
+            audioClipSignalData[i] = copyOfRange(currentChannelData, audioClipInfo.getStartPosition(), audioClipInfo.getEndPosition());
         }
         return audioClipSignalData;
     }

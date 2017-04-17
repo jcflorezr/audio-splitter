@@ -51,7 +51,7 @@ public class AudioMetadata {
 
     public void setComments(String comments) {
         String[] arr = comments.split("\\n");
-        this.comments = arr.length > 0 ? arr[1] : comments;
+        this.comments = arr.length > 1 ? arr[1] : comments;
     }
 
     public List<String> getRawMetadata() {

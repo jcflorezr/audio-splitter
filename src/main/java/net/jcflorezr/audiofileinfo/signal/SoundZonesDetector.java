@@ -14,13 +14,10 @@ package net.jcflorezr.audiofileinfo.signal;
 
 import biz.source_code.dsp.model.AudioSignal;
 import biz.source_code.dsp.signal.EnvelopeDetector;
-import net.jcflorezr.model.audioclips.AudioClipsWritingResult;
-import net.jcflorezr.model.audioclips.SingleAudioClipInfo;
+import net.jcflorezr.model.audioclips.AudioClipInfo;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import static net.jcflorezr.util.AudioUtils.formatAudioTimeWithMilliseconds;
 import static org.apache.commons.lang3.StringUtils.substringAfter;
@@ -57,7 +54,7 @@ public class SoundZonesDetector {
 
     private static final int GROUP_LENGTH = 13;
     private int groupNumber = 1;
-    private int groupDurationInSeconds;
+    private float groupDurationInSeconds;
 
     private float thresholdLevel = 0.01F;    // sound envelope threshold
     private float minActivityTime = 0.25F;   // minimum activity segment time in seconds
@@ -97,9 +94,9 @@ public class SoundZonesDetector {
      *
      * @return a list with the start position of the sound zones.
      */
-    public List<SingleAudioClipInfo> getAudioSoundZones(AudioSignal audioSignal) {
+    public List<AudioClipInfo> getAudioSoundZones(AudioSignal audioSignal) {
         init(audioSignal);
-        List<SingleAudioClipInfo> singleAudioFileSoundZones = new ArrayList<>();
+        List<AudioClipInfo> singleAudioFileSoundZones = new ArrayList<>();
         pos = 0;
         int activeStartPos = -1;                                // start position of ACTIVE zone or -1
         int undefStartPos = -1;                                 // start position of undefined zone or -1
@@ -155,7 +152,7 @@ public class SoundZonesDetector {
         return active ? SegmentType.ACTIVE : SegmentType.SILENCE;
     }
 
-    private SingleAudioClipInfo addAudioFileSoundZone(int endPosition) {
+    private AudioClipInfo addAudioFileSoundZone(int endPosition) {
         int startPosition = endPositionPreviousSoundZone;
         float startPositionInSeconds = formatAudioTimeWithMilliseconds((float) startPosition / samplingRate);
         float endPositionInSeconds = formatAudioTimeWithMilliseconds((float) endPosition / samplingRate);
@@ -171,7 +168,7 @@ public class SoundZonesDetector {
         int seconds = startPositionInSecondsInt % 60;
         int milliseconds = Integer.parseInt(substringAfter(suggestedAudioClipName, "_"));
 
-        SingleAudioClipInfo singleAudioFileSoundZone = new SingleAudioClipInfo.SingleAudioSoundZoneInfoBuilder()
+        AudioClipInfo singleAudioFileSoundZone = new AudioClipInfo.SingleAudioSoundZoneInfoBuilder()
                 .groupNumber(groupNumber)
                 .startPosition(startPosition)
                 .startPositionInSeconds(startPositionInSeconds)

@@ -21,13 +21,7 @@ public class AudioFileInfoServiceImpl implements AudioFileInfoService {
         audioFileInfo.setConvertedAudioFileName(convertedAudioFileName);
         AudioContent audioContent = audioContentService.retrieveAudioContent(audioFileInfo);
         audioFileInfo.setAudioContent(audioContent);
-        audioFileInfo.setSingleAudioClipsInfo(soundZonesDetector.getAudioSoundZones(audioContent.getOriginalAudioSignal()));
-//        if (grouped) {
-//            List<AudioClipsWritingResult> groupedAudioFileSoundZones =
-//                    soundZonesDetector.retrieveGroupedAudioSoundZones(audioFileInfo.getSingleAudioClipsInfo());
-//            audioFileInfo.setAudioClipsWritingResult(groupedAudioFileSoundZones);
-//        }
-        System.out.println(new ObjectMapper().convertValue(audioFileInfo, JsonNode.class).toString());
+        audioFileInfo.setAudioClipsInfo(soundZonesDetector.getAudioSoundZones(audioContent.getOriginalAudioSignal()));
         return audioFileInfo;
     }
 }
