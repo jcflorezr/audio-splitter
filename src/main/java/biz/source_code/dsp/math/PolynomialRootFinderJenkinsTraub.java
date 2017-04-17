@@ -127,7 +127,6 @@ private Complex[] rpoly (double[] coeffs) {
       p[i] = coeffs[i - 1]; }
    // Start the algorithm for one zero.
    while (true) {                                          // main loop
-      // System.out.println("Main loop " + n + p[1] + " " + p[2]);
       if (n < 1) {
          return zeros; }
       if (n == 1) {
