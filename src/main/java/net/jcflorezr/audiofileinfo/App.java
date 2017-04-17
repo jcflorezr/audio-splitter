@@ -10,8 +10,8 @@ public class App {
     public static void main(String[] args) throws Exception {
 //        String audioFileName = "/Users/juancamiloroman/OneDrive/transcriber/2016031307.mp3";
 //        String audioFileName = "/Users/juancamiloroman/OneDrive/transcriber/4_Galatas 3(EB).mp3";
-        String audioFileName = "/Users/juancamiloroman/jcflorezr-net/audio-splitter/src/main/test/resources/test-audio-mono-22050.mp3";
-        String outputAudioClipsDirectory = "/Users/juancamiloroman/Downloads/voice/2017031307/20170401_103357/";
+        String audioFileName = "/Users/juaflore/jcflorezr-net/audio-splitter/src/main/test/resources/test-audio-mono-22050.mp3";
+        String outputAudioClipsDirectory = "/Users/juaflore/Downloads/voice/2017031307/20170401_103357/";
         AudioFileLocation audioFileLocation = new AudioFileLocation(audioFileName, outputAudioClipsDirectory);
 
         System.out.println(new FlacAudioSplitterByGroup().generateAudioMonoClips(audioFileLocation));

@@ -2,7 +2,7 @@ package net.jcflorezr.model.audioclips;
 
 import biz.source_code.dsp.model.AudioFileWritingResult;
 
-public class SingleAudioClipInfo implements AudioClipInfo {
+public class SingleAudioClipInfo {
 
     private String suggestedAudioClipName;
     private final int groupNumber;
@@ -44,7 +44,7 @@ public class SingleAudioClipInfo implements AudioClipInfo {
         return startPosition;
     }
 
-    @Override
+    
     public float getStartPositionInSeconds() {
         return startPositionInSeconds;
     }
@@ -57,42 +57,42 @@ public class SingleAudioClipInfo implements AudioClipInfo {
         return endPositionInSeconds;
     }
 
-    @Override
+    
     public float getDurationInSeconds() {
         return durationInSeconds;
     }
 
-    @Override
+    
     public int getHours() {
         return hours;
     }
 
-    @Override
+    
     public int getMinutes() {
         return minutes;
     }
 
-    @Override
+    
     public int getSeconds() {
         return seconds;
     }
 
-    @Override
+    
     public int getMilliseconds() {
         return milliseconds;
     }
 
-    @Override
+    
     public AudioFileWritingResult getAudioClipWritingResult() {
         return audioClipWritingResult;
     }
 
-    @Override
+    
     public void setAudioClipWritingResult(AudioFileWritingResult audioClipWritingResult) {
         this.audioClipWritingResult = audioClipWritingResult;
     }
 
-    @Override
+    
     public String toString() {
         return "SingleAudioClipInfo{" +
                 "suggestedAudioClipName='" + suggestedAudioClipName + '\'' +

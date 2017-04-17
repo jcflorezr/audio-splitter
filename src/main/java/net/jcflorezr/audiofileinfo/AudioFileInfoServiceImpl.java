@@ -4,12 +4,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.jcflorezr.api.audiofileinfo.AudioFileInfoService;
 import net.jcflorezr.audiofileinfo.signal.SoundZonesDetector;
-import net.jcflorezr.model.audioclips.GroupAudioClipInfo;
 import net.jcflorezr.model.audiocontent.AudioContent;
 import net.jcflorezr.model.audiocontent.AudioFileInfo;
 import net.jcflorezr.model.request.AudioFileLocation;
-
-import java.util.List;
 
 public class AudioFileInfoServiceImpl implements AudioFileInfoService {
 
@@ -24,12 +21,12 @@ public class AudioFileInfoServiceImpl implements AudioFileInfoService {
         audioFileInfo.setConvertedAudioFileName(convertedAudioFileName);
         AudioContent audioContent = audioContentService.retrieveAudioContent(audioFileInfo);
         audioFileInfo.setAudioContent(audioContent);
-        audioFileInfo.setSingleAudioSoundZones(soundZonesDetector.getAudioSoundZones(audioContent.getOriginalAudioSignal()));
-        if (grouped) {
-            List<GroupAudioClipInfo> groupedAudioFileSoundZones =
-                    soundZonesDetector.retrieveGroupedAudioSoundZones(audioFileInfo.getSingleAudioSoundZones());
-            audioFileInfo.setGroupedAudioFileSoundZones(groupedAudioFileSoundZones);
-        }
+        audioFileInfo.setSingleAudioClipsInfo(soundZonesDetector.getAudioSoundZones(audioContent.getOriginalAudioSignal()));
+//        if (grouped) {
+//            List<AudioClipsWritingResult> groupedAudioFileSoundZones =
+//                    soundZonesDetector.retrieveGroupedAudioSoundZones(audioFileInfo.getSingleAudioClipsInfo());
+//            audioFileInfo.setAudioClipsWritingResult(groupedAudioFileSoundZones);
+//        }
         System.out.println(new ObjectMapper().convertValue(audioFileInfo, JsonNode.class).toString());
         return audioFileInfo;
     }

@@ -14,7 +14,7 @@ package net.jcflorezr.audiofileinfo.signal;
 
 import biz.source_code.dsp.model.AudioSignal;
 import biz.source_code.dsp.signal.EnvelopeDetector;
-import net.jcflorezr.model.audioclips.GroupAudioClipInfo;
+import net.jcflorezr.model.audioclips.AudioClipsWritingResult;
 import net.jcflorezr.model.audioclips.SingleAudioClipInfo;
 
 import java.util.ArrayList;
@@ -23,7 +23,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static net.jcflorezr.util.AudioUtils.formatAudioTimeWithMilliseconds;
-import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.substringAfter;
 
 /**
@@ -138,14 +137,6 @@ public class SoundZonesDetector {
         return singleAudioFileSoundZones;
     }
 
-    public List<GroupAudioClipInfo> retrieveGroupedAudioSoundZones(List<SingleAudioClipInfo> singleAudioFileSoundZones) {
-        Map<Integer, List<SingleAudioClipInfo>> groupedSoundZones = singleAudioFileSoundZones.stream()
-                .collect(Collectors.groupingBy(SingleAudioClipInfo::getGroupNumber));
-        return groupedSoundZones.entrySet().stream()
-                .map((groupedSoundZone) -> getAudioFileSoundZoneGroup(groupedSoundZone.getValue()))
-                .collect(toList());
-    }
-
     private enum SegmentType {ACTIVE, SILENCE, UNDEF}
 
     private SegmentType scanSegment() {
@@ -206,24 +197,6 @@ public class SoundZonesDetector {
         String[] startPosInSecondsString = String.valueOf(startPositionInSeconds).split("\\.");
         startPosInSecondsString[0] = String.format(audioDurationDigitsFormat, Integer.parseInt(startPosInSecondsString[0]));
         return startPosInSecondsString[0] + "_" + startPosInSecondsString[1];
-    }
-
-    private GroupAudioClipInfo getAudioFileSoundZoneGroup(List<SingleAudioClipInfo> soundZoneList) {
-        float groupDurationInSeconds = (float) soundZoneList.stream()
-                .mapToDouble(soundZone -> soundZone.getDurationInSeconds())
-                .sum();
-        SingleAudioClipInfo firstSoundZone = soundZoneList.get(0);
-        return new GroupAudioClipInfo.GroupAudioSoundZonesInfoBuilder()
-                .suggestedAudioFileName(firstSoundZone.getSuggestedAudioClipName())
-                .startPositionInSeconds(firstSoundZone.getStartPositionInSeconds())
-                .durationInSeconds(groupDurationInSeconds)
-                .hours(firstSoundZone.getHours())
-                .minutes(firstSoundZone.getMinutes())
-                .seconds(firstSoundZone.getSeconds())
-                .milliseconds(firstSoundZone.getMilliseconds())
-                .numSoundZones(soundZoneList.size())
-                .singleAudioSoundZonesInfo(soundZoneList)
-                .build();
     }
 
 }

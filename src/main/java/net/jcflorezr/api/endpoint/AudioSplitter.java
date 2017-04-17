@@ -3,7 +3,7 @@ package net.jcflorezr.api.endpoint;
 import biz.source_code.dsp.util.AudioFormatsSupported;
 import net.jcflorezr.api.audioclips.AudioClipsGenerator;
 import net.jcflorezr.api.audiofileinfo.AudioFileInfoService;
-import net.jcflorezr.model.audioclips.AudioClipInfo;
+import net.jcflorezr.model.audioclips.AudioClipsWritingResult;
 import net.jcflorezr.model.response.AudioSplitterResponse;
 import net.jcflorezr.audioclips.AudioClipsGeneratorImpl;
 import net.jcflorezr.audiofileinfo.AudioFileInfoServiceImpl;
@@ -40,12 +40,10 @@ public abstract class AudioSplitter {
             validateAudioFileLocationInfo(audioFileLocation);
             AudioFileInfo audioFileInfo = audioFileInfoService.generateAudioFileInfo(audioFileLocation, generateAudioClipsByGroup);
             OutputAudioClipsConfig outputAudioClipsConfig = audioFileInfo.getOutputAudioClipsConfig(audioFormat, asMono);
-            List<? extends AudioClipInfo> audioClipsInfo =
-                    generateAudioClipsByGroup ? audioFileInfo.getGroupedAudioFileSoundZones() : audioFileInfo.getSingleAudioSoundZones();
-            audioClipsInfo.stream().forEach(clip ->
-                    clip.setAudioClipWritingResult(audioClipsGenerator.generateAudioClip(clip, outputAudioClipsConfig, generateAudioClipsByGroup)));
-            Map<Boolean, Long> soundZonesGenerationResult = audioClipsInfo.stream()
-                    .collect(Collectors.partitioningBy(clipInfo -> ((AudioClipInfo)clipInfo).getAudioClipWritingResult().isSuccess(), Collectors.counting()));
+            List<AudioClipsWritingResult> audioClipsWritingResult = audioClipsGenerator.generateAudioClip(audioFileInfo, outputAudioClipsConfig, generateAudioClipsByGroup);
+            audioFileInfo.setAudioClipsWritingResult(audioClipsWritingResult);
+            Map<Boolean, Long> soundZonesGenerationResult = audioClipsWritingResult.stream()
+                    .collect(Collectors.partitioningBy(clipInfo -> clipInfo.getAudioClipWritingResult().isSuccess(), Collectors.counting()));
             return new SuccessResponse(soundZonesGenerationResult.get(true), soundZonesGenerationResult.get(false));
         } catch (IOException e) {
             errorResponse = new ErrorResponse(new BadRequestException(e.getMessage()));

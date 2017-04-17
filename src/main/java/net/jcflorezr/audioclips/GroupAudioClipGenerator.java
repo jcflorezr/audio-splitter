@@ -6,7 +6,6 @@ import biz.source_code.dsp.sound.AudioIo;
 import net.jcflorezr.exceptions.InternalServerErrorException;
 import net.jcflorezr.exceptions.SeparatorAudioFileNotFoundException;
 import net.jcflorezr.model.audiocontent.AudioContent;
-import net.jcflorezr.model.audioclips.GroupAudioClipInfo;
 import net.jcflorezr.model.audioclips.OutputAudioClipsConfig;
 import net.jcflorezr.model.audioclips.SingleAudioClipInfo;
 import org.apache.commons.lang3.ArrayUtils;
@@ -37,31 +36,30 @@ class GroupAudioClipGenerator {
 
     private AudioIo audioIo = new AudioIo();
 
-    AudioFileWritingResult generateAudioClip(GroupAudioClipInfo groupAudioClipInfo, OutputAudioClipsConfig outputAudioClipsConfig) {
+    AudioFileWritingResult generateAudioClip(List<SingleAudioClipInfo> groupAudioClipsInfo, OutputAudioClipsConfig outputAudioClipsConfig) {
         AudioContent audioContent = outputAudioClipsConfig.getAudioContent();
         List<float[][]> audioClipsSignalsWithSeparator =
-                generateAudioClipSignalsWithSeparator(groupAudioClipInfo,
+                generateAudioClipSignalsWithSeparator(groupAudioClipsInfo,
                         audioContent.getOriginalAudioSignal(),
                         outputAudioClipsConfig.isMono());
         float[][] finalAudioSignalData = audioClipsSignalsWithSeparator.stream()
                 .reduce((clip1, clip2) -> joinSeparatorToAudioClip(clip1, clip2))
                 .orElse(new float[][]{});
         int audioSamplingRate = audioContent.getOriginalAudioSamplingRate();
-        String groupAudioFileNameAndPath = outputAudioClipsConfig.getOutputAudioClipsDirectoryPath()
-                + groupAudioClipInfo.getSuggestedAudioClipName();
+        String suggestedAudioClipName = groupAudioClipsInfo.get(0).getSuggestedAudioClipName();
+        String groupAudioFileNameAndPath = outputAudioClipsConfig.getOutputAudioClipsDirectoryPath() + suggestedAudioClipName;
         AudioSignal finalAudioSignal = new AudioSignal(audioSamplingRate, finalAudioSignalData);
         return audioIo.saveAudioFile(groupAudioFileNameAndPath, outputAudioClipsConfig.getAudioFormatExtension(), finalAudioSignal);
     }
 
-    private List<float[][]> generateAudioClipSignalsWithSeparator(GroupAudioClipInfo groupAudioClipInfo, AudioSignal originalAudioFileSignal, boolean mono) {
-        List<SingleAudioClipInfo> singleAudioClipsInfo = groupAudioClipInfo.getSingleAudioClipsInfo();
-        List<float[][]> audioClipsAudioSignals = singleAudioClipsInfo.stream()
+    private List<float[][]> generateAudioClipSignalsWithSeparator(List<SingleAudioClipInfo> groupAudioClipsInfo, AudioSignal originalAudioFileSignal, boolean mono) {
+        List<float[][]> audioClipsAudioSignals = groupAudioClipsInfo.stream()
                 .map(audioClipInfo -> mono ? getAudioClipSignalDataAsMono(audioClipInfo, originalAudioFileSignal)
                                            : getAudioClipSignalDataAsStereo(audioClipInfo, originalAudioFileSignal))
                 .collect(toList());
         float [][] groupSeparatorAudioFileSignal = retrieveSeparatorAudioSignalData(originalAudioFileSignal);
         List<float[][]> groupSeparatorSignals = Stream.generate(() -> groupSeparatorAudioFileSignal)
-                .limit(singleAudioClipsInfo.size())
+                .limit(groupAudioClipsInfo.size())
                 .collect(toList());
         return mergeClipSignalToSeparatorSignal(audioClipsAudioSignals, groupSeparatorSignals);
     }

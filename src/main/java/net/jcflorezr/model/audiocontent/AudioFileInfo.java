@@ -1,7 +1,7 @@
 package net.jcflorezr.model.audiocontent;
 
 import biz.source_code.dsp.util.AudioFormatsSupported;
-import net.jcflorezr.model.audioclips.GroupAudioClipInfo;
+import net.jcflorezr.model.audioclips.AudioClipsWritingResult;
 import net.jcflorezr.model.audioclips.OutputAudioClipsConfig;
 import net.jcflorezr.model.audioclips.SingleAudioClipInfo;
 import net.jcflorezr.model.request.AudioFileLocation;
@@ -12,8 +12,8 @@ public class AudioFileInfo {
 
     private AudioFileLocation audioFileLocation;
     private String convertedAudioFileName;
-    private List<SingleAudioClipInfo> singleAudioSoundZones;
-    private List<GroupAudioClipInfo> groupedAudioFileSoundZones;
+    private List<SingleAudioClipInfo> singleAudioClipsInfo;
+    private List<AudioClipsWritingResult> audioClipsWritingResult;
     private AudioContent audioContent;
 
     public AudioFileInfo(AudioFileLocation audioFileLocation) {
@@ -32,20 +32,20 @@ public class AudioFileInfo {
         this.convertedAudioFileName = convertedAudioFileName;
     }
 
-    public List<SingleAudioClipInfo> getSingleAudioSoundZones() {
-        return singleAudioSoundZones;
+    public List<SingleAudioClipInfo> getSingleAudioClipsInfo() {
+        return singleAudioClipsInfo;
     }
 
-    public void setSingleAudioSoundZones(List<SingleAudioClipInfo> singleAudioSoundZones) {
-        this.singleAudioSoundZones = singleAudioSoundZones;
+    public void setSingleAudioClipsInfo(List<SingleAudioClipInfo> singleAudioClipsInfo) {
+        this.singleAudioClipsInfo = singleAudioClipsInfo;
     }
 
-    public List<GroupAudioClipInfo> getGroupedAudioFileSoundZones() {
-        return groupedAudioFileSoundZones;
+    public List<AudioClipsWritingResult> getAudioClipsWritingResult() {
+        return audioClipsWritingResult;
     }
 
-    public void setGroupedAudioFileSoundZones(List<GroupAudioClipInfo> groupedAudioFileSoundZones) {
-        this.groupedAudioFileSoundZones = groupedAudioFileSoundZones;
+    public void setAudioClipsWritingResult(List<AudioClipsWritingResult> audioClipsWritingResult) {
+        this.audioClipsWritingResult = audioClipsWritingResult;
     }
 
     public void setAudioFileLocation(AudioFileLocation audioFileLocation) {
