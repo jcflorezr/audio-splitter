@@ -3,7 +3,7 @@ package net.jcflorezr.audiofileinfo;
 import biz.source_code.dsp.model.AudioSignal;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import net.jcflorezr.audiofileinfo.signal.SoundZonesDetector;
+import net.jcflorezr.audiofileinfo.signal.SoundZonesDetectorImpl;
 import net.jcflorezr.model.audioclips.AudioClipInfo;
 import net.jcflorezr.model.audiocontent.AudioContent;
 import net.jcflorezr.model.audiocontent.AudioFileInfo;
@@ -39,7 +39,7 @@ public class AudioFileInfoServiceImplTest {
     @Mock
     private AudioContentService audioContentService;
     @Mock
-    private SoundZonesDetector soundZonesDetector;
+    private SoundZonesDetectorImpl soundZonesDetector;
     @InjectMocks
     private AudioFileInfoServiceImpl audioFileInfoService;
 

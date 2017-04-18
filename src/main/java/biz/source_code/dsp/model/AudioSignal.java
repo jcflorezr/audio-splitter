@@ -1,5 +1,7 @@
 package biz.source_code.dsp.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * A class for storing an audio signal in memory.
  */
@@ -43,6 +45,7 @@ public class AudioSignal {
     /**
      * Returns the signal length in samples.
      */
+    @JsonIgnore
     public int getLength() {
         return data[0].length;
     }
@@ -50,6 +53,7 @@ public class AudioSignal {
     /**
      * Returns the number of channels.
      */
+    @JsonIgnore
     public int getChannels() {
         return data.length;
     }
