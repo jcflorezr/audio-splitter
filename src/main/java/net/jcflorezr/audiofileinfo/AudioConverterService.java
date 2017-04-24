@@ -15,13 +15,17 @@ class AudioConverterService {
 
     private static final Tika TIKA = new Tika();
     private static final String WAV = "wav";
-    static BiPredicate<String, String> compareExtensions = (extension1, extension2) -> extension1.contains(extension2.toLowerCase());
+    static BiPredicate<String, String> compareExtensions = (extension1, extension2) ->
+            extension1.contains(extension2.toLowerCase()) || extension2.contains(extension1.toLowerCase());
 
     String convertFileToWavIfNeeded(String audioFileName) throws UnsupportedAudioFileException {
         Optional<String> convertedAudioFileName =
                 ofNullable(audioFileName)
                         .filter(fileName -> audioFileNeedsToBeConverted(fileName))
                         .map(fileName -> FilenameUtils.removeExtension(fileName).concat(".wav"));
+        if (!convertedAudioFileName.isPresent()) {
+            return audioFileName;
+        }
         return convertedAudioFileName
                 .filter(convertedFileName -> AudioUtils.convertAudioFile(audioFileName, convertedFileName))
                 .orElseThrow(() -> new UnsupportedAudioFileException("The file '" + audioFileName + "' could not be converted to wav."));

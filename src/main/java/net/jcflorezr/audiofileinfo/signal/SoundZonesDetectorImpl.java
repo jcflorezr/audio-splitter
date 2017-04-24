@@ -87,7 +87,7 @@ public class SoundZonesDetectorImpl implements SoundZonesDetector {
     }
 
     private String getNumOfDigitsFormat(int number) {
-        return "%0" + String.valueOf(number).length() + "d";
+        return "%0" + String.valueOf(Math.round(signalEnvelope.length / samplingRate)).length() + "d";
     }
 
     /**

@@ -109,7 +109,7 @@ class GroupAudioClipGenerator {
         try {
             InputStream separatorStream = Optional.ofNullable(ClassLoader.class.getResourceAsStream(SEPARATOR_FILE_NAME))
                     .orElseThrow(() -> new SeparatorAudioFileNotFoundException());
-            AudioSignal separatorAudioSignal = audioIo.loadWavFile(separatorStream);
+            AudioSignal separatorAudioSignal = audioIo.retrieveAudioSignalFromWavFile(separatorStream);
             if (separatorAudioFileNeedsToBeResampled.test(originalAudioSignal, separatorAudioSignal)) {
                 separatorAudioSignal = audioIo.resampleWavFile(originalAudioSignal, separatorAudioSignal, RESAMPLED_SEPARATOR_FILE_NAME);
             }

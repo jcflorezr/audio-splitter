@@ -46,6 +46,10 @@ public class AudioIo {
         return getAudioInputStream(signal, 0, signal.getLength());
     }
 
+    public AudioInputStream getAudioInputStream(String fileName) throws IOException, UnsupportedAudioFileException {
+        return AudioSystem.getAudioInputStream(new File(fileName));
+    }
+
     /**
      * Writes an audio signal into a WAV or FLAC file.
      *
@@ -114,16 +118,24 @@ public class AudioIo {
         }
     }
 
-    public AudioSignal loadWavFile(String fileName) throws IOException, UnsupportedAudioFileException {
-        try (AudioInputStream stream = AudioSystem.getAudioInputStream(new File(fileName))) {
-            return loadWavFile(stream);
+    public AudioSignal retrieveAudioSignalFromWavFile(String fileName) throws IOException, UnsupportedAudioFileException {
+        try (AudioInputStream stream = getAudioInputStream(fileName)) {
+            long totalFrames = stream.getFrameLength();
+            final int blockFrames = 0x4000;
+            return retrieveAudioSignal(stream, totalFrames, blockFrames);
         }
     }
 
-    public AudioSignal loadWavFile(InputStream inputStream) throws IOException, UnsupportedAudioFileException {
+    public AudioSignal retrieveAudioSignalFromWavFile(InputStream inputStream) throws IOException, UnsupportedAudioFileException {
         try (AudioInputStream stream = AudioSystem.getAudioInputStream(inputStream)) {
-            return loadWavFile(stream);
+            long totalFrames = stream.getFrameLength();
+            final int blockFrames = 0x4000;
+            return retrieveAudioSignal(stream, totalFrames, blockFrames);
         }
+    }
+
+    public AudioSignal retrieveAudioSignalFromWavFile(AudioInputStream audioInputStream, long totalFrames, int blockFrames) throws IOException {
+        return retrieveAudioSignal(audioInputStream, totalFrames, blockFrames);
     }
 
     public AudioSignal resampleWavFile(AudioSignal resampleFromSignal, AudioSignal toBeResampledSignal, String resampledSeparatorFilePathAndName) throws URISyntaxException, UnsupportedAudioFileException, IOException {
@@ -144,19 +156,20 @@ public class AudioIo {
             InputStream resampledAudioStream = AudioSystem.getAudioInputStream(resampledAudioFormat, toBeResampledStream);
             AudioSystem.write((AudioInputStream) resampledAudioStream, Type.WAVE, new File(resampledSeparatorFullFileName));
             resampledAudioStream = ClassLoader.class.getResourceAsStream(resampledSeparatorFilePathAndName);
-            return loadWavFile(resampledAudioStream);
+            long totalFrames = ((AudioInputStream) resampledAudioStream).getFrameLength();
+            final int blockFrames = 0x4000;
+            return retrieveAudioSignal((AudioInputStream) resampledAudioStream, totalFrames, blockFrames);
         } finally {
             Files.deleteIfExists(Paths.get(resampledSeparatorFullFileName));
         }
     }
 
-    private AudioSignal loadWavFile(AudioInputStream stream) throws IOException {
-        AudioSignal signal = new AudioSignal();
+    private AudioSignal retrieveAudioSignal(AudioInputStream stream, long totalFramesLong, int blockFrames) throws IOException {
         AudioFormat format = stream.getFormat();
+        AudioSignal signal = new AudioSignal();
         signal.setSamplingRate(Math.round(format.getSampleRate()));
         int frameSize = format.getFrameSize();
         int channels = format.getChannels();
-        long totalFramesLong = stream.getFrameLength();
         if (totalFramesLong > Integer.MAX_VALUE) {
             throw new IOException("Sound file too long.");
         }
@@ -165,7 +178,6 @@ public class AudioIo {
         for (int channel = 0; channel < channels; channel++) {
             signal.getData()[channel] = new float[totalFrames];
         }
-        final int blockFrames = 0x4000;
         byte[] blockBuf = new byte[frameSize * blockFrames];
         int pos = 0;
         while (pos < totalFrames) {

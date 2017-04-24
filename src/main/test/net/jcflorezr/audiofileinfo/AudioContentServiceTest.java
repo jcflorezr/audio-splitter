@@ -48,7 +48,7 @@ public class AudioContentServiceTest {
         AudioSignal dummyAudioSignal = createDummyAudioSignal(22050, new float[][]{});
 
         // When
-        when(audioIo.loadWavFile(anyString())).thenReturn(dummyAudioSignal);
+        when(audioIo.retrieveAudioSignalFromWavFile(anyString())).thenReturn(dummyAudioSignal);
 
         // Then
         AudioContent actualAudioContent = audioContentService.retrieveAudioContent(dummyAudioFileInfo);
@@ -70,7 +70,7 @@ public class AudioContentServiceTest {
         AudioSignal dummyAudioSignal = createDummyAudioSignal(22050, new float[][]{});
 
         // When
-        when(audioIo.loadWavFile(anyString())).thenReturn(dummyAudioSignal);
+        when(audioIo.retrieveAudioSignalFromWavFile(anyString())).thenReturn(dummyAudioSignal);
 
         // Then
         AudioContent actualAudioContent = audioContentService.retrieveAudioContent(dummyAudioFileInfo);

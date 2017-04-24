@@ -39,7 +39,7 @@ class AudioContentService {
 
     private AudioSignal retrieveOriginalAudioSignal(AudioFileInfo audioFileInfo) throws IOException, UnsupportedAudioFileException {
         try {
-            return audioIo.loadWavFile(audioFileInfo.getConvertedAudioFileName());
+            return audioIo.retrieveAudioSignalFromWavFile(audioFileInfo.getConvertedAudioFileName());
         } finally {
             String convertedAudioFileName = audioFileInfo.getConvertedAudioFileName();
             boolean convertedAudioFileExists = Files.exists(Paths.get(convertedAudioFileName));
