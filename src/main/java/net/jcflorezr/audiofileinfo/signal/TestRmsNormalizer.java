@@ -42,8 +42,8 @@ public class TestRmsNormalizer {
     }
 
     public void r() throws IOException, UnsupportedAudioFileException {
-//        String inputFileName = "/Users/juancamiloroman/OneDrive/dsp-collection-maven copy/2016103017.wav";
-        String inputFileName = "/Users/juancamiloroman/OneDrive/dsp-collection-maven copy/3818-2_00.wav";
+        String inputFileName = "/Users/juancamiloroman/OneDrive/dsp-collection-maven copy/2016103017.wav";
+//        String inputFileName = "/Users/juancamiloroman/OneDrive/dsp-collection-maven copy/3818-2_00.wav";
 //        String inputFileName = "/Users/juancamiloroman/OneDrive/dsp-collection-maven copy/161-1_30.wav";
 
 
@@ -112,6 +112,9 @@ public class TestRmsNormalizer {
         int endActiveZonePosition;
         RmsSignal previousRmsInfo = new RmsSignal();
         for (RmsSignal rmsInfo : rmsInfoList) {
+            if (rmsInfo.getPosition() % samplingRate == 0) {
+                continue;
+            }
             if (rmsInfo.isActive()) {
                 if (++activeCounter == 3) {
                     startActiveZonePosition = previousRmsInfo.getPosition();

@@ -18,18 +18,20 @@ import java.util.List;
  */
 public class RmsNormalizer {
 
-    private static final float TARGET_RMS = 0.5F;
-    private static final double THRESHOLD = 0.03;
+    private static final float TARGET_RMS = 0.3F;
+    private static final double THRESHOLD = 0.003;
 
     public List<RmsSignal> normalize(float[][] signals, int segmentSize, int samplingRate) {
         int channel = 0;
         List<Double> rmsLevels = retrieveRmsLevels(signals[channel], segmentSize);
         double maxRms = rmsLevels.stream().max(Comparator.comparing(x -> x)).orElse(0.0);
+        double minRms = rmsLevels.stream().min(Comparator.comparing(x -> x)).orElse(0.0);
         if (maxRms == 0) {
             return new ArrayList<>();
         }
+        System.out.println("########## " + (maxRms - minRms));
         double factor = TARGET_RMS / maxRms;
-        amplifySignal(signals, factor);
+//        amplifySignal(signals[channel], factor);
         return retrieveRmsInfo(signals[channel], segmentSize, samplingRate);
     }
 
@@ -55,14 +57,14 @@ public class RmsNormalizer {
             // If the last segment is less than 2/3 of the segment size, we include it in the previous segment.
             double rms = computeRms(signal, pos, endPos - pos);
             float positionInSeconds = (float) pos / samplingRate;
-            int position = endPos;
+            int position = pos;
 
-            double diff = prevRms - rms;
-            boolean active = Math.abs(prevDiff - diff) > THRESHOLD;
+            double diff = (pos == 0 ? rms : prevRms) - rms;
+            boolean active = Math.abs(diff) > THRESHOLD;
 
             DecimalFormat d = new DecimalFormat("#.###");
             float f = (float)pos/samplingRate;
-            System.out.print("\nrms: " + rms + " - " + d.format(f) + " - " + pos + " [" + d.format(diff) + "]" + " (" + (active ? active : "") + ")");
+            System.out.print("\nrms: " + rms + " - " + d.format(f) + " - " + pos + " [" + d.format(diff) + "]" + " (" + (!active ? active : "") + ")");
 
             rmsSignals.add(new RmsSignal(rms, positionInSeconds, position, active));
 
@@ -79,12 +81,6 @@ public class RmsNormalizer {
             a += signal[p] * signal[p];
         }
         return Math.sqrt(a / len);
-    }
-
-    private void amplifySignal(float[][] signals, double factor) {
-        for (int channel = 0; channel < signals.length; channel++) {
-            amplifySignal(signals[channel], factor);
-        }
     }
 
     private void amplifySignal(float[] signal, double factor) {
