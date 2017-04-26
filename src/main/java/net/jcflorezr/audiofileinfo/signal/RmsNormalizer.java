@@ -19,7 +19,8 @@ import java.util.List;
 public class RmsNormalizer {
 
     private static final float TARGET_RMS = 0.3F;
-    private static final double THRESHOLD = 0.003;
+    private static final double SILENCE_THRESHOLD = 0.001;
+    private static final double ACTIVE_THRESHOLD = 0.03;
 
     public List<RmsSignal> normalize(float[][] signals, int segmentSize, int samplingRate) {
         int channel = 0;
@@ -29,8 +30,8 @@ public class RmsNormalizer {
         if (maxRms == 0) {
             return new ArrayList<>();
         }
-        System.out.println("########## " + (maxRms - minRms));
-        double factor = TARGET_RMS / maxRms;
+//        System.out.println("########## " + (maxRms - minRms));
+//        double factor = TARGET_RMS / maxRms;
 //        amplifySignal(signals[channel], factor);
         return retrieveRmsInfo(signals[channel], segmentSize, samplingRate);
     }
@@ -55,18 +56,20 @@ public class RmsNormalizer {
         while (pos < signal.length) {
             int endPos = (pos + segmentSize * 5 / 3 > signal.length) ? signal.length : pos + segmentSize;
             // If the last segment is less than 2/3 of the segment size, we include it in the previous segment.
-            double rms = computeRms(signal, pos, endPos - pos);
+            DecimalFormat df = new DecimalFormat("#.###");
+            double rms = Double.parseDouble(df.format(computeRms(signal, pos, endPos - pos)));
             float positionInSeconds = (float) pos / samplingRate;
             int position = pos;
 
-            double diff = (pos == 0 ? rms : prevRms) - rms;
-            boolean active = Math.abs(diff) > THRESHOLD;
+            double diff = Double.parseDouble(df.format(prevRms - rms));
+            boolean silence = Math.abs(diff) <= SILENCE_THRESHOLD;
+            double deepDiff = Double.parseDouble(df.format(prevDiff - diff));
+            boolean active = Math.abs(deepDiff) >= ACTIVE_THRESHOLD;
 
-            DecimalFormat d = new DecimalFormat("#.###");
             float f = (float)pos/samplingRate;
-            System.out.print("\nrms: " + rms + " - " + d.format(f) + " - " + pos + " [" + d.format(diff) + "]" + " (" + (!active ? active : "") + ")");
+            System.out.print("\nrms: " + rms + " - " + df.format(f) + " - " + pos + " [" + diff + "|" + deepDiff + "]" + " (" + (silence ? silence : "") + ") (" + (active ? active : "") + ")");
 
-            rmsSignals.add(new RmsSignal(rms, positionInSeconds, position, active));
+            rmsSignals.add(new RmsSignal(rms, positionInSeconds, position, silence, active));
 
             prevRms = rms;
             pos = endPos;

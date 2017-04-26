@@ -5,17 +5,18 @@ public class RmsSignal {
     private double rms;
     private float positionInSeconds;
     private int position;
-    private boolean active;
-
+    private boolean possibleSilence;
+    private boolean possibleActive;
 
     public RmsSignal() {
     }
 
-    public RmsSignal(double rms, float positionInSeconds, int position, boolean active) {
+    public RmsSignal(double rms, float positionInSeconds, int position, boolean possibleSilence, boolean possibleActive) {
         this.rms = rms;
         this.positionInSeconds = positionInSeconds;
         this.position = position;
-        this.active = active;
+        this.possibleSilence = possibleSilence;
+        this.possibleActive = possibleActive;
     }
 
     public double getRms() {
@@ -30,13 +31,12 @@ public class RmsSignal {
         return position;
     }
 
-    public boolean isActive() {
-        return active;
+    public boolean isPossibleSilence() {
+        return possibleSilence;
     }
 
-    public void setPosition(int samplingRate, int second) {
-        this.position += samplingRate * second;
-        this.positionInSeconds += second;
+    public boolean isPossibleActive() {
+        return possibleActive;
     }
 
     @Override
@@ -45,7 +45,7 @@ public class RmsSignal {
                 "rms=" + rms +
                 ", positionInSeconds=" + positionInSeconds +
                 ", position=" + position +
-                ", active=" + active +
+                ", possibleSilence=" + possibleSilence +
                 '}';
     }
 }

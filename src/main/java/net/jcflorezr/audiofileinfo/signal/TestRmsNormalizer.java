@@ -42,8 +42,8 @@ public class TestRmsNormalizer {
     }
 
     public void r() throws IOException, UnsupportedAudioFileException {
-        String inputFileName = "/Users/juancamiloroman/OneDrive/dsp-collection-maven copy/2016103017.wav";
-//        String inputFileName = "/Users/juancamiloroman/OneDrive/dsp-collection-maven copy/3818-2_00.wav";
+//        String inputFileName = "/Users/juaflore/OneDrive/dsp-collection-maven copy/2016103017.wav";
+        String inputFileName = "/Users/juaflore/OneDrive/dsp-collection-maven copy/3818-2_00.wav";
 //        String inputFileName = "/Users/juancamiloroman/OneDrive/dsp-collection-maven copy/161-1_30.wav";
 
 
@@ -62,33 +62,35 @@ public class TestRmsNormalizer {
             int durationInSeconds = duration / samplingRate;
             segmentSize = samplingRate / 10; // 100ms
 
-            for (int currentSecond = 0; currentSecond <= durationInSeconds; currentSecond++) {
-                int nextPosition = samplingRate * currentSecond;
-                stream.mark(nextPosition);
+//            for (int currentSecond = 0; currentSecond <= durationInSeconds; currentSecond++) {
+//                int nextPosition = samplingRate * currentSecond;
+//                stream.mark(nextPosition);
 
-                int difference = duration - nextPosition;
-                boolean isLastSecond = difference < samplingRate;
-                int blockFrames = isLastSecond ? difference : samplingRate;
-                int totalFrames = blockFrames;
-                AudioSignal currentSecondSignal = new AudioIo().retrieveAudioSignalFromWavFile(stream, totalFrames, blockFrames);
+//                int difference = duration - nextPosition;
+//                boolean isLastSecond = difference < samplingRate;
+//
+//                int blockFrames = isLastSecond ? difference : samplingRate;
+//                int totalFrames = blockFrames;
 
-                float[][] previousAndCurrentSignalData = joinAudioSignals(audioFileSignalData.get(0), currentSecondSignal.getData());
-                audioFileSignalData.set(0, previousAndCurrentSignalData);
+                AudioSignal currentSecondSignal = new AudioIo().retrieveAudioSignalFromWavFile(stream, duration, duration);
+
+//                float[][] previousAndCurrentSignalData = joinAudioSignals(audioFileSignalData.get(0), currentSecondSignal.getData());
+//                audioFileSignalData.set(0, previousAndCurrentSignalData);
 
                 List<RmsSignal> rmsList = rmsNormalizer.normalize(currentSecondSignal.getData(), segmentSize, samplingRate);
 
-                System.out.println("=================================== " + currentSecond);
+//                System.out.println("=================================== " + currentSecond);
 
-                for (RmsSignal rmsSignal : rmsList) {
-                    rmsSignal.setPosition(samplingRate, currentSecond);
-                }
+//                for (RmsSignal rmsSignal : rmsList) {
+//                    rmsSignal.setPosition(samplingRate, currentSecond);
+//                }
                 rmsInfoList.addAll(rmsList);
 //            new AudioIo().saveAudioFile(outputFileName + "0" + currentSecond, ".wav", currentSecondSignal);
-            }
+//            }
+            audioDurationDigitsFormat = getNumOfDigitsFormat(currentSecondSignal);
         }
 
-        AudioSignal audioFileSignal = new AudioSignal(samplingRate, audioFileSignalData.get(0));
-        audioDurationDigitsFormat = getNumOfDigitsFormat(audioFileSignal);
+//        AudioSignal audioFileSignal = new AudioSignal(samplingRate, audioFileSignalData.get(0));
 
         List<AudioClipInfo> audioClips = retrieveSoundZones(rmsInfoList, segmentSize, samplingRate);
         System.out.println();
@@ -115,7 +117,7 @@ public class TestRmsNormalizer {
             if (rmsInfo.getPosition() % samplingRate == 0) {
                 continue;
             }
-            if (rmsInfo.isActive()) {
+            if (rmsInfo.isPossibleSilence()) {
                 if (++activeCounter == 3) {
                     startActiveZonePosition = previousRmsInfo.getPosition();
                     if (startActiveZonePosition > (segmentSize * 3)) {
