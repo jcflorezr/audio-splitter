@@ -1,161 +1,108 @@
-// Copyright 2013 Christian d'Heureuse, Inventec Informatik AG, Zurich, Switzerland
-// www.source-code.biz, www.inventec.ch/chdh
-//
-// This module is multi-licensed and may be used under the terms
-// of any of the following licenses:
-//
-//  EPL, Eclipse Public License, V1.0 or later, http://www.eclipse.org/legal
-//  LGPL, GNU Lesser General Public License, V2.1 or later, http://www.gnu.org/licenses/lgpl.html
-//
-// Please contact the author if you need another license.
-// This module is provided "as is", without warranties of any kind.
-
 package net.jcflorezr.audiofileinfo.signal;
 
 import biz.source_code.dsp.model.AudioSignal;
-import biz.source_code.dsp.signal.EnvelopeDetector;
 import net.jcflorezr.api.audiofileinfo.signal.SoundZonesDetector;
 import net.jcflorezr.model.audioclips.AudioClipInfo;
+import net.jcflorezr.model.audiocontent.signal.RmsSignalInfo;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import static net.jcflorezr.util.AudioUtils.formatAudioTimeWithMilliseconds;
 import static org.apache.commons.lang3.StringUtils.substringAfter;
 
-/**
- * An activity detector that can be used to subdivide an audio signal into zones with sound and zones with SILENCE.
- * The difference between this class and ActivityDetector.java is that this class does not discard the SILENCE gaps
- * between activity zones, each audio clip generated will keep the SILENCE gaps both at the beginning and at the end
- * as it was recorded in the original audio file.
- * <p>
- * <p>
- * <p>
- * The following model is used to find ACTIVE and silent zones:
- * The input signal is divided into segments according to whether the signal envelope level is above or
- * below the threshold level.
- * These segments are classified into the following types:
- * <ul>
- * <li>ACTIVE: The envelope level is above the threshold and the zone is equal or longer than the minimum for activity.
- * <li>SILENCE: The envelope level is below the threshold and the zone is equal or longer than the minimum for SILENCE.
- * <li>UNDEF: The zone is too small. The envelope level of the zone may be above or below the threshold (but not mixed).
- * </ul>
- * <p>
- * "UNDEF" segments are then eliminated using the following rules:
- * <ul>
- * <li>Adjacent "UNDEF" segments are combined.
- * <li>An "UNDEF" segment that is adjacent to an "ACTIVE" segment is converted to "ACTIVE".
- * <li>An "UNDEF" segment that lies between two "SILENCE" segments is converted to "SILENCE".
- * <li>The start and the end of the signal are regarded as "SILENCE".
- * </ul>
- * <p>
- * The resulting "ACTIVE" segments are combined into the ACTIVE zones.
- */
+
+// TODO this class cannot be referenced as Singleton
 public class SoundZonesDetectorImpl implements SoundZonesDetector {
 
+    private static final int MAX_ACTIVE_COUNTER = 80;
     private static final int GROUP_LENGTH = 13;
+
     private int groupNumber = 1;
     private float groupDurationInSeconds;
-
-    private float thresholdLevel = 0.01F;    // sound envelope threshold
-    private float minActivityTime = 0.25F;   // minimum activity segment time in seconds
-    private float minSilenceTime = 0.1F;    // minimum SILENCE segment time in seconds
-
-    private int minActivityLen;
-    private int minSilenceLen;
-    private int samplingRate;
     private String audioDurationDigitsFormat;
-    private int endPositionPreviousSoundZone;
-    private float[] signalEnvelope;
-    private int pos;                          // current position in signal
 
-    private void init(AudioSignal audioSignal) {
-        this.samplingRate = audioSignal.getSamplingRate();
-        this.minActivityLen = Math.round(minActivityTime * samplingRate);
-        this.minSilenceLen = Math.round(minSilenceTime * samplingRate);
-        this.signalEnvelope = getSignalEnvelope(audioSignal);
-        this.audioDurationDigitsFormat = getDigitsFormatOfAudioDuration();
-    }
+    private RmsCalculator rmsCalculator = new RmsCalculator();
 
-    private float[] getSignalEnvelope(AudioSignal audioSignal) {
-        EnvelopeDetector envelopeDetector = new EnvelopeDetector(samplingRate);
-        return envelopeDetector.process(audioSignal.getData()[0]);
-    }
-
-    private String getDigitsFormatOfAudioDuration() {
-        return getNumOfDigitsFormat(Math.round(signalEnvelope.length / samplingRate));
-    }
-
-    private String getNumOfDigitsFormat(int number) {
-        return "%0" + String.valueOf(Math.round(signalEnvelope.length / samplingRate)).length() + "d";
-    }
-
-    /**
-     * Processes the signal envelope and returns the positions of the sound zones.
-     *
-     * @return a list with the start position of the sound zones.
-     */
     @Override
-    public List<AudioClipInfo> getAudioSoundZones(AudioSignal audioSignal) {
-        init(audioSignal);
-        List<AudioClipInfo> singleAudioFileSoundZones = new ArrayList<>();
-        pos = 0;
-        int activeStartPos = -1;                                // start position of ACTIVE zone or -1
-        int undefStartPos = -1;                                 // start position of undefined zone or -1
-        while (pos < signalEnvelope.length) {
-            int segmentStartPos = pos;                           // start position of current segment
-            SegmentType segmentType = scanSegment();
-            switch (segmentType) {
-                case SILENCE: {
-                    if (activeStartPos != -1) {
-                        singleAudioFileSoundZones.add(addAudioFileSoundZone(segmentStartPos));
-                        activeStartPos = -1;
+    public List<AudioClipInfo> retrieveAudioClipsInfo(AudioSignal currentSecondSignal) {
+        int samplingRate = currentSecondSignal.getSamplingRate();
+        int segmentSize = samplingRate / 10;
+        List<RmsSignalInfo> rmsInfoList = rmsCalculator.normalize(currentSecondSignal.getData(), segmentSize, samplingRate);
+        audioDurationDigitsFormat = getNumOfDigitsFormat(currentSecondSignal);
+        return retrieveSoundZonesBySilenceSegments(rmsInfoList, segmentSize, samplingRate);
+    }
+
+    private List<AudioClipInfo> retrieveSoundZonesBySilenceSegments(List<RmsSignalInfo> rmsInfoList, int segmentSize, int samplingRate) {
+        List<AudioClipInfo> audioClips = new ArrayList<>();
+        int silenceCounter = 0;
+        int activeCounter = 0;
+        int startActiveZonePosition = 0;
+        int endActiveZonePosition;
+        Iterator<RmsSignalInfo> rmsSignalIterator = rmsInfoList.listIterator();
+        while (rmsSignalIterator.hasNext()) {
+            RmsSignalInfo rmsInfo = rmsSignalIterator.next();
+            boolean isLastSegment = !rmsSignalIterator.hasNext();
+            if (rmsInfo.isPossibleSilence() || isLastSegment) {
+                if (++silenceCounter == 2 || isLastSegment) {
+                    if (activeCounter > 2) {
+                        if (activeCounter >= MAX_ACTIVE_COUNTER) {
+                            int from = startActiveZonePosition / segmentSize;
+                            int to = rmsInfo.getPosition() / segmentSize;
+                            audioClips.addAll(retrieveSoundZonesByActiveSegments(rmsInfoList.subList(from, to), segmentSize, samplingRate));
+                        } else {
+                            startActiveZonePosition = Math.max(startActiveZonePosition - (segmentSize * 2), 0);
+                            endActiveZonePosition = rmsInfo.getPosition();
+                            audioClips.add(generateSoundZoneInfo(startActiveZonePosition, endActiveZonePosition, samplingRate));
+                        }
+                    } else {
+                        startActiveZonePosition = rmsInfo.getPosition();
                     }
-                    undefStartPos = -1;
-                    break;
+                    activeCounter = 0;
+                } else if (silenceCounter < 2) {
+                    activeCounter++;
                 }
-                case ACTIVE: {
-                    if (activeStartPos == -1) {
-                        activeStartPos = (undefStartPos != -1) ? undefStartPos : segmentStartPos;
-                    }
-                    break;
+            } else {
+                if (++activeCounter == 1) {
+                    startActiveZonePosition = rmsInfo.getPosition();
                 }
-                case UNDEF: {
-                    if (undefStartPos == -1) {
-                        undefStartPos = segmentStartPos;
-                    }
-                    break;
-                }
-                default:
-                    throw new AssertionError();
+                silenceCounter = 0;
             }
         }
-        if (activeStartPos != -1) {
-            singleAudioFileSoundZones.add(addAudioFileSoundZone(pos));
-        }
-        return singleAudioFileSoundZones;
+        return audioClips;
     }
 
-    private enum SegmentType {ACTIVE, SILENCE, UNDEF}
-
-    private SegmentType scanSegment() {
-        int startPos = pos;
-        if (pos >= signalEnvelope.length) {
-            throw new AssertionError();
+    private List<AudioClipInfo> retrieveSoundZonesByActiveSegments(List<RmsSignalInfo> rmsInfoList, int segmentSize, int samplingRate) {
+        List<AudioClipInfo> audioClips = new ArrayList<>();
+        int activeCounter = 0;
+        int inactiveCounter = 0;
+        int startActiveZonePosition = 0;
+        int endActiveZonePosition;
+        Iterator<RmsSignalInfo> rmsSignalIterator = rmsInfoList.listIterator();
+        while (rmsSignalIterator.hasNext()) {
+            RmsSignalInfo rmsInfo = rmsSignalIterator.next();
+            boolean isLastSegment = !rmsSignalIterator.hasNext();
+            if (rmsInfo.isPossibleActive() && !isLastSegment) {
+                if (++activeCounter == 3) {
+                    startActiveZonePosition = rmsInfo.getPosition();
+                    if (startActiveZonePosition > (segmentSize * 4)) {
+                        startActiveZonePosition -= (segmentSize * 4);
+                    }
+                }
+                inactiveCounter = 0;
+            } else if (++inactiveCounter == 3 || isLastSegment) {
+                if (activeCounter >= 3) {
+                    endActiveZonePosition = rmsInfo.getPosition();
+                    audioClips.add(generateSoundZoneInfo(startActiveZonePosition, endActiveZonePosition, samplingRate));
+                }
+                activeCounter = 0;
+            }
         }
-        boolean active = signalEnvelope[pos++] >= thresholdLevel;
-        while (pos < signalEnvelope.length && (signalEnvelope[pos] >= thresholdLevel) == active) {
-            pos++;
-        }
-        int minLen = active ? minActivityLen : minSilenceLen;
-        if (pos - startPos < minLen) {
-            return SegmentType.UNDEF;
-        }
-        return active ? SegmentType.ACTIVE : SegmentType.SILENCE;
+        return audioClips;
     }
 
-    private AudioClipInfo addAudioFileSoundZone(int endPosition) {
-        int startPosition = endPositionPreviousSoundZone;
+    private AudioClipInfo generateSoundZoneInfo(int startPosition, int endPosition, int samplingRate) {
         float startPositionInSeconds = formatAudioTimeWithMilliseconds((float) startPosition / samplingRate);
         float endPositionInSeconds = formatAudioTimeWithMilliseconds((float) endPosition / samplingRate);
         int startPositionInSecondsInt = (int) startPositionInSeconds;
@@ -188,7 +135,6 @@ public class SoundZonesDetectorImpl implements SoundZonesDetector {
             groupDurationInSeconds = 0;
             groupNumber++;
         }
-        endPositionPreviousSoundZone = endPosition;
         return singleAudioFileSoundZone;
     }
 
@@ -196,6 +142,10 @@ public class SoundZonesDetectorImpl implements SoundZonesDetector {
         String[] startPosInSecondsString = String.valueOf(startPositionInSeconds).split("\\.");
         startPosInSecondsString[0] = String.format(audioDurationDigitsFormat, Integer.parseInt(startPosInSecondsString[0]));
         return startPosInSecondsString[0] + "_" + startPosInSecondsString[1];
+    }
+
+    private String getNumOfDigitsFormat(AudioSignal audioSignal) {
+        return "%0" + String.valueOf(Math.round(audioSignal.getLength() / audioSignal.getSamplingRate())).length() + "d";
     }
 
 }

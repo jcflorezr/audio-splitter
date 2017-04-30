@@ -1,6 +1,6 @@
 package net.jcflorezr.model.audiocontent.signal;
 
-public class RmsSignal {
+public class RmsSignalInfo {
 
     private double rms;
     private float positionInSeconds;
@@ -8,10 +8,10 @@ public class RmsSignal {
     private boolean possibleSilence;
     private boolean possibleActive;
 
-    public RmsSignal() {
+    public RmsSignalInfo() {
     }
 
-    public RmsSignal(double rms, float positionInSeconds, int position, boolean possibleSilence, boolean possibleActive) {
+    public RmsSignalInfo(double rms, float positionInSeconds, int position, boolean possibleSilence, boolean possibleActive) {
         this.rms = rms;
         this.positionInSeconds = positionInSeconds;
         this.position = position;
@@ -41,10 +41,11 @@ public class RmsSignal {
 
     @Override
     public String toString() {
-        return "RmsSignal{" +
+        return "RmsSignalInfo{" +
                 "rms=" + rms +
                 ", positionInSeconds=" + positionInSeconds +
                 ", position=" + position +
+                ", possibleActive=" + possibleActive +
                 ", possibleSilence=" + possibleSilence +
                 '}';
     }
