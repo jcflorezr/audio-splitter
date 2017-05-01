@@ -40,6 +40,33 @@ public class RmsSignalInfo {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        RmsSignalInfo that = (RmsSignalInfo) o;
+
+        if (Double.compare(that.rms, rms) != 0) return false;
+        if (Float.compare(that.positionInSeconds, positionInSeconds) != 0) return false;
+        if (position != that.position) return false;
+        if (possibleSilence != that.possibleSilence) return false;
+        return possibleActive == that.possibleActive;
+    }
+
+    @Override
+    public int hashCode() {
+        int result;
+        long temp;
+        temp = Double.doubleToLongBits(rms);
+        result = (int) (temp ^ (temp >>> 32));
+        result = 31 * result + (positionInSeconds != +0.0f ? Float.floatToIntBits(positionInSeconds) : 0);
+        result = 31 * result + position;
+        result = 31 * result + (possibleSilence ? 1 : 0);
+        result = 31 * result + (possibleActive ? 1 : 0);
+        return result;
+    }
+
+    @Override
     public String toString() {
         return "RmsSignalInfo{" +
                 "rms=" + rms +

@@ -16,13 +16,13 @@ public class RmsCalculator {
     private static final double SILENCE_THRESHOLD = 0.001;
     private static final double ACTIVE_THRESHOLD = 0.03;
 
-    public List<RmsSignalInfo> normalize(float[][] signals, int segmentSize, int samplingRate) {
+    public List<RmsSignalInfo> retrieveRmsInfo(float[][] signals, int segmentSize, int samplingRate) {
         int channel = 0;
         return retrieveRmsInfo(signals[channel], segmentSize, samplingRate);
     }
 
     private List<RmsSignalInfo> retrieveRmsInfo(float[] signal, int segmentSize, int samplingRate) {
-        List<RmsSignalInfo> rmsSignalInfos = new ArrayList<>();
+        List<RmsSignalInfo> rmsSignalInfo = new ArrayList<>();
         int pos = 0;
         double prevRms = 0.0;
         double prevDiff = 0.0;
@@ -39,13 +39,13 @@ public class RmsCalculator {
             double deepDiff = Double.parseDouble(df.format(prevDiff - diff));
             boolean active = Math.abs(deepDiff) >= ACTIVE_THRESHOLD;
 
-            rmsSignalInfos.add(new RmsSignalInfo(rms, positionInSeconds, position, silence, active));
+            rmsSignalInfo.add(new RmsSignalInfo(rms, positionInSeconds, position, silence, active));
 
             prevRms = rms;
             pos = endPos;
             prevDiff = diff;
         }
-        return rmsSignalInfos;
+        return rmsSignalInfo;
     }
 
     private double computeRms(float[] signal, int startPos, int len) {
