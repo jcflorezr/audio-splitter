@@ -46,7 +46,7 @@ public class AudioConverterServiceTest {
 
     @Test(expected = UnsupportedAudioFileException.class)
     public void audioFileCouldNotBeConverted() throws UnsupportedAudioFileException {
-        String audioFileName = "/any-path-to-file/any-file.wav";
+        String audioFileName = "/any-path-to-file/any-file.mp3";
         String convertedAudioFileName = "/any-path-to-file/any-file.wav";
         when(AudioUtils.convertAudioFile(anyString(), anyString())).thenReturn(false);
         assertEquals(convertedAudioFileName, audioConverterService.convertFileToWavIfNeeded(audioFileName));
@@ -54,7 +54,7 @@ public class AudioConverterServiceTest {
 
     @Test(expected = InternalServerErrorException.class)
     public void errorWhenConvertingFile() throws UnsupportedAudioFileException {
-        String audioFileName = "/any-path-to-file/any-file.wav";
+        String audioFileName = "/any-path-to-file/any-file.mp3";
         String convertedAudioFileName = "/any-path-to-file/any-file.wav";
         when(AudioUtils.convertAudioFile(anyString(), anyString())).thenThrow(new InternalServerErrorException(new Exception()));
         assertEquals(convertedAudioFileName, audioConverterService.convertFileToWavIfNeeded(audioFileName));
