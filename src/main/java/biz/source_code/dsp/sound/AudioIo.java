@@ -153,12 +153,12 @@ public class AudioIo {
                     toBeResampledStream.getFormat().getFrameSize(),
                     resampleFromFormat.getFrameRate(),
                     resampleFromFormat.isBigEndian());
-            InputStream resampledAudioStream = AudioSystem.getAudioInputStream(resampledAudioFormat, toBeResampledStream);
-            AudioSystem.write((AudioInputStream) resampledAudioStream, Type.WAVE, new File(resampledSeparatorFullFileName));
-            resampledAudioStream = ClassLoader.class.getResourceAsStream(resampledSeparatorFilePathAndName);
-            long totalFrames = ((AudioInputStream) resampledAudioStream).getFrameLength();
+            AudioInputStream resampledAudioStream = AudioSystem.getAudioInputStream(resampledAudioFormat, toBeResampledStream);
+            AudioSystem.write(resampledAudioStream, Type.WAVE, new File(resampledSeparatorFullFileName));
+            resampledAudioStream = AudioSystem.getAudioInputStream(ClassLoader.class.getResourceAsStream(resampledSeparatorFilePathAndName));
+            long totalFrames = resampledAudioStream.getFrameLength();
             final int blockFrames = 0x4000;
-            return retrieveAudioSignal((AudioInputStream) resampledAudioStream, totalFrames, blockFrames);
+            return retrieveAudioSignal(resampledAudioStream, totalFrames, blockFrames);
         } finally {
             Files.deleteIfExists(Paths.get(resampledSeparatorFullFileName));
         }
