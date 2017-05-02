@@ -3,18 +3,14 @@ package net.jcflorezr.audioclips;
 import biz.source_code.dsp.model.AudioFileWritingResult;
 import biz.source_code.dsp.model.AudioSignal;
 import biz.source_code.dsp.sound.AudioIo;
-import net.jcflorezr.exceptions.InternalServerErrorException;
-import net.jcflorezr.exceptions.SeparatorAudioFileNotFoundException;
-import net.jcflorezr.model.audiocontent.AudioContent;
-import net.jcflorezr.model.audioclips.OutputAudioClipsConfig;
 import net.jcflorezr.model.audioclips.AudioClipInfo;
+import net.jcflorezr.model.audioclips.OutputAudioClipsConfig;
+import net.jcflorezr.model.audiocontent.AudioContent;
 import org.apache.commons.lang3.ArrayUtils;
 
-import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
-import java.util.function.BiPredicate;
 import java.util.stream.Stream;
 
 import static java.util.Arrays.copyOfRange;
@@ -24,27 +20,15 @@ class GroupAudioClipGenerator {
 
     private static final int MONO_CHANNELS = 1;
     private static final int STEREO_CHANNELS = 2;
-    //    private static final String PROPERTIES_FILE = "/audioFiles.properties";
-    // TODO I should create global variables with Spring @Value annotation
-    private static final String SEPARATOR_FILE_NAME = "/files/separator2channels44100.wav";
-    // TODO I should create global variables with Spring @Value annotation
-    private static final String RESAMPLED_SEPARATOR_FILE_NAME = "/resampledSeparator.wav";
-
-    private static BiPredicate<AudioSignal, AudioSignal> separatorAudioFileNeedsToBeResampled =
-            (originalAudioSignal, separatorAudioSignal) ->
-                    (originalAudioSignal.getSamplingRate() != separatorAudioSignal.getSamplingRate());
 
     private AudioIo audioIo = new AudioIo();
 
     AudioFileWritingResult generateAudioClip(List<AudioClipInfo> groupAudioClipsInfo, OutputAudioClipsConfig outputAudioClipsConfig) {
         AudioContent audioContent = outputAudioClipsConfig.getAudioContent();
-        List<float[][]> audioClipsSignalsWithSeparator =
-                generateAudioClipSignalsWithSeparator(groupAudioClipsInfo,
+        float[][] finalAudioSignalData = generateAudioClipSignals(groupAudioClipsInfo,
                         audioContent.getOriginalAudioSignal(),
-                        outputAudioClipsConfig.isMono());
-        float[][] finalAudioSignalData = audioClipsSignalsWithSeparator.stream()
-                .reduce((clip1, clip2) -> joinSeparatorToAudioClip(clip1, clip2))
-                .orElse(new float[][]{});
+                        outputAudioClipsConfig.isMono(),
+                false);
         int audioSamplingRate = audioContent.getOriginalAudioSamplingRate();
         String suggestedAudioClipName = groupAudioClipsInfo.get(0).getSuggestedAudioClipName();
         String groupAudioFileNameAndPath = outputAudioClipsConfig.getOutputAudioClipsDirectoryPath() + suggestedAudioClipName;
@@ -52,16 +36,25 @@ class GroupAudioClipGenerator {
         return audioIo.saveAudioFile(groupAudioFileNameAndPath, outputAudioClipsConfig.getAudioFormatExtension(), finalAudioSignal);
     }
 
-    private List<float[][]> generateAudioClipSignalsWithSeparator(List<AudioClipInfo> groupAudioClipsInfo, AudioSignal originalAudioFileSignal, boolean mono) {
-        List<float[][]> audioClipsAudioSignals = groupAudioClipsInfo.stream()
+    private float[][] generateAudioClipSignals(List<AudioClipInfo> groupAudioClipsInfo, AudioSignal originalAudioFileSignal, boolean mono, boolean withSeparator) {
+        Stream<float[][]> audioClipsSignalsStream = groupAudioClipsInfo.stream()
                 .map(audioClipInfo -> mono ? getAudioClipSignalDataAsMono(audioClipInfo, originalAudioFileSignal)
-                                           : getAudioClipSignalDataAsStereo(audioClipInfo, originalAudioFileSignal))
-                .collect(toList());
-        float [][] groupSeparatorAudioFileSignal = retrieveSeparatorAudioSignalData(originalAudioFileSignal);
-        List<float[][]> groupSeparatorSignals = Stream.generate(() -> groupSeparatorAudioFileSignal)
+                                           : getAudioClipSignalDataAsStereo(audioClipInfo, originalAudioFileSignal));
+        if (withSeparator) {
+            return generateAudioClipSignalsWithSeparator(groupAudioClipsInfo, originalAudioFileSignal, audioClipsSignalsStream.collect(toList()));
+        } else {
+            return audioClipsSignalsStream.reduce((clip1, clip2) -> joinAudioSignals(clip1, clip2)).orElse(new float[][]{});
+        }
+    }
+
+    private float[][] generateAudioClipSignalsWithSeparator(List<AudioClipInfo> groupAudioClipsInfo, AudioSignal originalAudioFileSignal, List<float[][]> audioClipsSignals) {
+        float [][] groupSeparatorSignal = retrieveSeparatorAudioSignalData(originalAudioFileSignal);
+        List<float[][]> groupSeparatorSignals = Stream.generate(() -> groupSeparatorSignal)
                 .limit(groupAudioClipsInfo.size())
                 .collect(toList());
-        return mergeClipSignalToSeparatorSignal(audioClipsAudioSignals, groupSeparatorSignals);
+        return mergeClipSignalToSeparatorSignal(audioClipsSignals, groupSeparatorSignals).stream()
+                .reduce((clip1, clip2) -> joinAudioSignals(clip1, clip2))
+                .orElse(new float[][]{});
     }
 
     private float[][] getAudioClipSignalDataAsStereo(AudioClipInfo audioClipInfo, AudioSignal originalAudioFileSignal) {
@@ -97,7 +90,7 @@ class GroupAudioClipGenerator {
         return finalAudioClipSignal;
     }
 
-    private float[][] joinSeparatorToAudioClip(float[][] audioClipSignal, float[][] groupSeparatorSignal) {
+    private float[][] joinAudioSignals(float[][] audioClipSignal, float[][] groupSeparatorSignal) {
         float[][] jointSignalData = new float[audioClipSignal.length][];
         for (int i = 0; i < audioClipSignal.length; i++) {
             jointSignalData[i] = ArrayUtils.addAll(audioClipSignal[i], groupSeparatorSignal[i]);
@@ -106,17 +99,14 @@ class GroupAudioClipGenerator {
     }
 
     private float[][] retrieveSeparatorAudioSignalData(AudioSignal originalAudioSignal) {
-        try {
-            InputStream separatorStream = Optional.ofNullable(ClassLoader.class.getResourceAsStream(SEPARATOR_FILE_NAME))
-                    .orElseThrow(() -> new SeparatorAudioFileNotFoundException());
-            AudioSignal separatorAudioSignal = audioIo.retrieveAudioSignalFromWavFile(separatorStream);
-            if (separatorAudioFileNeedsToBeResampled.test(originalAudioSignal, separatorAudioSignal)) {
-                separatorAudioSignal = audioIo.resampleWavFile(originalAudioSignal, separatorAudioSignal, RESAMPLED_SEPARATOR_FILE_NAME);
-            }
-            return separatorAudioSignal.getData();
-        } catch (Exception e) {
-            throw new InternalServerErrorException(e);
+        int channels = originalAudioSignal.getChannels();
+        int samplingRate = originalAudioSignal.getSamplingRate();
+        int separatorSize = samplingRate / 2; // 500ms
+        float[][] separatorSignalData = new float[channels][separatorSize];
+        for (float[] current : separatorSignalData) {
+            Arrays.fill(current, 0.0f);
         }
+        return separatorSignalData;
     }
 
 }
