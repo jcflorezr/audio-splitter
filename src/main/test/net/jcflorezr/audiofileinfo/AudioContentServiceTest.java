@@ -2,10 +2,10 @@ package net.jcflorezr.audiofileinfo;
 
 import biz.source_code.dsp.model.AudioSignal;
 import biz.source_code.dsp.sound.AudioIo;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.jcflorezr.model.audiocontent.AudioContent;
 import net.jcflorezr.model.audiocontent.AudioFileInfo;
+import net.jcflorezr.model.audiocontent.AudioMetadata;
 import net.jcflorezr.model.request.AudioFileLocation;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,7 +14,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.anyString;
 import static org.powermock.api.mockito.PowerMockito.when;
 
@@ -56,9 +58,9 @@ public class AudioContentServiceTest {
         float[][] emptyAudioSignalData = new float[][]{};
         assertEquals(emptyAudioSignalData, actualAudioContent.getOriginalAudioData());
 
-        JsonNode mp3AudioMetadata = MAPPER.readTree(thisClass.getResourceAsStream(MP3_AUDIO_METADATA_JSON_FILE));
-        JsonNode actualAudioMetadata = MAPPER.convertValue(actualAudioContent.getAudioMetadata(), JsonNode.class);
-        assertEquals(mp3AudioMetadata, actualAudioMetadata);
+        AudioMetadata mp3AudioMetadata = MAPPER.readValue(thisClass.getResourceAsStream(MP3_AUDIO_METADATA_JSON_FILE), AudioMetadata.class);
+        AudioMetadata actualAudioMetadata = actualAudioContent.getAudioMetadata();
+        assertThat(actualAudioMetadata, is(mp3AudioMetadata));
     }
 
     @Test
@@ -78,9 +80,9 @@ public class AudioContentServiceTest {
         float[][] emptyAudioSignalData = new float[][]{};
         assertEquals(emptyAudioSignalData, actualAudioContent.getOriginalAudioData());
 
-        JsonNode emptyAudioMetadata = MAPPER.readTree(thisClass.getResourceAsStream(EMPTY_AUDIO_METADATA_JSON_FILE));
-        JsonNode actualAudioMetadata = MAPPER.convertValue(actualAudioContent.getAudioMetadata(), JsonNode.class);
-        assertEquals(emptyAudioMetadata, actualAudioMetadata);
+        AudioMetadata emptyAudioMetadata = MAPPER.readValue(thisClass.getResourceAsStream(EMPTY_AUDIO_METADATA_JSON_FILE), AudioMetadata.class);
+        AudioMetadata actualAudioMetadata = actualAudioContent.getAudioMetadata();
+        assertThat(actualAudioMetadata, is(emptyAudioMetadata));
     }
 
     private AudioFileInfo createDummyAudioFileInfo(String audioFileName, String convertedAudioFileName) {
