@@ -42,7 +42,6 @@ public class AudioClipInfo {
     public int getStartPosition() {
         return startPosition;
     }
-
     
     public float getStartPositionInSeconds() {
         return startPositionInSeconds;
@@ -55,33 +54,56 @@ public class AudioClipInfo {
     public float getEndPositionInSeconds() {
         return endPositionInSeconds;
     }
-
     
     public float getDurationInSeconds() {
         return durationInSeconds;
     }
 
-    
     public int getHours() {
         return hours;
     }
 
-    
     public int getMinutes() {
         return minutes;
     }
-
     
     public int getSeconds() {
         return seconds;
     }
-
     
     public int getMilliseconds() {
         return milliseconds;
     }
 
-    
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        AudioClipInfo that = (AudioClipInfo) o;
+
+        if (groupNumber != that.groupNumber) return false;
+        if (startPosition != that.startPosition) return false;
+        if (Float.compare(that.startPositionInSeconds, startPositionInSeconds) != 0) return false;
+        if (endPosition != that.endPosition) return false;
+        if (Float.compare(that.endPositionInSeconds, endPositionInSeconds) != 0) return false;
+        if (Float.compare(that.durationInSeconds, durationInSeconds) != 0) return false;
+        return suggestedAudioClipName != null ? suggestedAudioClipName.equals(that.suggestedAudioClipName) : that.suggestedAudioClipName == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = suggestedAudioClipName != null ? suggestedAudioClipName.hashCode() : 0;
+        result = 31 * result + groupNumber;
+        result = 31 * result + startPosition;
+        result = 31 * result + (startPositionInSeconds != +0.0f ? Float.floatToIntBits(startPositionInSeconds) : 0);
+        result = 31 * result + endPosition;
+        result = 31 * result + (endPositionInSeconds != +0.0f ? Float.floatToIntBits(endPositionInSeconds) : 0);
+        result = 31 * result + (durationInSeconds != +0.0f ? Float.floatToIntBits(durationInSeconds) : 0);
+        return result;
+    }
+
+    @Override
     public String toString() {
         return "AudioClipInfo{" +
                 "suggestedAudioClipName='" + suggestedAudioClipName + '\'' +

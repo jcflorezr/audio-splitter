@@ -26,11 +26,11 @@ public class SoundZonesDetectorImpl implements SoundZonesDetector {
     private RmsCalculator rmsCalculator = new RmsCalculator();
 
     @Override
-    public List<AudioClipInfo> retrieveAudioClipsInfo(AudioSignal currentSecondSignal) {
-        int samplingRate = currentSecondSignal.getSamplingRate();
+    public List<AudioClipInfo> retrieveAudioClipsInfo(AudioSignal audioSignal) {
+        int samplingRate = audioSignal.getSamplingRate();
         int segmentSize = samplingRate / 10;
-        List<RmsSignalInfo> rmsInfoList = rmsCalculator.normalize(currentSecondSignal.getData(), segmentSize, samplingRate);
-        audioDurationDigitsFormat = getNumOfDigitsFormat(currentSecondSignal);
+        List<RmsSignalInfo> rmsInfoList = rmsCalculator.retrieveRmsInfo(audioSignal.getData(), segmentSize, samplingRate);
+        audioDurationDigitsFormat = getNumOfDigitsFormat(audioSignal);
         return retrieveSoundZonesBySilenceSegments(rmsInfoList, segmentSize, samplingRate);
     }
 

@@ -1,5 +1,6 @@
 package net.jcflorezr.audiofileinfo.signal;
 
+import biz.source_code.dsp.model.AudioSignal;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.jcflorezr.model.audiocontent.signal.RmsSignalInfo;
@@ -19,11 +20,11 @@ public class RmsCalculatorTest {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
     private static final String BACKGROUND_NOISE_LOW_VOLUME_SIGNAL = "/audiofileinfo/signal/background-noise-low-volume-signal.json";
-    private static final String BACKGROUND_NOISE_LOW_VOLUME_RESPONSE = "/audiofileinfo/signal/background-noise-low-volume-response.json";
+    private static final String BACKGROUND_NOISE_LOW_VOLUME_RMS_INFO = "/audiofileinfo/signal/background-noise-low-volume-rms-info.json";
     private static final String WITH_APPLAUSE_SIGNAL = "/audiofileinfo/signal/with-applause-signal.json";
-    private static final String WITH_APPLAUSE_RESPONSE = "/audiofileinfo/signal/with-applause-response.json";
+    private static final String WITH_APPLAUSE_RMS_INFO = "/audiofileinfo/signal/with-applause-rms-info.json";
     private static final String STRONG_BACKGROUND_NOISE_SIGNAL = "/audiofileinfo/signal/strong-background-noise-signal.json";
-    private static final String STRONG_BACKGROUND_NOISE_RESPONSE = "/audiofileinfo/signal/strong-background-noise-response.json";
+    private static final String STRONG_BACKGROUND_NOISE_RMS_INFO = "/audiofileinfo/signal/strong-background-noise-rms-info.json";
 
     private Class<? extends RmsCalculatorTest> thisClass;
 
@@ -39,10 +40,10 @@ public class RmsCalculatorTest {
     public void retrieveRmsInfoFromAudioWithBackgroundNoiseAndLowVolume() throws Exception {
         int samplingRate = 22050;
         int segmentSize = samplingRate / 10;
-        float[][] signal = MAPPER.readValue(thisClass.getResourceAsStream(BACKGROUND_NOISE_LOW_VOLUME_SIGNAL), float[][].class);
+        float[][] signal = MAPPER.readValue(thisClass.getResourceAsStream(BACKGROUND_NOISE_LOW_VOLUME_SIGNAL), AudioSignal.class).getData();
 
         List<RmsSignalInfo> actualRmsSignalInfo = rmsCalculator.retrieveRmsInfo(signal, segmentSize, samplingRate);
-        List<RmsSignalInfo> expectedRmsSignalInfo = MAPPER.readValue(thisClass.getResourceAsStream(BACKGROUND_NOISE_LOW_VOLUME_RESPONSE), new TypeReference<List<RmsSignalInfo>>() {});
+        List<RmsSignalInfo> expectedRmsSignalInfo = MAPPER.readValue(thisClass.getResourceAsStream(BACKGROUND_NOISE_LOW_VOLUME_RMS_INFO), new TypeReference<List<RmsSignalInfo>>() {});
 
         assertThat(actualRmsSignalInfo, is(expectedRmsSignalInfo));
     }
@@ -51,10 +52,10 @@ public class RmsCalculatorTest {
     public void retrieveRmsInfoFromAudioWithApplause() throws Exception {
         int samplingRate = 22050;
         int segmentSize = samplingRate / 10;
-        float[][] signal = MAPPER.readValue(thisClass.getResourceAsStream(WITH_APPLAUSE_SIGNAL), float[][].class);
+        float[][] signal = MAPPER.readValue(thisClass.getResourceAsStream(WITH_APPLAUSE_SIGNAL), AudioSignal.class).getData();
 
         List<RmsSignalInfo> actualRmsSignalInfo = rmsCalculator.retrieveRmsInfo(signal, segmentSize, samplingRate);
-        List<RmsSignalInfo> expectedRmsSignalInfo = MAPPER.readValue(thisClass.getResourceAsStream(WITH_APPLAUSE_RESPONSE), new TypeReference<List<RmsSignalInfo>>() {});
+        List<RmsSignalInfo> expectedRmsSignalInfo = MAPPER.readValue(thisClass.getResourceAsStream(WITH_APPLAUSE_RMS_INFO), new TypeReference<List<RmsSignalInfo>>() {});
 
         assertThat(actualRmsSignalInfo, is(expectedRmsSignalInfo));
     }
@@ -63,10 +64,10 @@ public class RmsCalculatorTest {
     public void retrieveRmsInfoFromAudioWithStrongBackgroundNoise() throws Exception {
         int samplingRate = 22050;
         int segmentSize = samplingRate / 10;
-        float[][] signal = MAPPER.readValue(thisClass.getResourceAsStream(STRONG_BACKGROUND_NOISE_SIGNAL), float[][].class);
+        float[][] signal = MAPPER.readValue(thisClass.getResourceAsStream(STRONG_BACKGROUND_NOISE_SIGNAL), AudioSignal.class).getData();
 
         List<RmsSignalInfo> actualRmsSignalInfo = rmsCalculator.retrieveRmsInfo(signal, segmentSize, samplingRate);
-        List<RmsSignalInfo> expectedRmsSignalInfo = MAPPER.readValue(thisClass.getResourceAsStream(STRONG_BACKGROUND_NOISE_RESPONSE), new TypeReference<List<RmsSignalInfo>>() {});
+        List<RmsSignalInfo> expectedRmsSignalInfo = MAPPER.readValue(thisClass.getResourceAsStream(STRONG_BACKGROUND_NOISE_RMS_INFO), new TypeReference<List<RmsSignalInfo>>() {});
 
         assertThat(actualRmsSignalInfo, is(expectedRmsSignalInfo));
     }
