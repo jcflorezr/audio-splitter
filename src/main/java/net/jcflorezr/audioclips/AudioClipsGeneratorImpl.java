@@ -15,7 +15,7 @@ public class AudioClipsGeneratorImpl implements AudioClipsGenerator {
     private SingleAudioClipGenerator singleAudioClipGenerator = new SingleAudioClipGenerator();
 
     @Override
-    public List<AudioClipsWritingResult> generateAudioClip(AudioFileInfo audioFileInfo, OutputAudioClipsConfig outputAudioClipsConfig, boolean generateAudioClipsByGroup) {
+    public List<AudioClipsWritingResult> generateAudioClip(AudioFileInfo audioFileInfo, OutputAudioClipsConfig outputAudioClipsConfig, boolean generateAudioClipsByGroup, boolean withSeparator) {
         List<AudioClipInfo> audioClipsInfo = audioFileInfo.getAudioClipsInfo();
         if (generateAudioClipsByGroup) {
             return audioClipsInfo.stream()
@@ -23,7 +23,7 @@ public class AudioClipsGeneratorImpl implements AudioClipsGenerator {
                     .entrySet().stream()
                     .map(audioClipsGroupInfo ->
                             new AudioClipsWritingResult(audioClipsGroupInfo.getValue().get(0).getSuggestedAudioClipName(),
-                                    groupAudioClipGenerator.generateAudioClip(audioClipsGroupInfo.getValue(), outputAudioClipsConfig)))
+                                    groupAudioClipGenerator.generateAudioClip(audioClipsGroupInfo.getValue(), outputAudioClipsConfig, withSeparator)))
                     .collect(Collectors.toList());
         } else {
             return audioClipsInfo.stream()

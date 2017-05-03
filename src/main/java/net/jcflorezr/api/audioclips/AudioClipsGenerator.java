@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface AudioClipsGenerator {
 
-    List<AudioClipsWritingResult> generateAudioClip(AudioFileInfo audioFileInfo, OutputAudioClipsConfig outputAudioClipsConfig, boolean generateAudioClipsByGroup);
+    List<AudioClipsWritingResult> generateAudioClip(AudioFileInfo audioFileInfo, OutputAudioClipsConfig outputAudioClipsConfig, boolean generateAudioClipsByGroup, boolean withSeparator);
 
 }

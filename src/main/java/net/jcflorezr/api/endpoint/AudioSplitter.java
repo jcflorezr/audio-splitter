@@ -32,15 +32,19 @@ public abstract class AudioSplitter {
 
     protected abstract AudioSplitterResponse generateAudioClips(AudioFileLocation audioFileLocation);
 
+    protected abstract AudioSplitterResponse generateAudioClipsWithSeparator(AudioFileLocation audioFileLocation);
+
     protected abstract AudioSplitterResponse generateAudioMonoClips(AudioFileLocation audioFileLocation);
+
+    protected abstract AudioSplitterResponse generateAudioMonoClipsWithSeparator(AudioFileLocation audioFileLocation);
     
-    public AudioSplitterResponse generateAudioClips(AudioFileLocation audioFileLocation, AudioFormatsSupported audioFormat, boolean asMono, boolean generateAudioClipsByGroup) {
+    public AudioSplitterResponse generateAudioClips(AudioFileLocation audioFileLocation, AudioFormatsSupported audioFormat, boolean asMono, boolean generateAudioClipsByGroup, boolean withSeparator) {
         ErrorResponse errorResponse;
         try {
             validateAudioFileLocationInfo(audioFileLocation);
             AudioFileInfo audioFileInfo = audioFileInfoService.generateAudioFileInfo(audioFileLocation, generateAudioClipsByGroup);
             OutputAudioClipsConfig outputAudioClipsConfig = audioFileInfo.getOutputAudioClipsConfig(audioFormat, asMono);
-            List<AudioClipsWritingResult> audioClipsWritingResult = audioClipsGenerator.generateAudioClip(audioFileInfo, outputAudioClipsConfig, generateAudioClipsByGroup);
+            List<AudioClipsWritingResult> audioClipsWritingResult = audioClipsGenerator.generateAudioClip(audioFileInfo, outputAudioClipsConfig, generateAudioClipsByGroup, withSeparator);
             audioFileInfo.setAudioClipsWritingResult(audioClipsWritingResult);
             Map<Boolean, Long> soundZonesGenerationResult = audioClipsWritingResult.stream()
                     .collect(Collectors.partitioningBy(clipInfo -> clipInfo.getAudioClipWritingResult().isSuccess(), Collectors.counting()));

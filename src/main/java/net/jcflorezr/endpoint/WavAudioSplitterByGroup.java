@@ -13,12 +13,28 @@ public class WavAudioSplitterByGroup extends AudioSplitter {
     @Override
     public AudioSplitterResponse generateAudioClips(AudioFileLocation audioFileLocation) {
         boolean asMono = false;
-        return generateAudioClips(audioFileLocation, audioFormat, asMono, generateAudioClipsByGroup);
+        boolean withSeparator = true;
+        return generateAudioClips(audioFileLocation, audioFormat, asMono, generateAudioClipsByGroup, withSeparator);
+    }
+
+    @Override
+    public AudioSplitterResponse generateAudioClipsWithSeparator(AudioFileLocation audioFileLocation) {
+        boolean asMono = false;
+        boolean withSeparator = true;
+        return generateAudioClips(audioFileLocation, audioFormat, asMono, generateAudioClipsByGroup, withSeparator);
     }
 
     @Override
     public AudioSplitterResponse generateAudioMonoClips(AudioFileLocation audioFileLocation) {
         boolean asMono = true;
-        return generateAudioClips(audioFileLocation, audioFormat, asMono, generateAudioClipsByGroup);
+        boolean withSeparator = false;
+        return generateAudioClips(audioFileLocation, audioFormat, asMono, generateAudioClipsByGroup, withSeparator);
+    }
+
+    @Override
+    public AudioSplitterResponse generateAudioMonoClipsWithSeparator(AudioFileLocation audioFileLocation) {
+        boolean asMono = true;
+        boolean withSeparator = true;
+        return generateAudioClips(audioFileLocation, audioFormat, asMono, generateAudioClipsByGroup, withSeparator);
     }
 }

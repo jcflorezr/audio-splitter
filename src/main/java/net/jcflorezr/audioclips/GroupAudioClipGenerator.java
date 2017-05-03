@@ -23,12 +23,12 @@ class GroupAudioClipGenerator {
 
     private AudioIo audioIo = new AudioIo();
 
-    AudioFileWritingResult generateAudioClip(List<AudioClipInfo> groupAudioClipsInfo, OutputAudioClipsConfig outputAudioClipsConfig) {
+    AudioFileWritingResult generateAudioClip(List<AudioClipInfo> groupAudioClipsInfo, OutputAudioClipsConfig outputAudioClipsConfig, boolean withSeparator) {
         AudioContent audioContent = outputAudioClipsConfig.getAudioContent();
         float[][] finalAudioSignalData = generateAudioClipSignals(groupAudioClipsInfo,
                         audioContent.getOriginalAudioSignal(),
                         outputAudioClipsConfig.isMono(),
-                false);
+                        withSeparator);
         int audioSamplingRate = audioContent.getOriginalAudioSamplingRate();
         String suggestedAudioClipName = groupAudioClipsInfo.get(0).getSuggestedAudioClipName();
         String groupAudioFileNameAndPath = outputAudioClipsConfig.getOutputAudioClipsDirectoryPath() + suggestedAudioClipName;
