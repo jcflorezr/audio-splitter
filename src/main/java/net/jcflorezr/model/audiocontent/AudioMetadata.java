@@ -20,6 +20,9 @@ public class AudioMetadata {
     private String comments;
     private List<String> rawMetadata;
 
+    public AudioMetadata() {
+    }
+
     @JsonGetter("title")
     public String getTitle() {
         return title;

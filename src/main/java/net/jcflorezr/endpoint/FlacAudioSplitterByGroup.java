@@ -1,11 +1,11 @@
 package net.jcflorezr.endpoint;
 
-import net.jcflorezr.api.endpoint.AudioSplitter;
-import net.jcflorezr.model.response.AudioSplitterResponse;
-import net.jcflorezr.model.request.AudioFileLocation;
 import biz.source_code.dsp.util.AudioFormatsSupported;
+import net.jcflorezr.api.endpoint.AudioSplitterByGroup;
+import net.jcflorezr.model.request.AudioFileLocation;
+import net.jcflorezr.model.response.AudioSplitterResponse;
 
-public class FlacAudioSplitterByGroup extends AudioSplitter {
+public class FlacAudioSplitterByGroup extends AudioSplitterByGroup {
 
     private final AudioFormatsSupported audioFormat = AudioFormatsSupported.FLAC;
     private final boolean generateAudioClipsByGroup = true;

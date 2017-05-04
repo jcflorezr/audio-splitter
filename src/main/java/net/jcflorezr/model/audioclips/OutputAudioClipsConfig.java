@@ -8,12 +8,14 @@ public class OutputAudioClipsConfig {
     private AudioContent audioContent;
     private String audioFormatExtension;
     private boolean mono;
+    private boolean withSeparator;
 
-    public OutputAudioClipsConfig(String outputAudioClipsDirectoryPath, AudioContent audioContent, String audioFormatExtension, boolean mono) {
+    public OutputAudioClipsConfig(String outputAudioClipsDirectoryPath, AudioContent audioContent, String audioFormatExtension, boolean mono, boolean withSeparator) {
         this.outputAudioClipsDirectoryPath = outputAudioClipsDirectoryPath;
         this.audioContent = audioContent;
         this.audioFormatExtension = audioFormatExtension;
         this.mono = mono;
+        this.withSeparator = withSeparator;
     }
 
     public String getOutputAudioClipsDirectoryPath() {
@@ -30,5 +32,9 @@ public class OutputAudioClipsConfig {
 
     public boolean isMono() {
         return mono;
+    }
+
+    public boolean isWithSeparator() {
+        return withSeparator;
     }
 }

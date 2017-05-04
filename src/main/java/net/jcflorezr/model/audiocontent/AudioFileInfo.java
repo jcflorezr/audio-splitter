@@ -67,11 +67,12 @@ public class AudioFileInfo {
     }
 
     @JsonIgnore
-    public OutputAudioClipsConfig getOutputAudioClipsConfig(AudioFormatsSupported audioFormat, boolean asMono) {
+    public OutputAudioClipsConfig getOutputAudioClipsConfig(AudioFormatsSupported audioFormat, boolean asMono, boolean withSeparator) {
         return new OutputAudioClipsConfig(
                 audioFileLocation.getOutputAudioClipsDirectoryPath(),
                 audioContent,
                 audioFormat.getExtension(),
-                asMono);
+                asMono,
+                withSeparator);
     }
 }
