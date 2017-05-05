@@ -31,8 +31,7 @@ class GroupAudioClipSignalGenerator {
 
     private float[][] generateAudioClipSignals(List<AudioClipInfo> groupAudioClipsInfo, AudioSignal originalAudioFileSignal, boolean mono, boolean withSeparator) {
         Stream<float[][]> audioClipsSignalsStream = groupAudioClipsInfo.stream()
-                .map(audioClipInfo -> mono ? getAudioClipSignalDataAsMono(audioClipInfo, originalAudioFileSignal)
-                                           : getAudioClipSignalDataAsStereo(audioClipInfo, originalAudioFileSignal));
+                .map(audioClipInfo -> getAudioClipSignalData(audioClipInfo, originalAudioFileSignal, mono));
         if (withSeparator) {
             return generateAudioClipSignalsWithSeparator(groupAudioClipsInfo, originalAudioFileSignal, audioClipsSignalsStream.collect(toList()), mono);
         } else {
@@ -48,14 +47,6 @@ class GroupAudioClipSignalGenerator {
         return mergeClipSignalToSeparatorSignal(audioClipsSignals, groupSeparatorSignals).stream()
                 .reduce((clip1, clip2) -> joinAudioSignals(clip1, clip2))
                 .orElse(new float[][]{});
-    }
-
-    private float[][] getAudioClipSignalDataAsStereo(AudioClipInfo audioClipInfo, AudioSignal originalAudioFileSignal) {
-        return getAudioClipSignalData(audioClipInfo, originalAudioFileSignal, false);
-    }
-
-    private float[][] getAudioClipSignalDataAsMono(AudioClipInfo audioClipInfo, AudioSignal originalAudioFileSignal) {
-        return getAudioClipSignalData(audioClipInfo, originalAudioFileSignal, true);
     }
 
     private float[][] getAudioClipSignalData(AudioClipInfo audioClipInfo, AudioSignal originalAudioFileSignal, boolean mono) {
