@@ -2,6 +2,8 @@ package biz.source_code.dsp.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import java.util.Arrays;
+
 /**
  * A class for storing an audio signal in memory.
  */
@@ -58,4 +60,29 @@ public class AudioSignal {
         return data.length;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        AudioSignal that = (AudioSignal) o;
+
+        if (samplingRate != that.samplingRate) return false;
+        return Arrays.deepEquals(data, that.data);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = samplingRate;
+        result = 31 * result + Arrays.deepHashCode(data);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "AudioSignal{" +
+                "samplingRate=" + samplingRate +
+                ", data=" + Arrays.asList(data) +
+                '}';
+    }
 }
