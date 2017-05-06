@@ -159,7 +159,7 @@ public class AudioIo {
     /**
      * A utility routine to unpack the data of a Java Sound audio stream.
      */
-    public static void unpackAudioStreamBytes(AudioFormat format, byte[] inBuf, int inPos, float[][] outBufs, int outPos, int frames) {
+    private static void unpackAudioStreamBytes(AudioFormat format, byte[] inBuf, int inPos, float[][] outBufs, int outPos, int frames) {
         Encoding encoding = format.getEncoding();
         if (encoding == Encoding.PCM_SIGNED) {
             unpackAudioStreamBytesPcmSigned(format, inBuf, inPos, outBufs, outPos, frames);
@@ -223,7 +223,7 @@ public class AudioIo {
     /**
      * A utility routine to pack the data for a Java Sound audio stream.
      */
-    public static void packAudioStreamBytes(AudioFormat format, float[][] inBufs, int inPos, byte[] outBuf, int outPos, int frames) {
+    private static void packAudioStreamBytes(AudioFormat format, float[][] inBufs, int inPos, byte[] outBuf, int outPos, int frames) {
         Encoding encoding = format.getEncoding();
         if (encoding == Encoding.PCM_SIGNED) {
             packAudioStreamBytesPcmSigned(format, inBufs, inPos, outBuf, outPos, frames);
