@@ -23,7 +23,7 @@ import static org.mockito.Mockito.when;
 public class AudioContentServiceTest {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
-    private static final String EMPTY_AUDIO_METADATA_JSON_FILE = "/audiofileinfo/emptyAudioMetadata.json";
+    private static final String EMPTY_AUDIO_METADATA_JSON_FILE = "/audiofileinfo/empty-audio-metadata.json";
     private static final String MP3_AUDIO_METADATA_JSON_FILE = "/audiofileinfo/mp3AudioMetadata.json";
 
     private String testResourcesPath;
