@@ -1,0 +1,117 @@
+[
+  {
+    "audioClipName": "000_0",
+    "audioClipWritingResult": {
+      "success": true
+    }
+  },
+  {
+    "audioClipName": "002_912",
+    "audioClipWritingResult": {
+      "success": false,
+      "exception": {
+        "exceptionClassName": "anyClass",
+        "message": "anyMessage",
+        "simplifiedStackTrace": "{anyStackTrace}"
+      }
+    }
+  },
+  {
+    "audioClipName": "004_902",
+    "audioClipWritingResult": {
+      "success": true
+    }
+  },
+  {
+    "audioClipName": "006_281",
+    "audioClipWritingResult": {
+      "success": true
+    }
+  },
+  {
+    "audioClipName": "007_524",
+    "audioClipWritingResult": {
+      "success": true
+    }
+  },
+  {
+    "audioClipName": "008_463",
+    "audioClipWritingResult": {
+      "success": false,
+      "exception": {
+        "exceptionClassName": "anyClass",
+        "message": "anyMessage",
+        "simplifiedStackTrace": "{anyStackTrace}"
+      }
+    }
+  },
+  {
+    "audioClipName": "010_38",
+    "audioClipWritingResult": {
+      "success": true
+    }
+  },
+  {
+    "audioClipName": "011_563",
+    "audioClipWritingResult": {
+      "success": false,
+      "exception": {
+        "exceptionClassName": "anyClass",
+        "message": "anyMessage",
+        "simplifiedStackTrace": "{anyStackTrace}"
+      }
+    }
+  },
+  {
+    "audioClipName": "013_495",
+    "audioClipWritingResult": {
+      "success": true
+    }
+  },
+  {
+    "audioClipName": "015_463",
+    "audioClipWritingResult": {
+      "success": true
+    }
+  },
+  {
+    "audioClipName": "018_848",
+    "audioClipWritingResult": {
+      "success": false,
+      "exception": {
+        "exceptionClassName": "anyClass",
+        "message": "anyMessage",
+        "simplifiedStackTrace": "{anyStackTrace}"
+      }
+    }
+  },
+  {
+    "audioClipName": "025_249",
+    "audioClipWritingResult": {
+      "success": true
+    }
+  },
+  {
+    "audioClipName": "026_844",
+    "audioClipWritingResult": {
+      "success": true
+    }
+  },
+  {
+    "audioClipName": "028_65",
+    "audioClipWritingResult": {
+      "success": false,
+      "exception": {
+        "exceptionClassName": "anyClass",
+        "message": "anyMessage",
+        "simplifiedStackTrace": "{anyStackTrace}"
+      }
+    }
+  },
+  {
+    "audioClipName": "030_072",
+    "audioClipWritingResult": {
+      "success": true
+    }
+  }
+]

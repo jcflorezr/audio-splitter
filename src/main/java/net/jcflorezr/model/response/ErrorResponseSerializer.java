@@ -10,6 +10,10 @@ import java.io.IOException;
 
 public class ErrorResponseSerializer extends StdSerializer<ErrorResponse> {
 
+    public ErrorResponseSerializer() {
+        this(null);
+    }
+
     protected ErrorResponseSerializer(Class<ErrorResponse> t) {
         super(t);
     }

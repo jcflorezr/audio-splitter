@@ -7,6 +7,9 @@ public class AudioFileWritingResult {
     private boolean success;
     private InternalServerErrorException exception;
 
+    public AudioFileWritingResult() {
+    }
+
     private AudioFileWritingResult(boolean success) {
         this.success = success;
     }

@@ -13,6 +13,9 @@ public class InternalServerErrorException extends AudioSplitterCustomException {
     private String message;
     private String simplifiedStackTrace;
 
+    public InternalServerErrorException() {
+    }
+
     public InternalServerErrorException(Exception e) {
         exceptionClassName = e.getClass().getName();
         message = e.getMessage();
@@ -28,6 +31,19 @@ public class InternalServerErrorException extends AudioSplitterCustomException {
                             Collectors.mapping(stackTraceElement -> String.valueOf(stackTraceElement.getLineNumber()),
                                                                     Collectors.joining(ELEMENTS_DELIMITER))))
         .toString();
+    }
+
+    public String getExceptionClassName() {
+        return exceptionClassName;
+    }
+
+    @Override
+    public String getMessage() {
+        return message;
+    }
+
+    public String getSimplifiedStackTrace() {
+        return simplifiedStackTrace;
     }
 
     @Override

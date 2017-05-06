@@ -67,7 +67,7 @@ public abstract class AudioSplitter {
         if (Files.isDirectory(audioFileNamePath)) throw AudioFileLocationException.audioFileShouldNotBeDirectory(audioFileNamePath);
         if (!Files.exists(outputAudioClipsPath)) throw AudioFileLocationException.outputDirectoryDoesNotExist(outputAudioClipsPath);
 
-        Path audioFilePath = Paths.get(FilenameUtils.getPath(audioFileLocation.getAudioFileName()));
+        Path audioFilePath = Paths.get(FilenameUtils.getFullPath(audioFileLocation.getAudioFileName()));
         if (audioFilePath.equals(outputAudioClipsPath)) throw AudioFileLocationException.sameAudioFileAndOutputDirectoryLocation();
     }
 

@@ -2,13 +2,13 @@ package net.jcflorezr.model.audioclips;
 
 import biz.source_code.dsp.model.AudioFileWritingResult;
 
-import java.util.Collections;
-import java.util.List;
-
 public class AudioClipsWritingResult {
 
     private String audioClipName;
     private AudioFileWritingResult audioClipWritingResult;
+
+    public AudioClipsWritingResult() {
+    }
 
     public AudioClipsWritingResult(String audioClipName, AudioFileWritingResult audioClipWritingResult) {
         this.audioClipName = audioClipName;

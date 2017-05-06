@@ -2,27 +2,27 @@ package net.jcflorezr.model.response;
 
 public class SuccessResponse implements AudioSplitterResponse {
 
-    private Long numOfSuccessSoundZones;
-    private Long numOfFailedSoundZones;
+    private Long numOfSuccessAudioClips;
+    private Long numOfFailedAudioClips;
 
-    public SuccessResponse(Long numOfSuccessSoundZones, Long numOfFailedSoundZones) {
-        this.numOfSuccessSoundZones = numOfSuccessSoundZones;
-        this.numOfFailedSoundZones = numOfFailedSoundZones;
+    public SuccessResponse(Long numOfSuccessAudioClips, Long numOfFailedAudioClips) {
+        this.numOfSuccessAudioClips = numOfSuccessAudioClips;
+        this.numOfFailedAudioClips = numOfFailedAudioClips;
     }
 
-    public Long getNumOfSuccessSoundZones() {
-        return numOfSuccessSoundZones;
+    public Long getNumOfSuccessAudioClips() {
+        return numOfSuccessAudioClips;
     }
 
-    public Long getNumOfFailedSoundZones() {
-        return numOfFailedSoundZones;
+    public Long getNumOfFailedAudioClips() {
+        return numOfFailedAudioClips;
     }
 
     @Override
     public String toString() {
         return "SuccessResponse{" +
-                "numOfSuccessSoundZones=" + numOfSuccessSoundZones +
-                ", numOfFailedSoundZones=" + numOfFailedSoundZones +
+                "numOfSuccessAudioClips=" + numOfSuccessAudioClips +
+                ", numOfFailedAudioClips=" + numOfFailedAudioClips +
                 '}';
     }
 }
