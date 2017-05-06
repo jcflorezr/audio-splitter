@@ -12,15 +12,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.anyString;
-import static org.powermock.api.mockito.PowerMockito.when;
+import static org.mockito.Mockito.when;
 
-@RunWith(PowerMockRunner.class)
+@RunWith(MockitoJUnitRunner.class)
 public class AudioContentServiceTest {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
@@ -43,20 +42,18 @@ public class AudioContentServiceTest {
 
     @Test
     public void retrieveAudioContent() throws Exception {
-        // Given
         String audioFileName = testResourcesPath + "test-audio-mono-22050.mp3";
         String convertedAudioFileName = "/any-path-to-file/any-file.mp3";
         AudioFileInfo dummyAudioFileInfo = createDummyAudioFileInfo(audioFileName, convertedAudioFileName);
         AudioSignal dummyAudioSignal = createDummyAudioSignal(22050, new float[][]{});
 
-        // When
         when(audioIo.retrieveAudioSignalFromWavFile(anyString())).thenReturn(dummyAudioSignal);
 
-        // Then
         AudioContent actualAudioContent = audioContentService.retrieveAudioContent(dummyAudioFileInfo);
 
         float[][] emptyAudioSignalData = new float[][]{};
-        assertEquals(emptyAudioSignalData, actualAudioContent.getOriginalAudioData());
+        float[][] actualAudioSignalData = actualAudioContent.getOriginalAudioData();
+        assertThat(actualAudioSignalData, is(emptyAudioSignalData));
 
         AudioMetadata mp3AudioMetadata = MAPPER.readValue(thisClass.getResourceAsStream(MP3_AUDIO_METADATA_JSON_FILE), AudioMetadata.class);
         AudioMetadata actualAudioMetadata = actualAudioContent.getAudioMetadata();
@@ -65,20 +62,18 @@ public class AudioContentServiceTest {
 
     @Test
     public void audioMetadataIsNotRetrievedForWavFiles() throws Exception {
-        // Given
         String audioFileName = testResourcesPath + "test-audio-mono-22050.wav";
         String convertedAudioFileName = "/any-path-to-file/any-file.wav";
         AudioFileInfo dummyAudioFileInfo = createDummyAudioFileInfo(audioFileName, convertedAudioFileName);
         AudioSignal dummyAudioSignal = createDummyAudioSignal(22050, new float[][]{});
 
-        // When
         when(audioIo.retrieveAudioSignalFromWavFile(anyString())).thenReturn(dummyAudioSignal);
 
-        // Then
         AudioContent actualAudioContent = audioContentService.retrieveAudioContent(dummyAudioFileInfo);
 
         float[][] emptyAudioSignalData = new float[][]{};
-        assertEquals(emptyAudioSignalData, actualAudioContent.getOriginalAudioData());
+        float[][] actualAudioSignalData = actualAudioContent.getOriginalAudioData();
+        assertThat(actualAudioSignalData, is(emptyAudioSignalData));
 
         AudioMetadata emptyAudioMetadata = MAPPER.readValue(thisClass.getResourceAsStream(EMPTY_AUDIO_METADATA_JSON_FILE), AudioMetadata.class);
         AudioMetadata actualAudioMetadata = actualAudioContent.getAudioMetadata();
