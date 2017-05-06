@@ -15,7 +15,6 @@ package biz.source_code.dsp.sound;
 import biz.source_code.dsp.model.AudioFileWritingResult;
 import biz.source_code.dsp.model.AudioSignal;
 import biz.source_code.dsp.util.AudioFormatsSupported;
-import org.apache.commons.io.FilenameUtils;
 
 import javax.sound.sampled.AudioFileFormat.Type;
 import javax.sound.sampled.AudioFormat;
@@ -26,9 +25,6 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Arrays;
 
 /**
@@ -40,10 +36,6 @@ public class AudioIo {
         AudioFormat format = new AudioFormat(signal.getSamplingRate(), 16, signal.getChannels(), true, false);
         AudioBytesPackerStream audioBytesPackerStream = new AudioBytesPackerStream(format, signal.getData(), pos, len);
         return new AudioInputStream(audioBytesPackerStream, format, len);
-    }
-
-    public AudioInputStream getAudioInputStream(AudioSignal signal) {
-        return getAudioInputStream(signal, 0, signal.getLength());
     }
 
     public AudioInputStream getAudioInputStream(String fileName) throws IOException, UnsupportedAudioFileException {
@@ -67,13 +59,6 @@ public class AudioIo {
 
     public AudioFileWritingResult saveAudioFile(String fileName, String extension, AudioSignal signal) {
         return saveAudioFile(fileName, extension, signal, 0, signal.getLength());
-    }
-
-    public AudioFileWritingResult saveMonoAudioFile(String fileName, String extension, float[] buf, int samplingRate) {
-        AudioSignal signal = new AudioSignal();
-        signal.setSamplingRate(samplingRate);
-        signal.setData(new float[][]{buf});
-        return saveAudioFile(fileName, extension, signal);
     }
 
     private AudioFileWritingResult writeAudioFile(AudioInputStream audioInputStream, Type fileType, String fileName) {
@@ -123,44 +108,6 @@ public class AudioIo {
             long totalFrames = stream.getFrameLength();
             final int blockFrames = 0x4000;
             return retrieveAudioSignal(stream, totalFrames, blockFrames);
-        }
-    }
-
-    public AudioSignal retrieveAudioSignalFromWavFile(InputStream inputStream) throws IOException, UnsupportedAudioFileException {
-        try (AudioInputStream stream = AudioSystem.getAudioInputStream(inputStream)) {
-            long totalFrames = stream.getFrameLength();
-            final int blockFrames = 0x4000;
-            return retrieveAudioSignal(stream, totalFrames, blockFrames);
-        }
-    }
-
-    public AudioSignal retrieveAudioSignalFromWavFile(AudioInputStream audioInputStream, long totalFrames, int blockFrames) throws IOException {
-        return retrieveAudioSignal(audioInputStream, totalFrames, blockFrames);
-    }
-
-    public AudioSignal resampleWavFile(AudioSignal resampleFromSignal, AudioSignal toBeResampledSignal, String resampledSeparatorFilePathAndName) throws URISyntaxException, UnsupportedAudioFileException, IOException {
-        String resampledSeparatorPath = FilenameUtils.getFullPath(resampledSeparatorFilePathAndName);
-        String resampledSeparatorFullPath = ClassLoader.class.getResource(resampledSeparatorPath).toURI().getPath();
-        String resampledSeparatorFullFileName = resampledSeparatorFullPath + FilenameUtils.getName(resampledSeparatorFilePathAndName);
-        try {
-            AudioFormat resampleFromFormat = getAudioInputStream(resampleFromSignal).getFormat();
-            AudioInputStream toBeResampledStream = getAudioInputStream(toBeResampledSignal);
-            AudioFormat resampledAudioFormat = new AudioFormat(
-                    resampleFromFormat.getEncoding(),
-                    resampleFromFormat.getSampleRate(),
-                    resampleFromFormat.getSampleSizeInBits(),
-                    toBeResampledStream.getFormat().getChannels(),
-                    toBeResampledStream.getFormat().getFrameSize(),
-                    resampleFromFormat.getFrameRate(),
-                    resampleFromFormat.isBigEndian());
-            AudioInputStream resampledAudioStream = AudioSystem.getAudioInputStream(resampledAudioFormat, toBeResampledStream);
-            AudioSystem.write(resampledAudioStream, Type.WAVE, new File(resampledSeparatorFullFileName));
-            resampledAudioStream = AudioSystem.getAudioInputStream(ClassLoader.class.getResourceAsStream(resampledSeparatorFilePathAndName));
-            long totalFrames = resampledAudioStream.getFrameLength();
-            final int blockFrames = 0x4000;
-            return retrieveAudioSignal(resampledAudioStream, totalFrames, blockFrames);
-        } finally {
-            Files.deleteIfExists(Paths.get(resampledSeparatorFullFileName));
         }
     }
 
