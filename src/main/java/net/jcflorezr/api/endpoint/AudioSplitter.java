@@ -16,6 +16,8 @@ import net.jcflorezr.model.audioclips.OutputAudioClipsConfig;
 import net.jcflorezr.model.response.ErrorResponse;
 import net.jcflorezr.model.response.SuccessResponse;
 import org.apache.commons.io.FilenameUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -25,10 +27,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Service
 public abstract class AudioSplitter {
 
-    private AudioFileInfoService audioFileInfoService = new AudioFileInfoServiceImpl();
-    private AudioClipsGenerator audioClipsGenerator = new AudioClipsGeneratorImpl();
+    @Autowired
+    private AudioFileInfoService audioFileInfoService;
+
+    @Autowired
+    private AudioClipsGenerator audioClipsGenerator;
 
     protected abstract AudioSplitterResponse generateAudioClips(AudioFileLocation audioFileLocation);
 

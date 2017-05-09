@@ -4,35 +4,45 @@ import biz.source_code.dsp.util.AudioFormatsSupported;
 import net.jcflorezr.api.endpoint.AudioSplitterByGroup;
 import net.jcflorezr.model.request.AudioFileLocation;
 import net.jcflorezr.model.response.AudioSplitterResponse;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+@RestController
+@RequestMapping("/wav-splitter-by-group")
 public class WavAudioSplitterByGroup extends AudioSplitterByGroup {
 
     private final AudioFormatsSupported audioFormat = AudioFormatsSupported.WAV;
     private final boolean generateAudioClipsByGroup = true;
 
     @Override
-    public AudioSplitterResponse generateAudioClips(AudioFileLocation audioFileLocation) {
+    @PostMapping(value = "/generate-audio-clips", consumes = "application/json", produces = "application/json")
+    public AudioSplitterResponse generateAudioClips(@RequestBody AudioFileLocation audioFileLocation) {
         boolean asMono = false;
         boolean withSeparator = true;
         return generateAudioClips(audioFileLocation, audioFormat, asMono, generateAudioClipsByGroup, withSeparator);
     }
 
     @Override
-    public AudioSplitterResponse generateAudioClipsWithSeparator(AudioFileLocation audioFileLocation) {
+    @PostMapping(value = "/generate-audio-clips-with-separator", consumes = "application/json", produces = "application/json")
+    public AudioSplitterResponse generateAudioClipsWithSeparator(@RequestBody AudioFileLocation audioFileLocation) {
         boolean asMono = false;
         boolean withSeparator = true;
         return generateAudioClips(audioFileLocation, audioFormat, asMono, generateAudioClipsByGroup, withSeparator);
     }
 
     @Override
-    public AudioSplitterResponse generateAudioMonoClips(AudioFileLocation audioFileLocation) {
+    @PostMapping(value = "/generate-audio-mono-clips", consumes = "application/json", produces = "application/json")
+    public AudioSplitterResponse generateAudioMonoClips(@RequestBody AudioFileLocation audioFileLocation) {
         boolean asMono = true;
         boolean withSeparator = false;
         return generateAudioClips(audioFileLocation, audioFormat, asMono, generateAudioClipsByGroup, withSeparator);
     }
 
     @Override
-    public AudioSplitterResponse generateAudioMonoClipsWithSeparator(AudioFileLocation audioFileLocation) {
+    @PostMapping(value = "/generate-audio-mono-clips-with-generator", consumes = "application/json", produces = "application/json")
+    public AudioSplitterResponse generateAudioMonoClipsWithSeparator(@RequestBody AudioFileLocation audioFileLocation) {
         boolean asMono = true;
         boolean withSeparator = true;
         return generateAudioClips(audioFileLocation, audioFormat, asMono, generateAudioClipsByGroup, withSeparator);
