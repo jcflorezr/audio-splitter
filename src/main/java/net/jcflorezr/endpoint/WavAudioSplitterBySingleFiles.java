@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/flac")
+@RequestMapping("/wav")
 public class WavAudioSplitterBySingleFiles extends AudioSplitter {
 
     private final AudioFormatsSupported audioFormat = AudioFormatsSupported.WAV;

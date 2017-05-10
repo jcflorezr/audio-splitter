@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 @JsonSerialize(using = ErrorResponseSerializer.class)
 public class ErrorResponse implements AudioSplitterResponse {
 
-    AudioSplitterCustomException audioSplitterCustomException;
+    private AudioSplitterCustomException audioSplitterCustomException;
 
     public ErrorResponse(AudioSplitterCustomException audioSplitterCustomException) {
         this.audioSplitterCustomException = audioSplitterCustomException;

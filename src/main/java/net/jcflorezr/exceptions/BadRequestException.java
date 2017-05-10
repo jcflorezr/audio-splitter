@@ -1,5 +1,8 @@
 package net.jcflorezr.exceptions;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class BadRequestException extends AudioSplitterCustomException {
 
     private String message;
@@ -29,6 +32,21 @@ public class BadRequestException extends AudioSplitterCustomException {
 
     public void setSuggestion(String suggestion) {
         this.suggestion = suggestion;
+    }
+
+    @Override
+    public StackTraceElement[] getStackTrace() {
+        return null;
+    }
+
+    @Override
+    public String getLocalizedMessage() {
+        return null;
+    }
+
+    @Override
+    public Throwable getCause() {
+        return null;
     }
 
     @Override

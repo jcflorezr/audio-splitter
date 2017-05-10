@@ -27,5 +27,6 @@ public class ErrorResponseSerializer extends StdSerializer<ErrorResponse> {
         } else {
             jsonGenerator.writeStringField("message", "Please try again later.");
         }
+        jsonGenerator.writeEndObject();
     }
 }

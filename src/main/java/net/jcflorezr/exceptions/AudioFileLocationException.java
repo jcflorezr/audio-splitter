@@ -24,4 +24,14 @@ public class AudioFileLocationException extends BadRequestException {
         return new AudioFileLocationException("The audio file location cannot be the same as the " +
                 "output audio clips location.", null);
     }
+
+    public static AudioFileLocationException emptyAudioFileLocationObject() {
+        String suggestion = "Example of body request: {\"audioFileName\": \"/any-audio-file.wav\", \"outputAudioClipsDirectoryPath\": \"/any-output-directory/\"}";
+        return new AudioFileLocationException("There is no body in the current request.", suggestion);
+    }
+
+    public static AudioFileLocationException mandatoryFieldsException() {
+        String suggestion = "Mandatory fields are: [audioFileName, outputAudioClipsDirectoryPath]";
+        return new AudioFileLocationException("There are empty mandatory fields.", suggestion);
+    }
 }

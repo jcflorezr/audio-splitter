@@ -3,17 +3,14 @@ package net.jcflorezr.api.endpoint;
 import biz.source_code.dsp.util.AudioFormatsSupported;
 import net.jcflorezr.api.audioclips.AudioClipsGenerator;
 import net.jcflorezr.api.audiofileinfo.AudioFileInfoService;
-import net.jcflorezr.model.audioclips.AudioClipsWritingResult;
-import net.jcflorezr.model.response.AudioSplitterResponse;
-import net.jcflorezr.audioclips.AudioClipsGeneratorImpl;
-import net.jcflorezr.audiofileinfo.AudioFileInfoServiceImpl;
 import net.jcflorezr.exceptions.AudioFileLocationException;
 import net.jcflorezr.exceptions.BadRequestException;
 import net.jcflorezr.exceptions.InternalServerErrorException;
+import net.jcflorezr.model.audioclips.AudioClipsWritingResult;
+import net.jcflorezr.model.audioclips.OutputAudioClipsConfig;
 import net.jcflorezr.model.audiocontent.AudioFileInfo;
 import net.jcflorezr.model.request.AudioFileLocation;
-import net.jcflorezr.model.audioclips.OutputAudioClipsConfig;
-import net.jcflorezr.model.response.ErrorResponse;
+import net.jcflorezr.model.response.AudioSplitterResponse;
 import net.jcflorezr.model.response.SuccessResponse;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +23,8 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Service
 public abstract class AudioSplitter {
@@ -45,7 +44,6 @@ public abstract class AudioSplitter {
     }
 
     public AudioSplitterResponse generateAudioClips(AudioFileLocation audioFileLocation, AudioFormatsSupported audioFormat, boolean asMono, boolean generateAudioClipsByGroup, boolean withSeparator) {
-        ErrorResponse errorResponse;
         try {
             validateAudioFileLocationInfo(audioFileLocation);
             AudioFileInfo audioFileInfo = audioFileInfoService.generateAudioFileInfo(audioFileLocation, generateAudioClipsByGroup);
@@ -56,16 +54,20 @@ public abstract class AudioSplitter {
                     .collect(Collectors.partitioningBy(clipInfo -> clipInfo.getAudioClipWritingResult().isSuccess(), Collectors.counting()));
             return new SuccessResponse(soundZonesGenerationResult.get(true), soundZonesGenerationResult.get(false));
         } catch (IOException e) {
-            errorResponse = new ErrorResponse(new BadRequestException(e.getMessage()));
+            throw new BadRequestException(e.getMessage());
         } catch (BadRequestException | InternalServerErrorException e) {
-            errorResponse = new ErrorResponse(e);
+            throw e;
         } catch (Exception e) {
-            errorResponse = new ErrorResponse(new InternalServerErrorException(e));
+            throw new InternalServerErrorException(e);
         }
-        return errorResponse;
     }
 
     private void validateAudioFileLocationInfo(AudioFileLocation audioFileLocation) {
+        if (audioFileLocation == null) throw AudioFileLocationException.emptyAudioFileLocationObject();
+        if (isBlank(audioFileLocation.getAudioFileName()) || isBlank(audioFileLocation.getOutputAudioClipsDirectoryPath())) {
+            throw AudioFileLocationException.mandatoryFieldsException();
+        }
+
         Path audioFileNamePath = Paths.get(audioFileLocation.getAudioFileName());
         Path outputAudioClipsPath = Paths.get(audioFileLocation.getOutputAudioClipsDirectoryPath());
 

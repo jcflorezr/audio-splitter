@@ -6,16 +6,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import net.jcflorezr.api.audioclips.AudioClipsGenerator;
 import net.jcflorezr.api.audiofileinfo.AudioFileInfoService;
 import net.jcflorezr.endpoint.FlacAudioSplitterBySingleFiles;
-import net.jcflorezr.exceptions.AudioFileLocationException;
-import net.jcflorezr.exceptions.AudioSplitterCustomException;
+import net.jcflorezr.exceptions.BadRequestException;
 import net.jcflorezr.model.audioclips.AudioClipsWritingResult;
 import net.jcflorezr.model.audiocontent.AudioFileInfo;
 import net.jcflorezr.model.request.AudioFileLocation;
 import net.jcflorezr.model.response.AudioSplitterResponse;
-import net.jcflorezr.model.response.ErrorResponse;
 import net.jcflorezr.model.response.SuccessResponse;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -23,7 +23,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.List;
 
-import static junit.framework.TestCase.assertNull;
 import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -49,6 +48,9 @@ public class AudioSplitterTest {
 
     @InjectMocks
     private FlacAudioSplitterBySingleFiles audioSplitter;
+
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
 
     @Before
     public void setUp() throws Exception {
@@ -84,18 +86,10 @@ public class AudioSplitterTest {
         String outputAudioClipsDirectoryPath = "any-output-directory";
         AudioFileLocation dummyAudioFileLocation = createDummyAudioFileLocation(audioFileName, outputAudioClipsDirectoryPath);
 
-        AudioSplitterResponse actualAudioSplitterResponse = audioSplitter.generateAudioClips(dummyAudioFileLocation, audioFormat, asMono);
-        assertTrue(actualAudioSplitterResponse instanceof ErrorResponse);
+        expectedException.expect(BadRequestException.class);
+        expectedException.expectMessage("The audio file 'any-audio-file' does not exist.");
 
-        AudioSplitterCustomException audioSplitterCustomException = ((ErrorResponse) actualAudioSplitterResponse).getAudioSplitterCustomException();
-        assertTrue(audioSplitterCustomException instanceof AudioFileLocationException);
-
-        String actualErrorMessage = audioSplitterCustomException.getMessage();
-        String expectedErrorMessage = "The audio file 'any-audio-file' does not exist.";
-        assertThat(actualErrorMessage, is(expectedErrorMessage));
-
-        String actualErrorSuggestion = ((AudioFileLocationException) audioSplitterCustomException).getSuggestion();
-        assertNull(actualErrorSuggestion);
+        audioSplitter.generateAudioClips(dummyAudioFileLocation, audioFormat, asMono);
     }
 
     @Test
@@ -104,18 +98,11 @@ public class AudioSplitterTest {
         String outputAudioClipsDirectoryPath = "any-output-directory";
         AudioFileLocation dummyAudioFileLocation = createDummyAudioFileLocation(testResourcesPath + audioFileName, outputAudioClipsDirectoryPath);
 
-        AudioSplitterResponse actualAudioSplitterResponse = audioSplitter.generateAudioClips(dummyAudioFileLocation, audioFormat, asMono);
-        assertTrue(actualAudioSplitterResponse instanceof ErrorResponse);
-
-        AudioSplitterCustomException audioSplitterCustomException = ((ErrorResponse) actualAudioSplitterResponse).getAudioSplitterCustomException();
-        assertTrue(audioSplitterCustomException instanceof AudioFileLocationException);
-
-        String actualErrorMessage = audioSplitterCustomException.getMessage();
+        expectedException.expect(BadRequestException.class);
         String expectedErrorMessage = "'" + testResourcesPath + audioFileName + "' should be a file, not a directory.";
-        assertThat(actualErrorMessage, is(expectedErrorMessage));
+        expectedException.expectMessage(expectedErrorMessage);
 
-        String actualErrorSuggestion = ((AudioFileLocationException) audioSplitterCustomException).getSuggestion();
-        assertNull(actualErrorSuggestion);
+        audioSplitter.generateAudioClips(dummyAudioFileLocation, audioFormat, asMono);
     }
 
     @Test
@@ -124,18 +111,10 @@ public class AudioSplitterTest {
         String outputAudioClipsDirectoryPath = "any-output-directory";
         AudioFileLocation dummyAudioFileLocation = createDummyAudioFileLocation(audioFileName, outputAudioClipsDirectoryPath);
 
-        AudioSplitterResponse actualAudioSplitterResponse = audioSplitter.generateAudioClips(dummyAudioFileLocation, audioFormat, asMono);
-        assertTrue(actualAudioSplitterResponse instanceof ErrorResponse);
+        expectedException.expect(BadRequestException.class);
+        expectedException.expectMessage("The directory 'any-output-directory' does not exist.");
 
-        AudioSplitterCustomException audioSplitterCustomException = ((ErrorResponse) actualAudioSplitterResponse).getAudioSplitterCustomException();
-        assertTrue(audioSplitterCustomException instanceof AudioFileLocationException);
-
-        String actualErrorMessage = audioSplitterCustomException.getMessage();
-        String expectedErrorMessage = "The directory 'any-output-directory' does not exist.";
-        assertThat(actualErrorMessage, is(expectedErrorMessage));
-
-        String actualErrorSuggestion = ((AudioFileLocationException) audioSplitterCustomException).getSuggestion();
-        assertNull(actualErrorSuggestion);
+        audioSplitter.generateAudioClips(dummyAudioFileLocation, audioFormat, asMono);
     }
 
     @Test
@@ -144,18 +123,43 @@ public class AudioSplitterTest {
         String outputAudioClipsDirectoryPath = testResourcesPath + "test-input-directory";
         AudioFileLocation dummyAudioFileLocation = createDummyAudioFileLocation(audioFileName, outputAudioClipsDirectoryPath);
 
-        AudioSplitterResponse actualAudioSplitterResponse = audioSplitter.generateAudioClips(dummyAudioFileLocation, audioFormat, asMono);
-        assertTrue(actualAudioSplitterResponse instanceof ErrorResponse);
+        expectedException.expect(BadRequestException.class);
+        expectedException.expectMessage("The audio file location cannot be the same as the output audio clips location.");
 
-        AudioSplitterCustomException audioSplitterCustomException = ((ErrorResponse) actualAudioSplitterResponse).getAudioSplitterCustomException();
-        assertTrue(audioSplitterCustomException instanceof AudioFileLocationException);
+        audioSplitter.generateAudioClips(dummyAudioFileLocation, audioFormat, asMono);
+    }
 
-        String actualErrorMessage = audioSplitterCustomException.getMessage();
-        String expectedErrorMessage = "The audio file location cannot be the same as the output audio clips location.";
-        assertThat(actualErrorMessage, is(expectedErrorMessage));
+    @Test
+    public void shouldThrow_EmptyAudioFileLocationObject_ErrorMessage() throws Exception {
+        AudioFileLocation dummyAudioFileLocation = null;
 
-        String actualErrorSuggestion = ((AudioFileLocationException) audioSplitterCustomException).getSuggestion();
-        assertNull(actualErrorSuggestion);
+        expectedException.expect(BadRequestException.class);
+        expectedException.expectMessage("There is no body in the current request.");
+
+        audioSplitter.generateAudioClips(dummyAudioFileLocation, audioFormat, asMono);
+    }
+
+    @Test
+    public void shouldThrow_EmptyMandatoryFields_ErrorMessage() throws Exception {
+        // With empty audioFileName
+        String audioFileName = "";
+        String outputAudioClipsDirectoryPath = testResourcesPath + "test-input-directory";
+        AudioFileLocation dummyAudioFileLocation = createDummyAudioFileLocation(audioFileName, outputAudioClipsDirectoryPath);
+
+        expectedException.expect(BadRequestException.class);
+        expectedException.expectMessage("There are empty mandatory fields.");
+
+        audioSplitter.generateAudioClips(dummyAudioFileLocation, audioFormat, asMono);
+
+        // With empty outputAudioClipsDirectoryPath
+        audioFileName = testResourcesPath + "test-input-directory/test-audio-file.mp3";
+        outputAudioClipsDirectoryPath = "";
+        dummyAudioFileLocation = createDummyAudioFileLocation(audioFileName, outputAudioClipsDirectoryPath);
+
+        expectedException.expect(BadRequestException.class);
+        expectedException.expectMessage("There are empty mandatory fields.");
+
+        audioSplitter.generateAudioClips(dummyAudioFileLocation, audioFormat, asMono);
     }
 
     private AudioFileLocation createDummyAudioFileLocation (String audioFileName, String outputAudioClipsDirectoryPath) {
