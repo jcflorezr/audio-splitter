@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/wav-splitter-by-group")
+@RequestMapping("/wav/by-group")
 public class WavAudioSplitterByGroup extends AudioSplitterByGroup {
 
     private final AudioFormatsSupported audioFormat = AudioFormatsSupported.WAV;
@@ -41,7 +41,7 @@ public class WavAudioSplitterByGroup extends AudioSplitterByGroup {
     }
 
     @Override
-    @PostMapping(value = "/generate-audio-mono-clips-with-generator", consumes = "application/json", produces = "application/json")
+    @PostMapping(value = "/generate-audio-mono-clips-with-separator", consumes = "application/json", produces = "application/json")
     public AudioSplitterResponse generateAudioMonoClipsWithSeparator(@RequestBody AudioFileLocation audioFileLocation) {
         boolean asMono = true;
         boolean withSeparator = true;

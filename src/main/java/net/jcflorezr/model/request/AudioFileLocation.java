@@ -5,6 +5,9 @@ public class AudioFileLocation {
     private String audioFileName;
     private String outputAudioClipsDirectoryPath;
 
+    public AudioFileLocation() {
+    }
+
     public AudioFileLocation(String audioFileName, String outputAudioClipsDirectoryPath) {
         this.audioFileName = audioFileName;
         this.outputAudioClipsDirectoryPath = outputAudioClipsDirectoryPath;

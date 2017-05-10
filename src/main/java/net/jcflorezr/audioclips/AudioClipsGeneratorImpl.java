@@ -8,10 +8,12 @@ import net.jcflorezr.model.audioclips.AudioClipInfo;
 import net.jcflorezr.model.audioclips.AudioClipsWritingResult;
 import net.jcflorezr.model.audioclips.OutputAudioClipsConfig;
 import net.jcflorezr.model.audiocontent.AudioFileInfo;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Service
 public class AudioClipsGeneratorImpl implements AudioClipsGenerator {
 
     private GroupAudioClipSignalGenerator groupAudioClipSignalGenerator = new GroupAudioClipSignalGenerator();

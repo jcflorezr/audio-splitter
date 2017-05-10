@@ -6,7 +6,9 @@ import net.jcflorezr.audiofileinfo.signal.SoundZonesDetectorImpl;
 import net.jcflorezr.model.audiocontent.AudioContent;
 import net.jcflorezr.model.audiocontent.AudioFileInfo;
 import net.jcflorezr.model.request.AudioFileLocation;
+import org.springframework.stereotype.Service;
 
+@Service
 public class AudioFileInfoServiceImpl implements AudioFileInfoService {
 
     private AudioConverterService audioConverterService = new AudioConverterService();
