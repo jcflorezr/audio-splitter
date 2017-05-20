@@ -49,10 +49,6 @@ public abstract class AudioSplitter {
             AudioFileInfo audioFileInfo = audioFileInfoService.generateAudioFileInfo(audioFileLocation, generateAudioClipsByGroup);
             OutputAudioClipsConfig outputAudioClipsConfig = audioFileInfo.getOutputAudioClipsConfig(audioFormat, asMono, withSeparator);
             List<AudioClipsWritingResult> audioClipsWritingResult = audioClipsGenerator.generateAudioClip(audioFileInfo, outputAudioClipsConfig, generateAudioClipsByGroup);
-
-            // TODO Do I really need to store this object inside AudioFileInfo?
-            //audioFileInfo.setAudioClipsWritingResult(audioClipsWritingResult);
-
             Map<Boolean, Long> soundZonesGenerationResult = audioClipsWritingResult.stream()
                     .collect(Collectors.partitioningBy(clipInfo -> clipInfo.getAudioClipWritingResult().isSuccess(), Collectors.counting()));
             return new SuccessResponse(soundZonesGenerationResult.get(true), soundZonesGenerationResult.get(false));
