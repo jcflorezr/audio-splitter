@@ -41,17 +41,17 @@ public class AudioClipsGeneratorImpl implements AudioClipsGenerator {
         String suggestedAudioClipName = audioClipsGroupInfo.get(0).getSuggestedAudioClipName();
         String groupAudioFileNameAndPath = outputAudioClipsConfig.getOutputAudioClipsDirectoryPath() + suggestedAudioClipName;
         AudioFileWritingResult audioFileWritingResult = audioIo.saveAudioFile(groupAudioFileNameAndPath, outputAudioClipsConfig.getAudioFormatExtension(), audioClipSignal);
-        return new AudioClipsWritingResult(audioClipsGroupInfo.get(0), audioFileWritingResult);
+        return new AudioClipsWritingResult(audioClipsGroupInfo.get(0), audioFileWritingResult, groupAudioFileNameAndPath);
     }
 
     private AudioClipsWritingResult generateSingleAudioClips(AudioClipInfo audioClipInfo, OutputAudioClipsConfig outputAudioClipsConfig) {
         AudioSignal audioClipSignal = singleAudioClipSignalGenerator.generateAudioClip(audioClipInfo, outputAudioClipsConfig);
         String suggestedAudioClipName = audioClipInfo.getSuggestedAudioClipName();
-        String outputFileName = outputAudioClipsConfig.getOutputAudioClipsDirectoryPath() + suggestedAudioClipName;
+        String audioFileNameAndPath = outputAudioClipsConfig.getOutputAudioClipsDirectoryPath() + suggestedAudioClipName;
         int startPosition = audioClipInfo.getStartPosition();
         int audioClipLength = audioClipInfo.getEndPosition() - startPosition;
-        AudioFileWritingResult audioFileWritingResult = audioIo.saveAudioFile(outputFileName, outputAudioClipsConfig.getAudioFormatExtension(), audioClipSignal, startPosition, audioClipLength);
-        return new AudioClipsWritingResult(audioClipInfo, audioFileWritingResult);
+        AudioFileWritingResult audioFileWritingResult = audioIo.saveAudioFile(audioFileNameAndPath, outputAudioClipsConfig.getAudioFormatExtension(), audioClipSignal, startPosition, audioClipLength);
+        return new AudioClipsWritingResult(audioClipInfo, audioFileWritingResult, audioFileNameAndPath);
     }
 
 }

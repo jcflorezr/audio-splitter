@@ -11,15 +11,12 @@ public class AudioClipsWritingResult {
     private String audioClipName;
     private AudioFileWritingResult audioClipWritingResult;
 
-    public AudioClipsWritingResult() {
-    }
-
-    public AudioClipsWritingResult(AudioClipInfo audioClipInfo, AudioFileWritingResult audioClipWritingResult) {
+    public AudioClipsWritingResult(AudioClipInfo audioClipInfo, AudioFileWritingResult audioClipWritingResult, String audioFileNameAndPath) {
         this.hours = audioClipInfo.getHours();
         this.minutes = audioClipInfo.getMinutes();
         this.seconds = audioClipInfo.getSeconds();
         this.milliseconds = audioClipInfo.getMilliseconds();
-        this.audioClipName = audioClipInfo.getSuggestedAudioClipName();
+        this.audioClipName = audioFileNameAndPath;
         this.audioClipWritingResult = audioClipWritingResult;
     }
 
