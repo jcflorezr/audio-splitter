@@ -38,12 +38,12 @@ class AudioContentService {
     }
 
     private AudioSignal retrieveOriginalAudioSignal(AudioFileInfo audioFileInfo) throws IOException, UnsupportedAudioFileException {
+        String convertedAudioFileName = audioFileInfo.getAudioFileLocation().getConvertedAudioFileName();
         try {
-            return audioIo.retrieveAudioSignalFromWavFile(audioFileInfo.getConvertedAudioFileName());
+            return audioIo.retrieveAudioSignalFromWavFile(convertedAudioFileName);
         } finally {
-            String convertedAudioFileName = audioFileInfo.getConvertedAudioFileName();
             boolean convertedAudioFileExists = Files.exists(Paths.get(convertedAudioFileName));
-            if (audioFileInfo.audioFileWasConverted() && convertedAudioFileExists) {
+            if (audioFileInfo.getAudioFileLocation().audioFileWasConverted() && convertedAudioFileExists) {
                 Path fileConvertedPath = Paths.get(convertedAudioFileName);
                 Files.deleteIfExists(fileConvertedPath);
             }

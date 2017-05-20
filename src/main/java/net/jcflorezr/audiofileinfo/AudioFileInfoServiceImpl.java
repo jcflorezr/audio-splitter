@@ -17,9 +17,9 @@ public class AudioFileInfoServiceImpl implements AudioFileInfoService {
 
     @Override
     public AudioFileInfo generateAudioFileInfo(AudioFileLocation audioFileLocation, boolean grouped) throws Exception {
-        AudioFileInfo audioFileInfo = new AudioFileInfo(audioFileLocation);
         String convertedAudioFileName = audioConverterService.convertFileToWavIfNeeded(audioFileLocation.getAudioFileName());
-        audioFileInfo.setConvertedAudioFileName(convertedAudioFileName);
+        audioFileLocation.setConvertedAudioFileName(convertedAudioFileName);
+        AudioFileInfo audioFileInfo = new AudioFileInfo(audioFileLocation);
         AudioContent audioContent = audioContentService.retrieveAudioContent(audioFileInfo);
         audioFileInfo.setAudioContent(audioContent);
         audioFileInfo.setAudioClipsInfo(soundZonesDetector.retrieveAudioClipsInfo(audioContent.getOriginalAudioSignal()));
