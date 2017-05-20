@@ -41,7 +41,7 @@ public class AudioClipsGeneratorImpl implements AudioClipsGenerator {
         String suggestedAudioClipName = audioClipsGroupInfo.get(0).getSuggestedAudioClipName();
         String groupAudioFileNameAndPath = outputAudioClipsConfig.getOutputAudioClipsDirectoryPath() + suggestedAudioClipName;
         AudioFileWritingResult audioFileWritingResult = audioIo.saveAudioFile(groupAudioFileNameAndPath, outputAudioClipsConfig.getAudioFormatExtension(), audioClipSignal);
-        return new AudioClipsWritingResult(suggestedAudioClipName, audioFileWritingResult);
+        return new AudioClipsWritingResult(audioClipsGroupInfo.get(0), audioFileWritingResult);
     }
 
     private AudioClipsWritingResult generateSingleAudioClips(AudioClipInfo audioClipInfo, OutputAudioClipsConfig outputAudioClipsConfig) {
@@ -51,7 +51,7 @@ public class AudioClipsGeneratorImpl implements AudioClipsGenerator {
         int startPosition = audioClipInfo.getStartPosition();
         int audioClipLength = audioClipInfo.getEndPosition() - startPosition;
         AudioFileWritingResult audioFileWritingResult = audioIo.saveAudioFile(outputFileName, outputAudioClipsConfig.getAudioFormatExtension(), audioClipSignal, startPosition, audioClipLength);
-        return new AudioClipsWritingResult(suggestedAudioClipName, audioFileWritingResult);
+        return new AudioClipsWritingResult(audioClipInfo, audioFileWritingResult);
     }
 
 }
