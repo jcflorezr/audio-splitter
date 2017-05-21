@@ -3,9 +3,11 @@ package net.jcflorezr.audioclips;
 import biz.source_code.dsp.model.AudioSignal;
 import net.jcflorezr.model.audioclips.AudioClipInfo;
 import net.jcflorezr.model.audioclips.OutputAudioClipsConfig;
+import org.springframework.stereotype.Service;
 
 import static java.util.Arrays.copyOfRange;
 
+@Service
 class SingleAudioClipSignalGenerator {
 
     private static final int MONO_CHANNELS = 1;

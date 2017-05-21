@@ -4,6 +4,7 @@ import biz.source_code.dsp.util.AudioFormatsSupported;
 import net.jcflorezr.util.AudioUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.tika.Tika;
+import org.springframework.stereotype.Service;
 
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.util.Optional;
@@ -11,6 +12,7 @@ import java.util.function.BiPredicate;
 
 import static java.util.Optional.ofNullable;
 
+@Service
 class AudioConverterService {
 
     private static final Tika TIKA = new Tika();

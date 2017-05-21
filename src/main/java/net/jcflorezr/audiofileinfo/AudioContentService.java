@@ -11,6 +11,7 @@ import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.AutoDetectParser;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.sax.BodyContentHandler;
+import org.springframework.stereotype.Service;
 import org.xml.sax.SAXException;
 
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -27,6 +28,7 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.toMap;
 import static org.apache.commons.lang3.StringUtils.split;
 
+@Service
 class AudioContentService {
 
     private AudioIo audioIo = new AudioIo();

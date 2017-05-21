@@ -5,6 +5,7 @@ import net.jcflorezr.model.audioclips.AudioClipInfo;
 import net.jcflorezr.model.audioclips.OutputAudioClipsConfig;
 import net.jcflorezr.model.audiocontent.AudioContent;
 import org.apache.commons.lang3.ArrayUtils;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,6 +15,7 @@ import java.util.stream.Stream;
 import static java.util.Arrays.copyOfRange;
 import static java.util.stream.Collectors.toList;
 
+@Service
 class GroupAudioClipSignalGenerator {
 
     private static final int MONO_CHANNELS = 1;

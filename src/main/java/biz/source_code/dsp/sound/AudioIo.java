@@ -15,6 +15,7 @@ package biz.source_code.dsp.sound;
 import biz.source_code.dsp.model.AudioFileWritingResult;
 import biz.source_code.dsp.model.AudioSignal;
 import biz.source_code.dsp.util.AudioFormatsSupported;
+import org.springframework.stereotype.Service;
 
 import javax.sound.sampled.AudioFileFormat.Type;
 import javax.sound.sampled.AudioFormat;
@@ -30,6 +31,7 @@ import java.util.Arrays;
 /**
  * Audio i/o utilities.
  */
+@Service
 public class AudioIo {
 
     public AudioInputStream getAudioInputStream(AudioSignal signal, int pos, int len) {

@@ -6,14 +6,20 @@ import net.jcflorezr.audiofileinfo.signal.SoundZonesDetectorImpl;
 import net.jcflorezr.model.audiocontent.AudioContent;
 import net.jcflorezr.model.audiocontent.AudioFileInfo;
 import net.jcflorezr.model.request.AudioFileLocation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AudioFileInfoServiceImpl implements AudioFileInfoService {
 
-    private AudioConverterService audioConverterService = new AudioConverterService();
-    private AudioContentService audioContentService = new AudioContentService();
-    private SoundZonesDetector soundZonesDetector = new SoundZonesDetectorImpl();
+    @Autowired
+    private AudioConverterService audioConverterService;
+
+    @Autowired
+    private AudioContentService audioContentService;
+
+    @Autowired
+    private SoundZonesDetector soundZonesDetector;
 
     @Override
     public AudioFileInfo generateAudioFileInfo(AudioFileLocation audioFileLocation, boolean grouped) throws Exception {

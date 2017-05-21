@@ -8,6 +8,7 @@ import net.jcflorezr.model.audioclips.AudioClipInfo;
 import net.jcflorezr.model.audioclips.AudioClipsWritingResult;
 import net.jcflorezr.model.audioclips.OutputAudioClipsConfig;
 import net.jcflorezr.model.audiocontent.AudioFileInfo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,9 +17,14 @@ import java.util.stream.Collectors;
 @Service
 public class AudioClipsGeneratorImpl implements AudioClipsGenerator {
 
-    private GroupAudioClipSignalGenerator groupAudioClipSignalGenerator = new GroupAudioClipSignalGenerator();
-    private SingleAudioClipSignalGenerator singleAudioClipSignalGenerator = new SingleAudioClipSignalGenerator();
-    private AudioIo audioIo = new AudioIo();
+    @Autowired
+    private GroupAudioClipSignalGenerator groupAudioClipSignalGenerator;
+
+    @Autowired
+    private SingleAudioClipSignalGenerator singleAudioClipSignalGenerator;
+
+    @Autowired
+    private AudioIo audioIo;
 
     @Override
     public List<AudioClipsWritingResult> generateAudioClip(AudioFileInfo audioFileInfo, OutputAudioClipsConfig outputAudioClipsConfig, boolean generateAudioClipsByGroup) {
