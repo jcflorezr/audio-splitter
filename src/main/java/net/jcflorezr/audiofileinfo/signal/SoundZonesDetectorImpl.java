@@ -4,6 +4,7 @@ import biz.source_code.dsp.model.AudioSignal;
 import net.jcflorezr.api.audiofileinfo.signal.SoundZonesDetector;
 import net.jcflorezr.model.audioclips.AudioClipInfo;
 import net.jcflorezr.model.audiocontent.signal.RmsSignalInfo;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -14,8 +15,8 @@ import static net.jcflorezr.util.AudioUtils.formatAudioTimeWithMilliseconds;
 import static org.apache.commons.lang3.StringUtils.substringAfter;
 
 
-// TODO this class cannot be referenced as Singleton
 @Service
+@Scope("prototype")
 public class SoundZonesDetectorImpl implements SoundZonesDetector {
 
     private static final int MAX_ACTIVE_COUNTER = 80;

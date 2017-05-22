@@ -163,7 +163,7 @@ public class AudioSplitterTest {
     }
 
     private AudioFileLocation createDummyAudioFileLocation (String audioFileName, String outputAudioClipsDirectoryPath) {
-        return new AudioFileLocation(audioFileName, outputAudioClipsDirectoryPath);
+        return new AudioFileLocation(audioFileName, outputAudioClipsDirectoryPath, null);
     }
 
 }

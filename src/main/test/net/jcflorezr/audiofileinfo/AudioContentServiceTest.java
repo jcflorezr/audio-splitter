@@ -81,7 +81,7 @@ public class AudioContentServiceTest {
     }
 
     private AudioFileInfo createDummyAudioFileInfo(String audioFileName, String convertedAudioFileName) {
-        AudioFileLocation audioFileLocation = new AudioFileLocation(audioFileName, null);
+        AudioFileLocation audioFileLocation = new AudioFileLocation(audioFileName, null, null);
         audioFileLocation.setConvertedAudioFileName(convertedAudioFileName);
         AudioFileInfo audioFileInfo = new AudioFileInfo(audioFileLocation);
         return audioFileInfo;

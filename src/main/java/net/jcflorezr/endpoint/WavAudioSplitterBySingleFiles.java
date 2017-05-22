@@ -5,6 +5,7 @@ import net.jcflorezr.model.response.AudioSplitterResponse;
 import net.jcflorezr.model.request.AudioFileLocation;
 import biz.source_code.dsp.util.AudioFormatsSupported;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -16,14 +17,14 @@ public class WavAudioSplitterBySingleFiles extends AudioSplitter {
 
     @Override
     @PostMapping("/generate-audio-clips")
-    public AudioSplitterResponse generateAudioClips(AudioFileLocation audioFileLocation) {
+    public AudioSplitterResponse generateAudioClips(@RequestBody AudioFileLocation audioFileLocation) {
         boolean asMono = false;
         return generateAudioClips(audioFileLocation, audioFormat, asMono);
     }
 
     @Override
     @PostMapping("/generate-audio-mono-clips")
-    public AudioSplitterResponse generateAudioMonoClips(AudioFileLocation audioFileLocation) {
+    public AudioSplitterResponse generateAudioMonoClips(@RequestBody AudioFileLocation audioFileLocation) {
         boolean asMono = true;
         return generateAudioClips(audioFileLocation, audioFormat, asMono);
     }
