@@ -12,6 +12,7 @@ import net.jcflorezr.model.audiocontent.AudioFileInfo;
 import net.jcflorezr.model.request.AudioFileLocation;
 import net.jcflorezr.model.response.AudioSplitterResponse;
 import net.jcflorezr.model.response.SuccessResponse;
+import net.jcflorezr.api.persistence.PersistenceService;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,6 +36,9 @@ public abstract class AudioSplitter {
     @Autowired
     private AudioClipsGenerator audioClipsGenerator;
 
+    @Autowired
+    private PersistenceService persistenceService;
+
     protected abstract AudioSplitterResponse generateAudioClips(AudioFileLocation audioFileLocation);
 
     protected abstract AudioSplitterResponse generateAudioMonoClips(AudioFileLocation audioFileLocation);
@@ -49,6 +53,9 @@ public abstract class AudioSplitter {
             AudioFileInfo audioFileInfo = audioFileInfoService.generateAudioFileInfo(audioFileLocation, generateAudioClipsByGroup);
             OutputAudioClipsConfig outputAudioClipsConfig = audioFileInfo.getOutputAudioClipsConfig(audioFormat, asMono, withSeparator);
             List<AudioClipsWritingResult> audioClipsWritingResult = audioClipsGenerator.generateAudioClip(audioFileInfo, outputAudioClipsConfig, generateAudioClipsByGroup);
+
+            persistenceService.storeResults(audioFileInfo, audioClipsWritingResult);
+
             Map<Boolean, Long> soundZonesGenerationResult = audioClipsWritingResult.stream()
                     .collect(Collectors.partitioningBy(clipInfo -> clipInfo.getAudioClipWritingResult().isSuccess(), Collectors.counting()));
             return new SuccessResponse(soundZonesGenerationResult.get(true), soundZonesGenerationResult.get(false));
