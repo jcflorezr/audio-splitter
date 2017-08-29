@@ -2,7 +2,7 @@ package net.jcflorezr.model.audioclips;
 
 public class AudioClipInfo {
 
-    private String suggestedAudioClipName;
+    private String audioClipName;
     private int groupNumber;
     private int startPosition;
     private float startPositionInSeconds;
@@ -17,8 +17,8 @@ public class AudioClipInfo {
     public AudioClipInfo() {
     }
 
-    public AudioClipInfo(int groupNumber, int startPosition, float startPositionInSeconds, int endPosition, float endPositionInSeconds, float durationInSeconds, String suggestedAudioClipName, int hours, int minutes, int seconds, int milliseconds) {
-        this.suggestedAudioClipName = suggestedAudioClipName;
+    public AudioClipInfo(int groupNumber, int startPosition, float startPositionInSeconds, int endPosition, float endPositionInSeconds, float durationInSeconds, String audioClipName, int hours, int minutes, int seconds, int milliseconds) {
+        this.audioClipName = audioClipName;
         this.groupNumber = groupNumber;
         this.startPosition = startPosition;
         this.startPositionInSeconds = startPositionInSeconds;
@@ -31,8 +31,8 @@ public class AudioClipInfo {
         this.milliseconds = milliseconds;
     }
 
-    public String getSuggestedAudioClipName() {
-        return suggestedAudioClipName;
+    public String getAudioClipName() {
+        return audioClipName;
     }
 
     public int getGroupNumber() {
@@ -88,12 +88,12 @@ public class AudioClipInfo {
         if (endPosition != that.endPosition) return false;
         if (Float.compare(that.endPositionInSeconds, endPositionInSeconds) != 0) return false;
         if (Float.compare(that.durationInSeconds, durationInSeconds) != 0) return false;
-        return suggestedAudioClipName != null ? suggestedAudioClipName.equals(that.suggestedAudioClipName) : that.suggestedAudioClipName == null;
+        return audioClipName != null ? audioClipName.equals(that.audioClipName) : that.audioClipName == null;
     }
 
     @Override
     public int hashCode() {
-        int result = suggestedAudioClipName != null ? suggestedAudioClipName.hashCode() : 0;
+        int result = audioClipName != null ? audioClipName.hashCode() : 0;
         result = 31 * result + groupNumber;
         result = 31 * result + startPosition;
         result = 31 * result + (startPositionInSeconds != +0.0f ? Float.floatToIntBits(startPositionInSeconds) : 0);
@@ -106,7 +106,7 @@ public class AudioClipInfo {
     @Override
     public String toString() {
         return "AudioClipInfo{" +
-                "suggestedAudioClipName='" + suggestedAudioClipName + '\'' +
+                "audioClipName='" + audioClipName + '\'' +
                 ", groupNumber=" + groupNumber +
                 ", startPosition=" + startPosition +
                 ", startPositionInSeconds=" + startPositionInSeconds +
