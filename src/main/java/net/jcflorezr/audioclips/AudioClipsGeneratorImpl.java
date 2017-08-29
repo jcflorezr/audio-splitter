@@ -44,7 +44,7 @@ public class AudioClipsGeneratorImpl implements AudioClipsGenerator {
 
     private AudioClipsWritingResult generateAudioClipsByGroup(List<AudioClipInfo> audioClipsGroupInfo, OutputAudioClipsConfig outputAudioClipsConfig) {
         AudioSignal audioClipSignal = groupAudioClipSignalGenerator.generateAudioClip(audioClipsGroupInfo, outputAudioClipsConfig);
-        String suggestedAudioClipName = audioClipsGroupInfo.get(0).getSuggestedAudioClipName();
+        String suggestedAudioClipName = audioClipsGroupInfo.get(0).getAudioClipName();
         String groupAudioFileNameAndPath = outputAudioClipsConfig.getOutputAudioClipsDirectoryPath() + suggestedAudioClipName;
         AudioFileWritingResult audioFileWritingResult = audioIo.saveAudioFile(groupAudioFileNameAndPath, outputAudioClipsConfig.getAudioFormatExtension(), audioClipSignal);
         return new AudioClipsWritingResult(audioClipsGroupInfo.get(0), audioFileWritingResult, groupAudioFileNameAndPath);
@@ -52,7 +52,7 @@ public class AudioClipsGeneratorImpl implements AudioClipsGenerator {
 
     private AudioClipsWritingResult generateSingleAudioClips(AudioClipInfo audioClipInfo, OutputAudioClipsConfig outputAudioClipsConfig) {
         AudioSignal audioClipSignal = singleAudioClipSignalGenerator.generateAudioClip(audioClipInfo, outputAudioClipsConfig);
-        String suggestedAudioClipName = audioClipInfo.getSuggestedAudioClipName();
+        String suggestedAudioClipName = audioClipInfo.getAudioClipName();
         String audioFileNameAndPath = outputAudioClipsConfig.getOutputAudioClipsDirectoryPath() + suggestedAudioClipName;
         int startPosition = audioClipInfo.getStartPosition();
         int audioClipLength = audioClipInfo.getEndPosition() - startPosition;
