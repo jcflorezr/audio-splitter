@@ -2,25 +2,44 @@ package net.jcflorezr.model.audiocontent;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import net.jcflorezr.model.persistence.AudioFileNamePrimaryKey;
+import org.springframework.data.cassandra.mapping.Column;
+import org.springframework.data.cassandra.mapping.PrimaryKey;
+import org.springframework.data.cassandra.mapping.Table;
 
 import java.util.List;
 
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
+@Table(value = "audio_metadata")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AudioMetadata {
 
     private static final String PREFIX = "xmpDM:";
 
+    @PrimaryKey
+    private AudioFileNamePrimaryKey audioFileName;
+    @Column("title")
     private String title;
+    @Column("album")
     private String album;
+    @Column("artist")
     private String artist;
+    @Column("track_number")
     private String trackNumber;
+    @Column("genre")
     private String genre;
+    @Column("comments")
     private String comments;
+    @Column("raw_metadata")
     private List<String> rawMetadata;
 
     public AudioMetadata() {
+    }
+
+    @JsonGetter("audioFileName")
+    public AudioFileNamePrimaryKey getAudioFileName() {
+        return audioFileName;
     }
 
     @JsonGetter("title")
@@ -73,20 +92,33 @@ public class AudioMetadata {
 
         AudioMetadata that = (AudioMetadata) o;
 
+        if (audioFileName != null ? !audioFileName.equals(that.audioFileName) : that.audioFileName != null)
+            return false;
         if (title != null ? !title.equals(that.title) : that.title != null) return false;
         if (album != null ? !album.equals(that.album) : that.album != null) return false;
-        if (artist != null ? !artist.equals(that.artist) : that.artist != null) return false;
-        if (trackNumber != null ? !trackNumber.equals(that.trackNumber) : that.trackNumber != null) return false;
-        return genre != null ? genre.equals(that.genre) : that.genre == null;
+        return artist != null ? artist.equals(that.artist) : that.artist == null;
     }
 
     @Override
     public int hashCode() {
-        int result = title != null ? title.hashCode() : 0;
+        int result = audioFileName != null ? audioFileName.hashCode() : 0;
+        result = 31 * result + (title != null ? title.hashCode() : 0);
         result = 31 * result + (album != null ? album.hashCode() : 0);
         result = 31 * result + (artist != null ? artist.hashCode() : 0);
-        result = 31 * result + (trackNumber != null ? trackNumber.hashCode() : 0);
-        result = 31 * result + (genre != null ? genre.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "AudioMetadata{" +
+                "audioFileName=" + audioFileName +
+                ", title='" + title + '\'' +
+                ", album='" + album + '\'' +
+                ", artist='" + artist + '\'' +
+                ", trackNumber='" + trackNumber + '\'' +
+                ", genre='" + genre + '\'' +
+                ", comments='" + comments + '\'' +
+                ", rawMetadata=" + rawMetadata +
+                '}';
     }
 }

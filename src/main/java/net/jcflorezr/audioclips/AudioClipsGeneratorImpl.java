@@ -27,37 +27,37 @@ public class AudioClipsGeneratorImpl implements AudioClipsGenerator {
     private AudioIo audioIo;
 
     @Override
-    public List<AudioClipsWritingResult> generateAudioClip(AudioFileInfo audioFileInfo, OutputAudioClipsConfig outputAudioClipsConfig, boolean generateAudioClipsByGroup) {
+    public List<AudioClipsWritingResult> generateAudioClip(String audioFileName, AudioFileInfo audioFileInfo, OutputAudioClipsConfig outputAudioClipsConfig, boolean generateAudioClipsByGroup) {
         List<AudioClipInfo> audioClipsInfo = audioFileInfo.getAudioClipsInfo();
         if (generateAudioClipsByGroup) {
             return audioClipsInfo.stream()
                     .collect(Collectors.groupingBy(AudioClipInfo::getGroupNumber))
                     .entrySet().stream()
-                    .map(audioClipsGroupInfo -> generateAudioClipsByGroup(audioClipsGroupInfo.getValue(), outputAudioClipsConfig))
+                    .map(audioClipsGroupInfo -> generateAudioClipsByGroup(audioFileName, audioClipsGroupInfo.getValue(), outputAudioClipsConfig))
                     .collect(Collectors.toList());
         } else {
             return audioClipsInfo.stream()
-                    .map(audioClipInfo -> generateSingleAudioClips(audioClipInfo, outputAudioClipsConfig))
+                    .map(audioClipInfo -> generateSingleAudioClips(audioFileName, audioClipInfo, outputAudioClipsConfig))
                     .collect(Collectors.toList());
         }
     }
 
-    private AudioClipsWritingResult generateAudioClipsByGroup(List<AudioClipInfo> audioClipsGroupInfo, OutputAudioClipsConfig outputAudioClipsConfig) {
+    private AudioClipsWritingResult generateAudioClipsByGroup(String audioFileName, List<AudioClipInfo> audioClipsGroupInfo, OutputAudioClipsConfig outputAudioClipsConfig) {
         AudioSignal audioClipSignal = groupAudioClipSignalGenerator.generateAudioClip(audioClipsGroupInfo, outputAudioClipsConfig);
         String suggestedAudioClipName = audioClipsGroupInfo.get(0).getAudioClipName();
         String groupAudioFileNameAndPath = outputAudioClipsConfig.getOutputAudioClipsDirectoryPath() + suggestedAudioClipName;
         AudioFileWritingResult audioFileWritingResult = audioIo.saveAudioFile(groupAudioFileNameAndPath, outputAudioClipsConfig.getAudioFormatExtension(), audioClipSignal);
-        return new AudioClipsWritingResult(audioClipsGroupInfo.get(0), audioFileWritingResult, groupAudioFileNameAndPath);
+        return new AudioClipsWritingResult(audioFileName, audioClipsGroupInfo.get(0), audioFileWritingResult, suggestedAudioClipName);
     }
 
-    private AudioClipsWritingResult generateSingleAudioClips(AudioClipInfo audioClipInfo, OutputAudioClipsConfig outputAudioClipsConfig) {
+    private AudioClipsWritingResult generateSingleAudioClips(String audioFileName, AudioClipInfo audioClipInfo, OutputAudioClipsConfig outputAudioClipsConfig) {
         AudioSignal audioClipSignal = singleAudioClipSignalGenerator.generateAudioClip(audioClipInfo, outputAudioClipsConfig);
         String suggestedAudioClipName = audioClipInfo.getAudioClipName();
         String audioFileNameAndPath = outputAudioClipsConfig.getOutputAudioClipsDirectoryPath() + suggestedAudioClipName;
         int startPosition = audioClipInfo.getStartPosition();
         int audioClipLength = audioClipInfo.getEndPosition() - startPosition;
         AudioFileWritingResult audioFileWritingResult = audioIo.saveAudioFile(audioFileNameAndPath, outputAudioClipsConfig.getAudioFormatExtension(), audioClipSignal, startPosition, audioClipLength);
-        return new AudioClipsWritingResult(audioClipInfo, audioFileWritingResult, audioFileNameAndPath);
+        return new AudioClipsWritingResult(audioFileName, audioClipInfo, audioFileWritingResult, suggestedAudioClipName);
     }
 
 }

@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface SoundZonesDetector {
 
-    List<AudioClipInfo> retrieveAudioClipsInfo(AudioSignal audioSignal);
+    List<AudioClipInfo> retrieveAudioClipsInfo(String audioFileName, AudioSignal audioSignal);
 
 }

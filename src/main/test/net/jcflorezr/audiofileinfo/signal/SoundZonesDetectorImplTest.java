@@ -52,7 +52,7 @@ public class SoundZonesDetectorImplTest {
         when(rmsCalculator.retrieveRmsInfo(anyObject(), anyInt(), anyInt())).thenReturn(rmsSignalInfo);
 
         AudioSignal backgroundNoiseAndLowVolumeSignal = MAPPER.readValue(thisClass.getResourceAsStream(BACKGROUND_NOISE_LOW_VOLUME_SIGNAL), AudioSignal.class);
-        List<AudioClipInfo> actualAudioClipsInfo = soundZonesDetector.retrieveAudioClipsInfo(backgroundNoiseAndLowVolumeSignal);
+        List<AudioClipInfo> actualAudioClipsInfo = soundZonesDetector.retrieveAudioClipsInfo(audioFileLocation.getAudioFileName(), backgroundNoiseAndLowVolumeSignal);
         List<AudioClipInfo> expectedAudioClipsInfo = MAPPER.readValue(thisClass.getResourceAsStream(BACKGROUND_NOISE_LOW_VOLUME_AUDIO_CLIPS_INFO), new TypeReference<List<AudioClipInfo>>() {});
 
         assertThat(actualAudioClipsInfo, is(expectedAudioClipsInfo));
@@ -64,7 +64,7 @@ public class SoundZonesDetectorImplTest {
         when(rmsCalculator.retrieveRmsInfo(anyObject(), anyInt(), anyInt())).thenReturn(rmsSignalInfo);
 
         AudioSignal withApplauseSignal = MAPPER.readValue(thisClass.getResourceAsStream(WITH_APPLAUSE_SIGNAL), AudioSignal.class);
-        List<AudioClipInfo> actualAudioClipsInfo = soundZonesDetector.retrieveAudioClipsInfo(withApplauseSignal);
+        List<AudioClipInfo> actualAudioClipsInfo = soundZonesDetector.retrieveAudioClipsInfo(audioFileLocation.getAudioFileName(), withApplauseSignal);
         List<AudioClipInfo> expectedAudioClipsInfo = MAPPER.readValue(thisClass.getResourceAsStream(WITH_APPLAUSE_AUDIO_CLIPS_INFO), new TypeReference<List<AudioClipInfo>>() {});
 
         assertThat(actualAudioClipsInfo, is(expectedAudioClipsInfo));
@@ -76,7 +76,7 @@ public class SoundZonesDetectorImplTest {
         when(rmsCalculator.retrieveRmsInfo(anyObject(), anyInt(), anyInt())).thenReturn(rmsSignalInfo);
 
         AudioSignal withApplauseSignal = MAPPER.readValue(thisClass.getResourceAsStream(STRONG_BACKGROUND_NOISE_SIGNAL), AudioSignal.class);
-        List<AudioClipInfo> actualAudioClipsInfo = soundZonesDetector.retrieveAudioClipsInfo(withApplauseSignal);
+        List<AudioClipInfo> actualAudioClipsInfo = soundZonesDetector.retrieveAudioClipsInfo(audioFileLocation.getAudioFileName(), withApplauseSignal);
         List<AudioClipInfo> expectedAudioClipsInfo = MAPPER.readValue(thisClass.getResourceAsStream(STRONG_BACKGROUND_NOISE_AUDIO_CLIPS_INFO), new TypeReference<List<AudioClipInfo>>() {});
 
         assertThat(actualAudioClipsInfo, is(expectedAudioClipsInfo));

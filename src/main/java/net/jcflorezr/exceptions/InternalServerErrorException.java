@@ -48,10 +48,10 @@ public class InternalServerErrorException extends AudioSplitterCustomException {
 
     @Override
     public String toString() {
-        return "InternalServerErrorException{" +
-                "exceptionClassName='" + exceptionClassName + '\'' +
-                ", message='" + message + '\'' +
-                ", simplifiedStackTrace='" + simplifiedStackTrace + '\'' +
+        return "{" +
+                "'exceptionClassName' : '" + exceptionClassName + '\'' +
+                ", 'message' : '" + message + '\'' +
+                ", 'simplifiedStackTrace' : '" + simplifiedStackTrace + '\'' +
                 '}';
     }
 }

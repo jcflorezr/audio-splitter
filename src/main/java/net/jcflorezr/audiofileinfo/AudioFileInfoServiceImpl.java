@@ -28,7 +28,7 @@ public class AudioFileInfoServiceImpl implements AudioFileInfoService {
         AudioFileInfo audioFileInfo = new AudioFileInfo(audioFileLocation);
         AudioContent audioContent = audioContentService.retrieveAudioContent(audioFileInfo);
         audioFileInfo.setAudioContent(audioContent);
-        audioFileInfo.setAudioClipsInfo(soundZonesDetector.retrieveAudioClipsInfo(audioContent.getOriginalAudioSignal()));
+        audioFileInfo.setAudioClipsInfo(soundZonesDetector.retrieveAudioClipsInfo(audioFileLocation.getAudioFileName(), audioContent.getOriginalAudioSignal()));
         return audioFileInfo;
     }
 }

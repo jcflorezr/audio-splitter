@@ -52,9 +52,9 @@ public abstract class AudioSplitter {
             validateAudioFileLocationInfo(audioFileLocation);
             AudioFileInfo audioFileInfo = audioFileInfoService.generateAudioFileInfo(audioFileLocation, generateAudioClipsByGroup);
             OutputAudioClipsConfig outputAudioClipsConfig = audioFileInfo.getOutputAudioClipsConfig(audioFormat, asMono, withSeparator);
-            List<AudioClipsWritingResult> audioClipsWritingResult = audioClipsGenerator.generateAudioClip(audioFileInfo, outputAudioClipsConfig, generateAudioClipsByGroup);
+            List<AudioClipsWritingResult> audioClipsWritingResult = audioClipsGenerator.generateAudioClip(audioFileLocation.getAudioFileName(), audioFileInfo, outputAudioClipsConfig, generateAudioClipsByGroup);
 
-            persistenceService.storeResults(audioFileInfo, audioClipsWritingResult);
+            persistenceService.storeResults(audioFileLocation, audioFileInfo, audioClipsWritingResult);
 
             Map<Boolean, Long> soundZonesGenerationResult = audioClipsWritingResult.stream()
                     .collect(Collectors.partitioningBy(clipInfo -> clipInfo.getAudioClipWritingResult().isSuccess(), Collectors.counting()));

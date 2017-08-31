@@ -1,38 +1,70 @@
 package net.jcflorezr.model.audioclips;
 
+import net.jcflorezr.model.persistence.AudioClipsPrimaryKey;
+import org.springframework.data.cassandra.mapping.Column;
+import org.springframework.data.cassandra.mapping.PrimaryKey;
+import org.springframework.data.cassandra.mapping.Table;
+
+@Table(value = "audio_clips")
 public class AudioClipInfo {
 
-    private String audioClipName;
+    @PrimaryKey
+    private AudioClipsPrimaryKey audioClipsPrimaryKey;
+    @Column("group_number")
     private int groupNumber;
+    @Column("start_position")
     private int startPosition;
+    @Column("start_position_in_seconds")
     private float startPositionInSeconds;
+    @Column("end_position")
     private int endPosition;
+    @Column("end_position_in_seconds")
     private float endPositionInSeconds;
+    @Column("duration_in_seconds")
     private float durationInSeconds;
-    private int hours;
-    private int minutes;
-    private int seconds;
-    private int milliseconds;
 
     public AudioClipInfo() {
     }
 
-    public AudioClipInfo(int groupNumber, int startPosition, float startPositionInSeconds, int endPosition, float endPositionInSeconds, float durationInSeconds, String audioClipName, int hours, int minutes, int seconds, int milliseconds) {
-        this.audioClipName = audioClipName;
+    private AudioClipInfo(String audioFileName, int hours, int minutes, int seconds, int milliseconds, int groupNumber, int startPosition, float startPositionInSeconds, int endPosition, float endPositionInSeconds, float durationInSeconds, String audioClipName) {
+        audioClipsPrimaryKey = new AudioClipsPrimaryKey.AudioClipsPrimaryKeyBuilder()
+                .audioFileName(audioFileName)
+                .hours(hours)
+                .minutes(minutes)
+                .seconds(seconds)
+                .milliseconds(milliseconds)
+                .audioClipName(audioClipName)
+                .build();
         this.groupNumber = groupNumber;
         this.startPosition = startPosition;
         this.startPositionInSeconds = startPositionInSeconds;
         this.endPosition = endPosition;
         this.endPositionInSeconds = endPositionInSeconds;
         this.durationInSeconds = durationInSeconds;
-        this.hours = hours;
-        this.minutes = minutes;
-        this.seconds = seconds;
-        this.milliseconds = milliseconds;
+    }
+
+    public AudioClipsPrimaryKey getAudioFileName() {
+        return audioClipsPrimaryKey;
+    }
+
+    public int getHours() {
+        return audioClipsPrimaryKey.getHours();
+    }
+
+    public int getMinutes() {
+        return audioClipsPrimaryKey.getMinutes();
+    }
+
+    public int getSeconds() {
+        return audioClipsPrimaryKey.getSeconds();
+    }
+
+    public int getMilliseconds() {
+        return audioClipsPrimaryKey.getMilliseconds();
     }
 
     public String getAudioClipName() {
-        return audioClipName;
+        return audioClipsPrimaryKey.getAudioClipName();
     }
 
     public int getGroupNumber() {
@@ -42,7 +74,7 @@ public class AudioClipInfo {
     public int getStartPosition() {
         return startPosition;
     }
-    
+
     public float getStartPositionInSeconds() {
         return startPositionInSeconds;
     }
@@ -54,25 +86,9 @@ public class AudioClipInfo {
     public float getEndPositionInSeconds() {
         return endPositionInSeconds;
     }
-    
+
     public float getDurationInSeconds() {
         return durationInSeconds;
-    }
-
-    public int getHours() {
-        return hours;
-    }
-
-    public int getMinutes() {
-        return minutes;
-    }
-    
-    public int getSeconds() {
-        return seconds;
-    }
-    
-    public int getMilliseconds() {
-        return milliseconds;
     }
 
     @Override
@@ -82,46 +98,34 @@ public class AudioClipInfo {
 
         AudioClipInfo that = (AudioClipInfo) o;
 
-        if (groupNumber != that.groupNumber) return false;
-        if (startPosition != that.startPosition) return false;
-        if (Float.compare(that.startPositionInSeconds, startPositionInSeconds) != 0) return false;
-        if (endPosition != that.endPosition) return false;
-        if (Float.compare(that.endPositionInSeconds, endPositionInSeconds) != 0) return false;
-        if (Float.compare(that.durationInSeconds, durationInSeconds) != 0) return false;
-        return audioClipName != null ? audioClipName.equals(that.audioClipName) : that.audioClipName == null;
+        return audioClipsPrimaryKey != null ? audioClipsPrimaryKey.equals(that.audioClipsPrimaryKey) : that.audioClipsPrimaryKey == null;
     }
 
     @Override
     public int hashCode() {
-        int result = audioClipName != null ? audioClipName.hashCode() : 0;
-        result = 31 * result + groupNumber;
-        result = 31 * result + startPosition;
-        result = 31 * result + (startPositionInSeconds != +0.0f ? Float.floatToIntBits(startPositionInSeconds) : 0);
-        result = 31 * result + endPosition;
-        result = 31 * result + (endPositionInSeconds != +0.0f ? Float.floatToIntBits(endPositionInSeconds) : 0);
-        result = 31 * result + (durationInSeconds != +0.0f ? Float.floatToIntBits(durationInSeconds) : 0);
-        return result;
+        return audioClipsPrimaryKey != null ? audioClipsPrimaryKey.hashCode() : 0;
     }
 
     @Override
     public String toString() {
         return "AudioClipInfo{" +
-                "audioClipName='" + audioClipName + '\'' +
+                "audioClipsPrimaryKey=" + audioClipsPrimaryKey +
                 ", groupNumber=" + groupNumber +
                 ", startPosition=" + startPosition +
                 ", startPositionInSeconds=" + startPositionInSeconds +
                 ", endPosition=" + endPosition +
                 ", endPositionInSeconds=" + endPositionInSeconds +
                 ", durationInSeconds=" + durationInSeconds +
-                ", hours=" + hours +
-                ", minutes=" + minutes +
-                ", seconds=" + seconds +
-                ", milliseconds=" + milliseconds +
                 '}';
     }
 
     public static class SingleAudioSoundZoneInfoBuilder {
 
+        private String audioFileName;
+        private int hours;
+        private int minutes;
+        private int seconds;
+        private int milliseconds;
         private String suggestedAudioClipName;
         private int groupNumber;
         private int startPosition;
@@ -129,10 +133,31 @@ public class AudioClipInfo {
         private int endPosition;
         private float endPositionInSeconds;
         private float durationInSeconds;
-        private int hours;
-        private int minutes;
-        private int seconds;
-        private int milliseconds;
+
+        public SingleAudioSoundZoneInfoBuilder audioFileName(String audioFileName) {
+            this.audioFileName = audioFileName;
+            return this;
+        }
+
+        public SingleAudioSoundZoneInfoBuilder hours(int hours) {
+            this.hours = hours;
+            return this;
+        }
+
+        public SingleAudioSoundZoneInfoBuilder minutes(int minutes) {
+            this.minutes = minutes;
+            return this;
+        }
+
+        public SingleAudioSoundZoneInfoBuilder seconds(int seconds) {
+            this.seconds = seconds;
+            return this;
+        }
+
+        public SingleAudioSoundZoneInfoBuilder milliseconds(int milliseconds) {
+            this.milliseconds = milliseconds;
+            return this;
+        }
 
         public SingleAudioSoundZoneInfoBuilder suggestedAudioClipName(String suggestedAudioClipName) {
             this.suggestedAudioClipName = suggestedAudioClipName;
@@ -169,39 +194,20 @@ public class AudioClipInfo {
             return this;
         }
 
-        public SingleAudioSoundZoneInfoBuilder hours(int hours) {
-            this.hours = hours;
-            return this;
-        }
-
-        public SingleAudioSoundZoneInfoBuilder minutes(int minutes) {
-            this.minutes = minutes;
-            return this;
-        }
-
-        public SingleAudioSoundZoneInfoBuilder seconds(int seconds) {
-            this.seconds = seconds;
-            return this;
-        }
-
-        public SingleAudioSoundZoneInfoBuilder milliseconds(int milliseconds) {
-            this.milliseconds = milliseconds;
-            return this;
-        }
-
         public AudioClipInfo build() {
             return new AudioClipInfo(
+                    audioFileName,
+                    hours,
+                    minutes,
+                    seconds,
+                    milliseconds,
                     groupNumber,
                     startPosition,
                     startPositionInSeconds,
                     endPosition,
                     endPositionInSeconds,
                     durationInSeconds,
-                    suggestedAudioClipName,
-                    hours,
-                    minutes,
-                    seconds,
-                    milliseconds);
+                    suggestedAudioClipName);
         }
     }
 }

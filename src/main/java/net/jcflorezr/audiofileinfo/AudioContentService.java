@@ -5,6 +5,7 @@ import biz.source_code.dsp.sound.AudioIo;
 import net.jcflorezr.model.audiocontent.AudioContent;
 import net.jcflorezr.model.audiocontent.AudioFileInfo;
 import net.jcflorezr.model.audiocontent.AudioMetadata;
+import net.jcflorezr.model.persistence.AudioFileNamePrimaryKey;
 import net.jcflorezr.util.JsonUtils;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
@@ -57,7 +58,8 @@ class AudioContentService {
             Metadata metadata = new Metadata();
             BodyContentHandler bodyContentHandler = new BodyContentHandler();
             new AutoDetectParser().parse(inputstream, bodyContentHandler, metadata, new ParseContext());
-            Map<String, String> metadataMap = Stream.of(metadata.names()).collect(toMap(name -> name, name -> metadata.get(name)));
+            Map<String, Object> metadataMap = Stream.of(metadata.names()).collect(toMap(name -> name, name -> metadata.get(name)));
+            metadataMap.put("audioFileName", new AudioFileNamePrimaryKey(audioFileName));
             AudioMetadata audioMetadata = JsonUtils.convertMapToPojo(metadataMap, AudioMetadata.class);
             List<String> rawMetadata = Arrays.asList(split(bodyContentHandler.toString(), "\n"));
             audioMetadata.setRawMetadata(rawMetadata);

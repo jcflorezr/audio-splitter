@@ -66,7 +66,7 @@ public class AudioSplitterTest {
 
         when(audioFileInfoService.generateAudioFileInfo(anyObject(), anyBoolean())).thenReturn(new AudioFileInfo(dummyAudioFileLocation));
         List<AudioClipsWritingResult> mockAudioClipsWritingResult = MAPPER.readValue(thisClass.getResourceAsStream(AUDIO_CLIPS_WRITING_RESULT), new TypeReference<List<AudioClipsWritingResult>>(){});
-        when(audioClipsGenerator.generateAudioClip(anyObject(), anyObject(), anyBoolean())).thenReturn(mockAudioClipsWritingResult);
+        when(audioClipsGenerator.generateAudioClip(audioFileLocation.getAudioFileName(), anyObject(), anyObject(), anyBoolean())).thenReturn(mockAudioClipsWritingResult);
 
         AudioSplitterResponse actualAudioSplitterResponse = audioSplitter.generateAudioClips(dummyAudioFileLocation, audioFormat, asMono);
         assertTrue(actualAudioSplitterResponse instanceof SuccessResponse);
