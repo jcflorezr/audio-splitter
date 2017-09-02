@@ -1,15 +1,15 @@
 package net.jcflorezr.model.audioclips;
 
-import net.jcflorezr.model.persistence.AudioClipsPrimaryKey;
+import net.jcflorezr.model.persistence.AudioFileClipsPrimaryKey;
 import org.springframework.data.cassandra.mapping.Column;
 import org.springframework.data.cassandra.mapping.PrimaryKey;
 import org.springframework.data.cassandra.mapping.Table;
 
 @Table(value = "audio_clips")
-public class AudioClipInfo {
+public class AudioFileClip {
 
     @PrimaryKey
-    private AudioClipsPrimaryKey audioClipsPrimaryKey;
+    private AudioFileClipsPrimaryKey audioFileClipsPrimaryKey;
     @Column("group_number")
     private int groupNumber;
     @Column("start_position")
@@ -23,11 +23,11 @@ public class AudioClipInfo {
     @Column("duration_in_seconds")
     private float durationInSeconds;
 
-    public AudioClipInfo() {
+    public AudioFileClip() {
     }
 
-    private AudioClipInfo(String audioFileName, int hours, int minutes, int seconds, int milliseconds, int groupNumber, int startPosition, float startPositionInSeconds, int endPosition, float endPositionInSeconds, float durationInSeconds, String audioClipName) {
-        audioClipsPrimaryKey = new AudioClipsPrimaryKey.AudioClipsPrimaryKeyBuilder()
+    private AudioFileClip(String audioFileName, int hours, int minutes, int seconds, int milliseconds, int groupNumber, int startPosition, float startPositionInSeconds, int endPosition, float endPositionInSeconds, float durationInSeconds, String audioClipName) {
+        audioFileClipsPrimaryKey = new AudioFileClipsPrimaryKey.AudioClipsPrimaryKeyBuilder()
                 .audioFileName(audioFileName)
                 .hours(hours)
                 .minutes(minutes)
@@ -43,28 +43,28 @@ public class AudioClipInfo {
         this.durationInSeconds = durationInSeconds;
     }
 
-    public AudioClipsPrimaryKey getAudioFileName() {
-        return audioClipsPrimaryKey;
+    public AudioFileClipsPrimaryKey getAudioFileClipsPrimaryKey() {
+        return audioFileClipsPrimaryKey;
     }
 
     public int getHours() {
-        return audioClipsPrimaryKey.getHours();
+        return audioFileClipsPrimaryKey.getHours();
     }
 
     public int getMinutes() {
-        return audioClipsPrimaryKey.getMinutes();
+        return audioFileClipsPrimaryKey.getMinutes();
     }
 
     public int getSeconds() {
-        return audioClipsPrimaryKey.getSeconds();
+        return audioFileClipsPrimaryKey.getSeconds();
     }
 
     public int getMilliseconds() {
-        return audioClipsPrimaryKey.getMilliseconds();
+        return audioFileClipsPrimaryKey.getMilliseconds();
     }
 
     public String getAudioClipName() {
-        return audioClipsPrimaryKey.getAudioClipName();
+        return audioFileClipsPrimaryKey.getAudioClipName();
     }
 
     public int getGroupNumber() {
@@ -96,20 +96,20 @@ public class AudioClipInfo {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        AudioClipInfo that = (AudioClipInfo) o;
+        AudioFileClip that = (AudioFileClip) o;
 
-        return audioClipsPrimaryKey != null ? audioClipsPrimaryKey.equals(that.audioClipsPrimaryKey) : that.audioClipsPrimaryKey == null;
+        return audioFileClipsPrimaryKey != null ? audioFileClipsPrimaryKey.equals(that.audioFileClipsPrimaryKey) : that.audioFileClipsPrimaryKey == null;
     }
 
     @Override
     public int hashCode() {
-        return audioClipsPrimaryKey != null ? audioClipsPrimaryKey.hashCode() : 0;
+        return audioFileClipsPrimaryKey != null ? audioFileClipsPrimaryKey.hashCode() : 0;
     }
 
     @Override
     public String toString() {
-        return "AudioClipInfo{" +
-                "audioClipsPrimaryKey=" + audioClipsPrimaryKey +
+        return "AudioFileClip{" +
+                "audioFileClipsPrimaryKey=" + audioFileClipsPrimaryKey +
                 ", groupNumber=" + groupNumber +
                 ", startPosition=" + startPosition +
                 ", startPositionInSeconds=" + startPositionInSeconds +
@@ -194,8 +194,8 @@ public class AudioClipInfo {
             return this;
         }
 
-        public AudioClipInfo build() {
-            return new AudioClipInfo(
+        public AudioFileClip build() {
+            return new AudioFileClip(
                     audioFileName,
                     hours,
                     minutes,

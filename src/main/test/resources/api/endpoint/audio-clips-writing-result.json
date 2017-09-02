@@ -1,177 +1,172 @@
 [
   {
-    "hours": 0,
-    "minutes": 0,
-    "seconds": 0,
-    "milliseconds": 0,
-    "audioClipName": "000_0",
-    "audioClipWritingResult": {
-      "success": true
-    }
+    "audioFileClipsPrimaryKey": {
+      "audioFileName": "/path/to-find/audio-file",
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 0,
+      "milliseconds": 0,
+      "audioClipName": "000_0"
+    },
+    "success": true
   },
   {
-    "hours": 0,
-    "minutes": 0,
-    "seconds": 2,
-    "milliseconds": 912,
-    "audioClipName": "002_912",
-    "audioClipWritingResult": {
-      "success": false,
-      "exception": {
-        "exceptionClassName": "anyClass",
-        "message": "anyMessage",
-        "simplifiedStackTrace": "{anyStackTrace}"
-      }
-    }
+    "audioFileClipsPrimaryKey": {
+      "audioFileName": "/path/to-find/audio-file",
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 2,
+      "milliseconds": 912,
+      "audioClipName": "002_912"
+    },
+    "success": false,
+    "exception": "{\"exceptionClassName\": \"anyClass\", \"message\": \"anyMessage\", \"simplifiedStackTrace\": \"{anyStackTrace}\"}"
   },
   {
-    "hours": 0,
-    "minutes": 0,
-    "seconds": 4,
-    "milliseconds": 902,
-    "audioClipName": "004_902",
-    "audioClipWritingResult": {
-      "success": true
-    }
+    "audioFileClipsPrimaryKey": {
+      "audioFileName": "/path/to-find/audio-file",
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 4,
+      "milliseconds": 902,
+      "audioClipName": "004_902"
+    },
+    "success": true
   },
   {
-    "hours": 0,
-    "minutes": 0,
-    "seconds": 6,
-    "milliseconds": 281,
-    "audioClipName": "006_281",
-    "audioClipWritingResult": {
-      "success": true
-    }
+    "audioFileClipsPrimaryKey": {
+      "audioFileName": "/path/to-find/audio-file",
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 6,
+      "milliseconds": 281,
+      "audioClipName": "006_281"
+    },
+    "success": true
   },
   {
-    "hours": 0,
-    "minutes": 0,
-    "seconds": 7,
-    "milliseconds": 524,
-    "audioClipName": "007_524",
-    "audioClipWritingResult": {
-      "success": true
-    }
+    "audioFileClipsPrimaryKey": {
+      "audioFileName": "/path/to-find/audio-file",
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 7,
+      "milliseconds": 524,
+      "audioClipName": "007_524"
+    },
+    "success": true
   },
   {
-    "hours": 0,
-    "minutes": 0,
-    "seconds": 8,
-    "milliseconds": 463,
-    "audioClipName": "008_463",
-    "audioClipWritingResult": {
-      "success": false,
-      "exception": {
-        "exceptionClassName": "anyClass",
-        "message": "anyMessage",
-        "simplifiedStackTrace": "{anyStackTrace}"
-      }
-    }
+    "audioFileClipsPrimaryKey": {
+      "audioFileName": "/path/to-find/audio-file",
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 8,
+      "milliseconds": 463,
+      "audioClipName": "008_463"
+    },
+    "success": false,
+    "exception": "{\"exceptionClassName\": \"anyClass\", \"message\": \"anyMessage\", \"simplifiedStackTrace\": \"{anyStackTrace}\"}"
   },
   {
-    "hours": 0,
-    "minutes": 0,
-    "seconds": 10,
-    "milliseconds": 380,
-    "audioClipName": "010_38",
-    "audioClipWritingResult": {
-      "success": true
-    }
+    "audioFileClipsPrimaryKey": {
+      "audioFileName": "/path/to-find/audio-file",
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 10,
+      "milliseconds": 380,
+      "audioClipName": "010_38"
+    },
+    "success": true
   },
   {
-    "hours": 0,
-    "minutes": 0,
-    "seconds": 11,
-    "milliseconds": 563,
-    "audioClipName": "011_563",
-    "audioClipWritingResult": {
-      "success": false,
-      "exception": {
-        "exceptionClassName": "anyClass",
-        "message": "anyMessage",
-        "simplifiedStackTrace": "{anyStackTrace}"
-      }
-    }
+    "audioFileClipsPrimaryKey": {
+      "audioFileName": "/path/to-find/audio-file",
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 11,
+      "milliseconds": 563,
+      "audioClipName": "011_563"
+    },
+    "success": false,
+    "exception": "{\"exceptionClassName\": \"anyClass\", \"message\": \"anyMessage\", \"simplifiedStackTrace\": \"{anyStackTrace}\"}"
   },
   {
-    "hours": 0,
-    "minutes": 0,
-    "seconds": 13,
-    "milliseconds": 495,
-    "audioClipName": "013_495",
-    "audioClipWritingResult": {
-      "success": true
-    }
+    "audioFileClipsPrimaryKey": {
+      "audioFileName": "/path/to-find/audio-file",
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 13,
+      "milliseconds": 195,
+      "audioClipName": "013_195"
+    },
+    "success": true
   },
   {
-    "hours": 0,
-    "minutes": 0,
-    "seconds": 15,
-    "milliseconds": 463,
-    "audioClipName": "015_463",
-    "audioClipWritingResult": {
-      "success": true
-    }
+    "audioFileClipsPrimaryKey": {
+      "audioFileName": "/path/to-find/audio-file",
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 15,
+      "milliseconds": 463,
+      "audioClipName": "015_463"
+    },
+    "success": true
   },
   {
-    "hours": 0,
-    "minutes": 0,
-    "seconds": 18,
-    "milliseconds": 848,
-    "audioClipName": "018_848",
-    "audioClipWritingResult": {
-      "success": false,
-      "exception": {
-        "exceptionClassName": "anyClass",
-        "message": "anyMessage",
-        "simplifiedStackTrace": "{anyStackTrace}"
-      }
-    }
+    "audioFileClipsPrimaryKey": {
+      "audioFileName": "/path/to-find/audio-file",
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 18,
+      "milliseconds": 848,
+      "audioClipName": "018_848"
+    },
+    "success": false,
+    "exception": "{\"exceptionClassName\": \"anyClass\", \"message\": \"anyMessage\", \"simplifiedStackTrace\": \"{anyStackTrace}\"}"
   },
   {
-    "hours": 0,
-    "minutes": 0,
-    "seconds": 25,
-    "milliseconds": 249,
-    "audioClipName": "025_249",
-    "audioClipWritingResult": {
-      "success": true
-    }
+    "audioFileClipsPrimaryKey": {
+      "audioFileName": "/path/to-find/audio-file",
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 25,
+      "milliseconds": 249,
+      "audioClipName": "025_249"
+    },
+    "success": true
   },
   {
-    "hours": 0,
-    "minutes": 0,
-    "seconds": 26,
-    "milliseconds": 844,
-    "audioClipName": "026_844",
-    "audioClipWritingResult": {
-      "success": true
-    }
+    "audioFileClipsPrimaryKey": {
+      "audioFileName": "/path/to-find/audio-file",
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 26,
+      "milliseconds": 844,
+      "audioClipName": "026_844"
+    },
+    "success": true
   },
   {
-    "hours": 0,
-    "minutes": 0,
-    "seconds": 28,
-    "milliseconds": 650,
-    "audioClipName": "028_65",
-    "audioClipWritingResult": {
-      "success": false,
-      "exception": {
-        "exceptionClassName": "anyClass",
-        "message": "anyMessage",
-        "simplifiedStackTrace": "{anyStackTrace}"
-      }
-    }
+    "audioFileClipsPrimaryKey": {
+      "audioFileName": "/path/to-find/audio-file",
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 28,
+      "milliseconds": 650,
+      "audioClipName": "028_65"
+    },
+    "success": false,
+    "exception": "{\"exceptionClassName\": \"anyClass\", \"message\": \"anyMessage\", \"simplifiedStackTrace\": \"{anyStackTrace}\"}"
   },
   {
-    "hours": 0,
-    "minutes": 0,
-    "seconds": 30,
-    "milliseconds": 72,
-    "audioClipName": "030_072",
-    "audioClipWritingResult": {
-      "success": true
-    }
+    "audioFileClipsPrimaryKey": {
+      "audioFileName": "/path/to-find/audio-file",
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 30,
+      "milliseconds": 72,
+      "audioClipName": "030_072"
+    },
+    "success": true
   }
 ]

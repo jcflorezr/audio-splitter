@@ -3,7 +3,7 @@ package net.jcflorezr.audiofileinfo.signal;
 import biz.source_code.dsp.model.AudioSignal;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import net.jcflorezr.model.audioclips.AudioClipInfo;
+import net.jcflorezr.model.audioclips.AudioFileClip;
 import net.jcflorezr.model.audiocontent.signal.RmsSignalInfo;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,7 +14,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyObject;
@@ -48,38 +48,35 @@ public class SoundZonesDetectorImplTest {
 
     @Test
     public void retrieveAudioClipsWithBackgroundNoiseAndLowVolume() throws Exception {
-        List<RmsSignalInfo> rmsSignalInfo = MAPPER.readValue(thisClass.getResourceAsStream(BACKGROUND_NOISE_LOW_VOLUME_RMS_INFO), new TypeReference<List<RmsSignalInfo>>() {});
-        when(rmsCalculator.retrieveRmsInfo(anyObject(), anyInt(), anyInt())).thenReturn(rmsSignalInfo);
-
-        AudioSignal backgroundNoiseAndLowVolumeSignal = MAPPER.readValue(thisClass.getResourceAsStream(BACKGROUND_NOISE_LOW_VOLUME_SIGNAL), AudioSignal.class);
-        List<AudioClipInfo> actualAudioClipsInfo = soundZonesDetector.retrieveAudioClipsInfo(audioFileLocation.getAudioFileName(), backgroundNoiseAndLowVolumeSignal);
-        List<AudioClipInfo> expectedAudioClipsInfo = MAPPER.readValue(thisClass.getResourceAsStream(BACKGROUND_NOISE_LOW_VOLUME_AUDIO_CLIPS_INFO), new TypeReference<List<AudioClipInfo>>() {});
-
-        assertThat(actualAudioClipsInfo, is(expectedAudioClipsInfo));
+        testAudioClipsProcess(BACKGROUND_NOISE_LOW_VOLUME_RMS_INFO,
+                              BACKGROUND_NOISE_LOW_VOLUME_SIGNAL,
+                              BACKGROUND_NOISE_LOW_VOLUME_AUDIO_CLIPS_INFO);
     }
 
     @Test
     public void retrieveAudioClipsWithApplause() throws Exception {
-        List<RmsSignalInfo> rmsSignalInfo = MAPPER.readValue(thisClass.getResourceAsStream(WITH_APPLAUSE_RMS_INFO), new TypeReference<List<RmsSignalInfo>>() {});
-        when(rmsCalculator.retrieveRmsInfo(anyObject(), anyInt(), anyInt())).thenReturn(rmsSignalInfo);
-
-        AudioSignal withApplauseSignal = MAPPER.readValue(thisClass.getResourceAsStream(WITH_APPLAUSE_SIGNAL), AudioSignal.class);
-        List<AudioClipInfo> actualAudioClipsInfo = soundZonesDetector.retrieveAudioClipsInfo(audioFileLocation.getAudioFileName(), withApplauseSignal);
-        List<AudioClipInfo> expectedAudioClipsInfo = MAPPER.readValue(thisClass.getResourceAsStream(WITH_APPLAUSE_AUDIO_CLIPS_INFO), new TypeReference<List<AudioClipInfo>>() {});
-
-        assertThat(actualAudioClipsInfo, is(expectedAudioClipsInfo));
+        testAudioClipsProcess(WITH_APPLAUSE_RMS_INFO,
+                              WITH_APPLAUSE_SIGNAL,
+                              WITH_APPLAUSE_AUDIO_CLIPS_INFO);
     }
 
     @Test
     public void retrieveAudioClipsWithStrongBackgroundNoise() throws Exception {
-        List<RmsSignalInfo> rmsSignalInfo = MAPPER.readValue(thisClass.getResourceAsStream(STRONG_BACKGROUND_NOISE_RMS_INFO), new TypeReference<List<RmsSignalInfo>>() {});
+        testAudioClipsProcess(STRONG_BACKGROUND_NOISE_RMS_INFO,
+                              STRONG_BACKGROUND_NOISE_SIGNAL,
+                              STRONG_BACKGROUND_NOISE_AUDIO_CLIPS_INFO);
+    }
+
+    private void testAudioClipsProcess(String rmsSignalInfoFileName, String audioSignalFileName, String expectedAudioClipsFileName) throws Exception {
+        List<RmsSignalInfo> rmsSignalInfo = MAPPER.readValue(thisClass.getResourceAsStream(rmsSignalInfoFileName), new TypeReference<List<RmsSignalInfo>>() {});
         when(rmsCalculator.retrieveRmsInfo(anyObject(), anyInt(), anyInt())).thenReturn(rmsSignalInfo);
 
-        AudioSignal withApplauseSignal = MAPPER.readValue(thisClass.getResourceAsStream(STRONG_BACKGROUND_NOISE_SIGNAL), AudioSignal.class);
-        List<AudioClipInfo> actualAudioClipsInfo = soundZonesDetector.retrieveAudioClipsInfo(audioFileLocation.getAudioFileName(), withApplauseSignal);
-        List<AudioClipInfo> expectedAudioClipsInfo = MAPPER.readValue(thisClass.getResourceAsStream(STRONG_BACKGROUND_NOISE_AUDIO_CLIPS_INFO), new TypeReference<List<AudioClipInfo>>() {});
+        String audioFileName = "/path/to-find/audio-file";
+        AudioSignal withApplauseSignal = MAPPER.readValue(thisClass.getResourceAsStream(audioSignalFileName), AudioSignal.class);
+        List<AudioFileClip> actualAudioClips = soundZonesDetector.retrieveAudioClipsInfo(audioFileName, withApplauseSignal);
+        List<AudioFileClip> expectedAudioClips = MAPPER.readValue(thisClass.getResourceAsStream(expectedAudioClipsFileName), new TypeReference<List<AudioFileClip>>() {});
 
-        assertThat(actualAudioClipsInfo, is(expectedAudioClipsInfo));
+        assertThat(actualAudioClips, equalTo(expectedAudioClips));
     }
 
 }

@@ -11,14 +11,14 @@ import java.util.List;
 
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
-@Table(value = "audio_metadata")
+@Table(value = "audio_file_metadata")
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class AudioMetadata {
+public class AudioFileMetadata {
 
     private static final String PREFIX = "xmpDM:";
 
     @PrimaryKey
-    private AudioFileNamePrimaryKey audioFileName;
+    private AudioFileNamePrimaryKey audioFileNamePrimaryKey;
     @Column("title")
     private String title;
     @Column("album")
@@ -34,12 +34,12 @@ public class AudioMetadata {
     @Column("raw_metadata")
     private List<String> rawMetadata;
 
-    public AudioMetadata() {
+    public AudioFileMetadata() {
     }
 
-    @JsonGetter("audioFileName")
-    public AudioFileNamePrimaryKey getAudioFileName() {
-        return audioFileName;
+    @JsonGetter("audioFileNamePrimaryKey")
+    public AudioFileNamePrimaryKey getAudioFileNamePrimaryKey() {
+        return audioFileNamePrimaryKey;
     }
 
     @JsonGetter("title")
@@ -90,9 +90,9 @@ public class AudioMetadata {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        AudioMetadata that = (AudioMetadata) o;
+        AudioFileMetadata that = (AudioFileMetadata) o;
 
-        if (audioFileName != null ? !audioFileName.equals(that.audioFileName) : that.audioFileName != null)
+        if (audioFileNamePrimaryKey != null ? !audioFileNamePrimaryKey.equals(that.audioFileNamePrimaryKey) : that.audioFileNamePrimaryKey != null)
             return false;
         if (title != null ? !title.equals(that.title) : that.title != null) return false;
         if (album != null ? !album.equals(that.album) : that.album != null) return false;
@@ -101,7 +101,7 @@ public class AudioMetadata {
 
     @Override
     public int hashCode() {
-        int result = audioFileName != null ? audioFileName.hashCode() : 0;
+        int result = audioFileNamePrimaryKey != null ? audioFileNamePrimaryKey.hashCode() : 0;
         result = 31 * result + (title != null ? title.hashCode() : 0);
         result = 31 * result + (album != null ? album.hashCode() : 0);
         result = 31 * result + (artist != null ? artist.hashCode() : 0);
@@ -110,8 +110,8 @@ public class AudioMetadata {
 
     @Override
     public String toString() {
-        return "AudioMetadata{" +
-                "audioFileName=" + audioFileName +
+        return "AudioFileMetadata{" +
+                "audioFileNamePrimaryKey=" + audioFileNamePrimaryKey +
                 ", title='" + title + '\'' +
                 ", album='" + album + '\'' +
                 ", artist='" + artist + '\'' +

@@ -1,36 +1,39 @@
 package net.jcflorezr.model.audioclips;
 
 import biz.source_code.dsp.model.AudioFileWritingResult;
-import net.jcflorezr.model.persistence.AudioClipsPrimaryKey;
+import net.jcflorezr.model.persistence.AudioFileClipsPrimaryKey;
 import org.springframework.data.cassandra.mapping.Column;
 import org.springframework.data.cassandra.mapping.PrimaryKey;
 import org.springframework.data.cassandra.mapping.Table;
 
-@Table(value = "audio_clip_result")
-public class AudioClipsWritingResult {
+@Table(value = "audio_clips_results")
+public class AudioFileClipResult {
 
     @PrimaryKey
-    private AudioClipsPrimaryKey audioClipsPrimaryKey;
+    private AudioFileClipsPrimaryKey audioFileClipsPrimaryKey;
     @Column("success")
     private boolean success;
     @Column("exception")
     private String exception;
 
-    public AudioClipsWritingResult(String audioFileName, AudioClipInfo audioClipInfo, AudioFileWritingResult audioFileWritingResult, String audioClipName) {
-        audioClipsPrimaryKey = new AudioClipsPrimaryKey.AudioClipsPrimaryKeyBuilder()
+    public AudioFileClipResult() {
+    }
+
+    public AudioFileClipResult(String audioFileName, AudioFileClip audioFileClip, AudioFileWritingResult audioFileWritingResult, String audioClipName) {
+        audioFileClipsPrimaryKey = new AudioFileClipsPrimaryKey.AudioClipsPrimaryKeyBuilder()
                 .audioFileName(audioFileName)
-                .hours(audioClipInfo.getHours())
-                .minutes(audioClipInfo.getMinutes())
-                .seconds(audioClipInfo.getSeconds())
-                .milliseconds(audioClipInfo.getMilliseconds())
+                .hours(audioFileClip.getHours())
+                .minutes(audioFileClip.getMinutes())
+                .seconds(audioFileClip.getSeconds())
+                .milliseconds(audioFileClip.getMilliseconds())
                 .audioClipName(audioClipName)
                 .build();
         this.success = audioFileWritingResult.isSuccess();
         this.exception = audioFileWritingResult.getException() != null ? audioFileWritingResult.getException().toString() : null;
     }
 
-    public AudioClipsPrimaryKey getAudioFileName() {
-        return audioClipsPrimaryKey;
+    public AudioFileClipsPrimaryKey getAudioFileClipsPrimaryKey() {
+        return audioFileClipsPrimaryKey;
     }
 
     public boolean isSuccess() {
@@ -46,23 +49,23 @@ public class AudioClipsWritingResult {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        AudioClipsWritingResult that = (AudioClipsWritingResult) o;
+        AudioFileClipResult that = (AudioFileClipResult) o;
 
         if (success != that.success) return false;
-        return audioClipsPrimaryKey != null ? audioClipsPrimaryKey.equals(that.audioClipsPrimaryKey) : that.audioClipsPrimaryKey == null;
+        return audioFileClipsPrimaryKey != null ? audioFileClipsPrimaryKey.equals(that.audioFileClipsPrimaryKey) : that.audioFileClipsPrimaryKey == null;
     }
 
     @Override
     public int hashCode() {
-        int result = audioClipsPrimaryKey != null ? audioClipsPrimaryKey.hashCode() : 0;
+        int result = audioFileClipsPrimaryKey != null ? audioFileClipsPrimaryKey.hashCode() : 0;
         result = 31 * result + (success ? 1 : 0);
         return result;
     }
 
     @Override
     public String toString() {
-        return "AudioClipsWritingResult{" +
-                "audioClipsPrimaryKey=" + audioClipsPrimaryKey +
+        return "AudioFileClipResult{" +
+                "audioFileClipsPrimaryKey=" + audioFileClipsPrimaryKey +
                 ", success=" + success +
                 ", exception='" + exception + '\'' +
                 '}';

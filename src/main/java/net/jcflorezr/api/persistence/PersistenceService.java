@@ -1,13 +1,22 @@
 package net.jcflorezr.api.persistence;
 
-import net.jcflorezr.model.audioclips.AudioClipsWritingResult;
-import net.jcflorezr.model.audiocontent.AudioFileInfo;
-import net.jcflorezr.model.request.AudioFileLocation;
+import net.jcflorezr.model.audioclips.AudioFileClip;
+import net.jcflorezr.model.audioclips.AudioFileClipResult;
+import net.jcflorezr.model.audiocontent.AudioFileCompleteInfo;
+import net.jcflorezr.model.audiocontent.AudioFileMetadata;
+import net.jcflorezr.model.request.AudioFileBasicInfo;
 
 import java.util.List;
 
 public interface PersistenceService {
 
-    Object storeResults(AudioFileLocation audioFileLocation, AudioFileInfo audioFileInfo, List<AudioClipsWritingResult> audioClipsWritingResult);
+    void storeResults(AudioFileCompleteInfo audioFileCompleteInfo, List<AudioFileClipResult> audioFileClipResult);
 
+    AudioFileBasicInfo retrieveAudioFileBasicInfo(String audioFileName);
+
+    AudioFileMetadata retrieveAudioMetadata(String audioFileName);
+
+    List<AudioFileClip> retrieveAudioFileClips(String audioFileName);
+
+    List<AudioFileClipResult> retrieveAudioFileClipsResults(String audioFileName);
 }

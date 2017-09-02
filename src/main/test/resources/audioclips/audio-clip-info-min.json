@@ -1,13 +1,16 @@
 {
-  "suggestedAudioClipName": "19_2",
+  "audioFileClipsPrimaryKey": {
+    "audioFileName": "/path/to-find/audio-file",
+    "hours": 0,
+    "minutes": 0,
+    "seconds": 19,
+    "milliseconds": 2,
+    "audioClipName": "19_2"
+  },
   "groupNumber": 1,
   "startPosition": 4224,
   "startPositionInSeconds": 19.2,
   "endPosition": 4576,
   "endPositionInSeconds": 20.8,
-  "durationInSeconds": 1.6,
-  "hours": 0,
-  "minutes": 0,
-  "seconds": 19,
-  "milliseconds": 2
+  "durationInSeconds": 1.6
 }

@@ -1,4 +1,7 @@
 {
+  "audioFileNamePrimaryKey": {
+    "audioFileName": "/path/to-find/audio-file"
+  },
   "rawMetadata": [
     "Presidential Candidacy Announcement",
     "Barack Obama",

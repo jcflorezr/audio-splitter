@@ -1,314 +1,394 @@
 [
   {
-    "suggestedAudioClipName": "00_2",
+    "audioFileClipsPrimaryKey": {
+      "audioFileName": "/path/to-find/audio-file",
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 0,
+      "milliseconds": 2,
+      "audioClipName": "00_2"
+    },
     "groupNumber": 1,
     "startPosition": 4410,
     "startPositionInSeconds": 0.2,
     "endPosition": 74970,
     "endPositionInSeconds": 3.4,
-    "durationInSeconds": 3.2,
-    "hours": 0,
-    "minutes": 0,
-    "seconds": 0,
-    "milliseconds": 2
+    "durationInSeconds": 3.2
   },
   {
-    "suggestedAudioClipName": "03_5",
+    "audioFileClipsPrimaryKey": {
+      "audioFileName": "/path/to-find/audio-file",
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 3,
+      "milliseconds": 5,
+      "audioClipName": "03_5"
+    },
     "groupNumber": 1,
     "startPosition": 77175,
     "startPositionInSeconds": 3.5,
     "endPosition": 97020,
     "endPositionInSeconds": 4.4,
-    "durationInSeconds": 0.9,
-    "hours": 0,
-    "minutes": 0,
-    "seconds": 3,
-    "milliseconds": 5
+    "durationInSeconds": 0.9
   },
   {
-    "suggestedAudioClipName": "04_5",
+    "audioFileClipsPrimaryKey": {
+      "audioFileName": "/path/to-find/audio-file",
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 4,
+      "milliseconds": 5,
+      "audioClipName": "04_5"
+    },
     "groupNumber": 1,
     "startPosition": 99225,
     "startPositionInSeconds": 4.5,
     "endPosition": 154350,
     "endPositionInSeconds": 7.0,
-    "durationInSeconds": 2.5,
-    "hours": 0,
-    "minutes": 0,
-    "seconds": 4,
-    "milliseconds": 5
+    "durationInSeconds": 2.5
   },
   {
-    "suggestedAudioClipName": "08_0",
+    "audioFileClipsPrimaryKey": {
+      "audioFileName": "/path/to-find/audio-file",
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 8,
+      "milliseconds": 0,
+      "audioClipName": "08_0"
+    },
     "groupNumber": 1,
     "startPosition": 176400,
     "startPositionInSeconds": 8.0,
     "endPosition": 202860,
     "endPositionInSeconds": 9.2,
-    "durationInSeconds": 1.2,
-    "hours": 0,
-    "minutes": 0,
-    "seconds": 8,
-    "milliseconds": 0
+    "durationInSeconds": 1.2
   },
   {
-    "suggestedAudioClipName": "09_5",
+    "audioFileClipsPrimaryKey": {
+      "audioFileName": "/path/to-find/audio-file",
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 9,
+      "milliseconds": 5,
+      "audioClipName": "09_5"
+    },
     "groupNumber": 1,
     "startPosition": 209475,
     "startPositionInSeconds": 9.5,
     "endPosition": 244755,
     "endPositionInSeconds": 11.1,
-    "durationInSeconds": 1.6,
-    "hours": 0,
-    "minutes": 0,
-    "seconds": 9,
-    "milliseconds": 5
+    "durationInSeconds": 1.6
   },
   {
-    "suggestedAudioClipName": "11_2",
+    "audioFileClipsPrimaryKey": {
+      "audioFileName": "/path/to-find/audio-file",
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 11,
+      "milliseconds": 2,
+      "audioClipName": "11_2"
+    },
     "groupNumber": 1,
     "startPosition": 246960,
     "startPositionInSeconds": 11.2,
     "endPosition": 284445,
     "endPositionInSeconds": 12.9,
-    "durationInSeconds": 1.7,
-    "hours": 0,
-    "minutes": 0,
-    "seconds": 11,
-    "milliseconds": 2
+    "durationInSeconds": 1.7
   },
   {
-    "suggestedAudioClipName": "13_2",
+    "audioFileClipsPrimaryKey": {
+      "audioFileName": "/path/to-find/audio-file",
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 0,
+      "milliseconds": 1,
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 13,
+      "milliseconds": 2,
+      "audioClipName": "13_2"
+    },
     "groupNumber": 1,
     "startPosition": 291060,
     "startPositionInSeconds": 13.2,
     "endPosition": 302085,
     "endPositionInSeconds": 13.7,
-    "durationInSeconds": 0.5,
-    "hours": 0,
-    "minutes": 0,
-    "seconds": 13,
-    "milliseconds": 2
+    "durationInSeconds": 0.5
   },
   {
-    "suggestedAudioClipName": "13_9",
+    "audioFileClipsPrimaryKey": {
+      "audioFileName": "/path/to-find/audio-file",
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 13,
+      "milliseconds": 9,
+      "audioClipName": "13_9"
+    },
     "groupNumber": 1,
     "startPosition": 306495,
     "startPositionInSeconds": 13.9,
     "endPosition": 317520,
     "endPositionInSeconds": 14.4,
-    "durationInSeconds": 0.5,
-    "hours": 0,
-    "minutes": 0,
-    "seconds": 13,
-    "milliseconds": 9
+    "durationInSeconds": 0.5
   },
   {
-    "suggestedAudioClipName": "14_5",
+    "audioFileClipsPrimaryKey": {
+      "audioFileName": "/path/to-find/audio-file",
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 14,
+      "milliseconds": 5,
+      "audioClipName": "14_5"
+    },
     "groupNumber": 1,
     "startPosition": 319725,
     "startPositionInSeconds": 14.5,
     "endPosition": 372645,
     "endPositionInSeconds": 16.9,
-    "durationInSeconds": 2.4,
-    "hours": 0,
-    "minutes": 0,
-    "seconds": 14,
-    "milliseconds": 5
+    "durationInSeconds": 2.4
   },
   {
-    "suggestedAudioClipName": "17_5",
+    "audioFileClipsPrimaryKey": {
+      "audioFileName": "/path/to-find/audio-file",
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 17,
+      "milliseconds": 5,
+      "audioClipName": "17_5"
+    },
     "groupNumber": 2,
     "startPosition": 385875,
     "startPositionInSeconds": 17.5,
     "endPosition": 421155,
     "endPositionInSeconds": 19.1,
-    "durationInSeconds": 1.6,
-    "hours": 0,
-    "minutes": 0,
-    "seconds": 17,
-    "milliseconds": 5
+    "durationInSeconds": 1.6
   },
   {
-    "suggestedAudioClipName": "19_0",
+    "audioFileClipsPrimaryKey": {
+      "audioFileName": "/path/to-find/audio-file",
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 0,
+      "milliseconds": 1,
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 19,
+      "milliseconds": 0,
+      "audioClipName": "19_0"
+    },
     "groupNumber": 2,
     "startPosition": 418950,
     "startPositionInSeconds": 19.0,
     "endPosition": 456435,
     "endPositionInSeconds": 20.7,
-    "durationInSeconds": 1.7,
-    "hours": 0,
-    "minutes": 0,
-    "seconds": 19,
-    "milliseconds": 0
+    "durationInSeconds": 1.7
   },
   {
-    "suggestedAudioClipName": "21_0",
+    "audioFileClipsPrimaryKey": {
+      "audioFileName": "/path/to-find/audio-file",
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 21,
+      "milliseconds": 0,
+      "audioClipName": "21_0"
+    },
     "groupNumber": 2,
     "startPosition": 463050,
     "startPositionInSeconds": 21.0,
     "endPosition": 531405,
     "endPositionInSeconds": 24.1,
-    "durationInSeconds": 3.1,
-    "hours": 0,
-    "minutes": 0,
-    "seconds": 21,
-    "milliseconds": 0
+    "durationInSeconds": 3.1
   },
   {
-    "suggestedAudioClipName": "25_1",
+    "audioFileClipsPrimaryKey": {
+      "audioFileName": "/path/to-find/audio-file",
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 25,
+      "milliseconds": 1,
+      "audioClipName": "25_1"
+    },
     "groupNumber": 2,
     "startPosition": 553455,
     "startPositionInSeconds": 25.1,
     "endPosition": 564480,
     "endPositionInSeconds": 25.6,
-    "durationInSeconds": 0.5,
-    "hours": 0,
-    "minutes": 0,
-    "seconds": 25,
-    "milliseconds": 1
+    "durationInSeconds": 0.5
   },
   {
-    "suggestedAudioClipName": "25_5",
+    "audioFileClipsPrimaryKey": {
+      "audioFileName": "/path/to-find/audio-file",
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 25,
+      "milliseconds": 5,
+      "audioClipName": "25_5"
+    },
     "groupNumber": 2,
     "startPosition": 562275,
     "startPositionInSeconds": 25.5,
     "endPosition": 586530,
     "endPositionInSeconds": 26.6,
-    "durationInSeconds": 1.1,
-    "hours": 0,
-    "minutes": 0,
-    "seconds": 25,
-    "milliseconds": 5
+    "durationInSeconds": 1.1
   },
   {
-    "suggestedAudioClipName": "27_1",
+    "audioFileClipsPrimaryKey": {
+      "audioFileName": "/path/to-find/audio-file",
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 27,
+      "milliseconds": 1,
+      "audioClipName": "27_1"
+    },
     "groupNumber": 2,
     "startPosition": 597555,
     "startPositionInSeconds": 27.1,
     "endPosition": 615195,
     "endPositionInSeconds": 27.9,
-    "durationInSeconds": 0.8,
-    "hours": 0,
-    "minutes": 0,
-    "seconds": 27,
-    "milliseconds": 1
+    "durationInSeconds": 0.8
   },
   {
-    "suggestedAudioClipName": "27_8",
+    "audioFileClipsPrimaryKey": {
+      "audioFileName": "/path/to-find/audio-file",
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 27,
+      "milliseconds": 8,
+      "audioClipName": "27_8"
+    },
     "groupNumber": 2,
     "startPosition": 612990,
     "startPositionInSeconds": 27.8,
     "endPosition": 637245,
     "endPositionInSeconds": 28.9,
-    "durationInSeconds": 1.1,
-    "hours": 0,
-    "minutes": 0,
-    "seconds": 27,
-    "milliseconds": 8
+    "durationInSeconds": 1.1
   },
   {
-    "suggestedAudioClipName": "29_0",
+    "audioFileClipsPrimaryKey": {
+      "audioFileName": "/path/to-find/audio-file",
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 29,
+      "milliseconds": 0,
+      "audioClipName": "29_0"
+    },
     "groupNumber": 2,
     "startPosition": 639450,
     "startPositionInSeconds": 29.0,
     "endPosition": 659295,
     "endPositionInSeconds": 29.9,
-    "durationInSeconds": 0.9,
-    "hours": 0,
-    "minutes": 0,
-    "seconds": 29,
-    "milliseconds": 0
+    "durationInSeconds": 0.9
   },
   {
-    "suggestedAudioClipName": "30_2",
+    "audioFileClipsPrimaryKey": {
+      "audioFileName": "/path/to-find/audio-file",
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 30,
+      "milliseconds": 2,
+      "audioClipName": "30_2"
+    },
     "groupNumber": 2,
     "startPosition": 665910,
     "startPositionInSeconds": 30.2,
     "endPosition": 690165,
     "endPositionInSeconds": 31.3,
-    "durationInSeconds": 1.1,
-    "hours": 0,
-    "minutes": 0,
-    "seconds": 30,
-    "milliseconds": 2
+    "durationInSeconds": 1.1
   },
   {
-    "suggestedAudioClipName": "31_8",
+    "audioFileClipsPrimaryKey": {
+      "audioFileName": "/path/to-find/audio-file",
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 31,
+      "milliseconds": 8,
+      "audioClipName": "31_8"
+    },
     "groupNumber": 2,
     "startPosition": 701190,
     "startPositionInSeconds": 31.8,
     "endPosition": 749700,
     "endPositionInSeconds": 34.0,
-    "durationInSeconds": 2.2,
-    "hours": 0,
-    "minutes": 0,
-    "seconds": 31,
-    "milliseconds": 8
+    "durationInSeconds": 2.2
   },
   {
-    "suggestedAudioClipName": "34_3",
+    "audioFileClipsPrimaryKey": {
+      "audioFileName": "/path/to-find/audio-file",
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 34,
+      "milliseconds": 3,
+      "audioClipName": "34_3"
+    },
     "groupNumber": 3,
     "startPosition": 756315,
     "startPositionInSeconds": 34.3,
     "endPosition": 807030,
     "endPositionInSeconds": 36.6,
-    "durationInSeconds": 2.3,
-    "hours": 0,
-    "minutes": 0,
-    "seconds": 34,
-    "milliseconds": 3
+    "durationInSeconds": 2.3
   },
   {
-    "suggestedAudioClipName": "36_8",
+    "audioFileClipsPrimaryKey": {
+      "audioFileName": "/path/to-find/audio-file",
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 36,
+      "milliseconds": 8,
+      "audioClipName": "36_8"
+    },
     "groupNumber": 3,
     "startPosition": 811440,
     "startPositionInSeconds": 36.8,
     "endPosition": 862155,
     "endPositionInSeconds": 39.1,
-    "durationInSeconds": 2.3,
-    "hours": 0,
-    "minutes": 0,
-    "seconds": 36,
-    "milliseconds": 8
+    "durationInSeconds": 2.3
   },
   {
-    "suggestedAudioClipName": "39_1",
+    "audioFileClipsPrimaryKey": {
+      "audioFileName": "/path/to-find/audio-file",
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 39,
+      "milliseconds": 1,
+      "audioClipName": "39_1"
+    },
     "groupNumber": 3,
     "startPosition": 862155,
     "startPositionInSeconds": 39.1,
     "endPosition": 882000,
     "endPositionInSeconds": 40.0,
-    "durationInSeconds": 0.9,
-    "hours": 0,
-    "minutes": 0,
-    "seconds": 39,
-    "milliseconds": 1
+    "durationInSeconds": 0.9
   },
   {
-    "suggestedAudioClipName": "39_9",
+    "audioFileClipsPrimaryKey": {
+      "audioFileName": "/path/to-find/audio-file",
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 39,
+      "milliseconds": 9,
+      "audioClipName": "39_9"
+    },
     "groupNumber": 3,
     "startPosition": 879795,
     "startPositionInSeconds": 39.9,
     "endPosition": 923895,
     "endPositionInSeconds": 41.9,
-    "durationInSeconds": 2.0,
-    "hours": 0,
-    "minutes": 0,
-    "seconds": 39,
-    "milliseconds": 9
+    "durationInSeconds": 2.0
   },
   {
-    "suggestedAudioClipName": "42_3",
+    "audioFileClipsPrimaryKey": {
+      "audioFileName": "/path/to-find/audio-file",
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 42,
+      "milliseconds": 3,
+      "audioClipName": "42_3"
+    },
     "groupNumber": 3,
     "startPosition": 932715,
     "startPositionInSeconds": 42.3,
     "endPosition": 959175,
     "endPositionInSeconds": 43.5,
-    "durationInSeconds": 1.2,
-    "hours": 0,
-    "minutes": 0,
-    "seconds": 42,
-    "milliseconds": 3
+    "durationInSeconds": 1.2
   }
 ]

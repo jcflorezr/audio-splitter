@@ -1,13 +1,13 @@
 package net.jcflorezr.api.audioclips;
 
-import net.jcflorezr.model.audioclips.AudioClipsWritingResult;
+import net.jcflorezr.model.audioclips.AudioFileClipResult;
 import net.jcflorezr.model.audioclips.OutputAudioClipsConfig;
-import net.jcflorezr.model.audiocontent.AudioFileInfo;
+import net.jcflorezr.model.audiocontent.AudioFileCompleteInfo;
 
 import java.util.List;
 
 public interface AudioClipsGenerator {
 
-    List<AudioClipsWritingResult> generateAudioClip(String audioFileName, AudioFileInfo audioFileInfo, OutputAudioClipsConfig outputAudioClipsConfig, boolean generateAudioClipsByGroup);
+    List<AudioFileClipResult> generateAudioClip(String audioFileName, AudioFileCompleteInfo audioFileCompleteInfo, OutputAudioClipsConfig outputAudioClipsConfig, boolean generateAudioClipsByGroup);
 
 }

@@ -1,19 +1,21 @@
 [
   {
-    "suggestedAudioClipName": "000_0",
+    "audioFileClipsPrimaryKey": {
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 0,
+      "milliseconds": 0,
+      "audioClipName": "000_0"
+    },
     "groupNumber": 1,
     "startPosition": 0,
     "startPositionInSeconds": 0.0,
     "endPosition": 64200,
     "endPositionInSeconds": 2.912,
-    "durationInSeconds": 2.912,
-    "hours": 0,
-    "minutes": 0,
-    "seconds": 0,
-    "milliseconds": 0
+    "durationInSeconds": 2.912
   },
   {
-    "suggestedAudioClipName": "002_912",
+    "audioFileName": "002_912",
     "groupNumber": 1,
     "startPosition": 64200,
     "startPositionInSeconds": 2.912,
@@ -26,7 +28,7 @@
     "milliseconds": 912
   },
   {
-    "suggestedAudioClipName": "004_902",
+    "audioFileName": "004_902",
     "groupNumber": 1,
     "startPosition": 108091,
     "startPositionInSeconds": 4.902,
@@ -39,7 +41,7 @@
     "milliseconds": 902
   },
   {
-    "suggestedAudioClipName": "006_281",
+    "audioFileName": "006_281",
     "groupNumber": 1,
     "startPosition": 138504,
     "startPositionInSeconds": 6.281,
@@ -52,7 +54,7 @@
     "milliseconds": 281
   },
   {
-    "suggestedAudioClipName": "007_524",
+    "audioFileName": "007_524",
     "groupNumber": 1,
     "startPosition": 165905,
     "startPositionInSeconds": 7.524,
@@ -65,7 +67,7 @@
     "milliseconds": 524
   },
   {
-    "suggestedAudioClipName": "008_463",
+    "audioFileName": "008_463",
     "groupNumber": 1,
     "startPosition": 186601,
     "startPositionInSeconds": 8.463,
@@ -78,7 +80,7 @@
     "milliseconds": 463
   },
   {
-    "suggestedAudioClipName": "010_38",
+    "audioFileName": "010_38",
     "groupNumber": 1,
     "startPosition": 228869,
     "startPositionInSeconds": 10.38,
@@ -91,7 +93,7 @@
     "milliseconds": 38
   },
   {
-    "suggestedAudioClipName": "011_563",
+    "audioFileName": "011_563",
     "groupNumber": 1,
     "startPosition": 254975,
     "startPositionInSeconds": 11.563,
@@ -104,7 +106,7 @@
     "milliseconds": 563
   },
   {
-    "suggestedAudioClipName": "013_495",
+    "audioFileName": "013_495",
     "groupNumber": 2,
     "startPosition": 297571,
     "startPositionInSeconds": 13.495,
@@ -117,7 +119,7 @@
     "milliseconds": 495
   },
   {
-    "suggestedAudioClipName": "015_463",
+    "audioFileName": "015_463",
     "groupNumber": 2,
     "startPosition": 340967,
     "startPositionInSeconds": 15.463,
@@ -130,7 +132,7 @@
     "milliseconds": 463
   },
   {
-    "suggestedAudioClipName": "018_848",
+    "audioFileName": "018_848",
     "groupNumber": 2,
     "startPosition": 415606,
     "startPositionInSeconds": 18.848,
@@ -143,7 +145,7 @@
     "milliseconds": 848
   },
   {
-    "suggestedAudioClipName": "025_249",
+    "audioFileName": "025_249",
     "groupNumber": 2,
     "startPosition": 556744,
     "startPositionInSeconds": 25.249,
@@ -156,7 +158,7 @@
     "milliseconds": 249
   },
   {
-    "suggestedAudioClipName": "026_844",
+    "audioFileName": "026_844",
     "groupNumber": 3,
     "startPosition": 591900,
     "startPositionInSeconds": 26.844,
@@ -169,7 +171,7 @@
     "milliseconds": 844
   },
   {
-    "suggestedAudioClipName": "028_65",
+    "audioFileName": "028_65",
     "groupNumber": 3,
     "startPosition": 631738,
     "startPositionInSeconds": 28.65,
@@ -182,7 +184,7 @@
     "milliseconds": 65
   },
   {
-    "suggestedAudioClipName": "030_072",
+    "audioFileName": "030_072",
     "groupNumber": 3,
     "startPosition": 663084,
     "startPositionInSeconds": 30.072,
@@ -195,7 +197,7 @@
     "milliseconds": 72
   },
   {
-    "suggestedAudioClipName": "030_984",
+    "audioFileName": "030_984",
     "groupNumber": 3,
     "startPosition": 683196,
     "startPositionInSeconds": 30.984,
@@ -208,7 +210,7 @@
     "milliseconds": 984
   },
   {
-    "suggestedAudioClipName": "032_22",
+    "audioFileName": "032_22",
     "groupNumber": 3,
     "startPosition": 710449,
     "startPositionInSeconds": 32.22,
@@ -221,7 +223,7 @@
     "milliseconds": 22
   },
   {
-    "suggestedAudioClipName": "033_522",
+    "audioFileName": "033_522",
     "groupNumber": 3,
     "startPosition": 739166,
     "startPositionInSeconds": 33.522,
@@ -234,7 +236,7 @@
     "milliseconds": 522
   },
   {
-    "suggestedAudioClipName": "036_237",
+    "audioFileName": "036_237",
     "groupNumber": 3,
     "startPosition": 799015,
     "startPositionInSeconds": 36.237,
@@ -247,7 +249,7 @@
     "milliseconds": 237
   },
   {
-    "suggestedAudioClipName": "038_145",
+    "audioFileName": "038_145",
     "groupNumber": 3,
     "startPosition": 841100,
     "startPositionInSeconds": 38.145,
@@ -260,7 +262,7 @@
     "milliseconds": 145
   },
   {
-    "suggestedAudioClipName": "040_793",
+    "audioFileName": "040_793",
     "groupNumber": 4,
     "startPosition": 899493,
     "startPositionInSeconds": 40.793,
@@ -273,7 +275,7 @@
     "milliseconds": 793
   },
   {
-    "suggestedAudioClipName": "044_22",
+    "audioFileName": "044_22",
     "groupNumber": 4,
     "startPosition": 975054,
     "startPositionInSeconds": 44.22,
@@ -286,7 +288,7 @@
     "milliseconds": 22
   },
   {
-    "suggestedAudioClipName": "046_906",
+    "audioFileName": "046_906",
     "groupNumber": 4,
     "startPosition": 1034267,
     "startPositionInSeconds": 46.906,
@@ -299,7 +301,7 @@
     "milliseconds": 906
   },
   {
-    "suggestedAudioClipName": "049_848",
+    "audioFileName": "049_848",
     "groupNumber": 4,
     "startPosition": 1099150,
     "startPositionInSeconds": 49.848,
@@ -312,7 +314,7 @@
     "milliseconds": 848
   },
   {
-    "suggestedAudioClipName": "054_115",
+    "audioFileName": "054_115",
     "groupNumber": 5,
     "startPosition": 1193246,
     "startPositionInSeconds": 54.115,
@@ -325,7 +327,7 @@
     "milliseconds": 115
   },
   {
-    "suggestedAudioClipName": "055_991",
+    "audioFileName": "055_991",
     "groupNumber": 5,
     "startPosition": 1234601,
     "startPositionInSeconds": 55.991,
@@ -338,7 +340,7 @@
     "milliseconds": 991
   },
   {
-    "suggestedAudioClipName": "060_207",
+    "audioFileName": "060_207",
     "groupNumber": 5,
     "startPosition": 1327561,
     "startPositionInSeconds": 60.207,
@@ -351,7 +353,7 @@
     "milliseconds": 207
   },
   {
-    "suggestedAudioClipName": "061_562",
+    "audioFileName": "061_562",
     "groupNumber": 5,
     "startPosition": 1357451,
     "startPositionInSeconds": 61.562,
@@ -364,7 +366,7 @@
     "milliseconds": 562
   },
   {
-    "suggestedAudioClipName": "064_139",
+    "audioFileName": "064_139",
     "groupNumber": 5,
     "startPosition": 1414272,
     "startPositionInSeconds": 64.139,
@@ -377,7 +379,7 @@
     "milliseconds": 139
   },
   {
-    "suggestedAudioClipName": "067_849",
+    "audioFileName": "067_849",
     "groupNumber": 6,
     "startPosition": 1496064,
     "startPositionInSeconds": 67.849,
@@ -390,7 +392,7 @@
     "milliseconds": 849
   },
   {
-    "suggestedAudioClipName": "069_076",
+    "audioFileName": "069_076",
     "groupNumber": 6,
     "startPosition": 1523126,
     "startPositionInSeconds": 69.076,
@@ -403,7 +405,7 @@
     "milliseconds": 76
   },
   {
-    "suggestedAudioClipName": "070_572",
+    "audioFileName": "070_572",
     "groupNumber": 6,
     "startPosition": 1556121,
     "startPositionInSeconds": 70.572,
@@ -416,7 +418,7 @@
     "milliseconds": 572
   },
   {
-    "suggestedAudioClipName": "072_936",
+    "audioFileName": "072_936",
     "groupNumber": 6,
     "startPosition": 1608231,
     "startPositionInSeconds": 72.936,
@@ -429,7 +431,7 @@
     "milliseconds": 936
   },
   {
-    "suggestedAudioClipName": "077_749",
+    "audioFileName": "077_749",
     "groupNumber": 6,
     "startPosition": 1714368,
     "startPositionInSeconds": 77.749,
@@ -442,7 +444,7 @@
     "milliseconds": 749
   },
   {
-    "suggestedAudioClipName": "079_014",
+    "audioFileName": "079_014",
     "groupNumber": 6,
     "startPosition": 1742259,
     "startPositionInSeconds": 79.014,
@@ -455,7 +457,7 @@
     "milliseconds": 14
   },
   {
-    "suggestedAudioClipName": "081_831",
+    "audioFileName": "081_831",
     "groupNumber": 7,
     "startPosition": 1804366,
     "startPositionInSeconds": 81.831,
@@ -468,7 +470,7 @@
     "milliseconds": 831
   },
   {
-    "suggestedAudioClipName": "083_771",
+    "audioFileName": "083_771",
     "groupNumber": 7,
     "startPosition": 1847148,
     "startPositionInSeconds": 83.771,
@@ -481,7 +483,7 @@
     "milliseconds": 771
   },
   {
-    "suggestedAudioClipName": "087_042",
+    "audioFileName": "087_042",
     "groupNumber": 7,
     "startPosition": 1919267,
     "startPositionInSeconds": 87.042,
@@ -494,7 +496,7 @@
     "milliseconds": 42
   },
   {
-    "suggestedAudioClipName": "089_909",
+    "audioFileName": "089_909",
     "groupNumber": 7,
     "startPosition": 1982501,
     "startPositionInSeconds": 89.909,
@@ -507,7 +509,7 @@
     "milliseconds": 909
   },
   {
-    "suggestedAudioClipName": "090_788",
+    "audioFileName": "090_788",
     "groupNumber": 7,
     "startPosition": 2001877,
     "startPositionInSeconds": 90.788,
@@ -520,7 +522,7 @@
     "milliseconds": 788
   },
   {
-    "suggestedAudioClipName": "092_04",
+    "audioFileName": "092_04",
     "groupNumber": 7,
     "startPosition": 2029476,
     "startPositionInSeconds": 92.04,
@@ -533,7 +535,7 @@
     "milliseconds": 4
   },
   {
-    "suggestedAudioClipName": "094_425",
+    "audioFileName": "094_425",
     "groupNumber": 7,
     "startPosition": 2082076,
     "startPositionInSeconds": 94.425,
@@ -546,7 +548,7 @@
     "milliseconds": 425
   },
   {
-    "suggestedAudioClipName": "096_496",
+    "audioFileName": "096_496",
     "groupNumber": 8,
     "startPosition": 2127741,
     "startPositionInSeconds": 96.496,
@@ -559,7 +561,7 @@
     "milliseconds": 496
   },
   {
-    "suggestedAudioClipName": "099_2",
+    "audioFileName": "099_2",
     "groupNumber": 8,
     "startPosition": 2187353,
     "startPositionInSeconds": 99.2,
@@ -572,7 +574,7 @@
     "milliseconds": 2
   },
   {
-    "suggestedAudioClipName": "101_364",
+    "audioFileName": "101_364",
     "groupNumber": 8,
     "startPosition": 2235082,
     "startPositionInSeconds": 101.364,
@@ -585,7 +587,7 @@
     "milliseconds": 364
   },
   {
-    "suggestedAudioClipName": "102_479",
+    "audioFileName": "102_479",
     "groupNumber": 8,
     "startPosition": 2259657,
     "startPositionInSeconds": 102.479,
@@ -598,7 +600,7 @@
     "milliseconds": 479
   },
   {
-    "suggestedAudioClipName": "105_361",
+    "audioFileName": "105_361",
     "groupNumber": 8,
     "startPosition": 2323206,
     "startPositionInSeconds": 105.361,

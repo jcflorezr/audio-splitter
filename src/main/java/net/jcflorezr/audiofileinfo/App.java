@@ -1,9 +1,9 @@
 package net.jcflorezr.audiofileinfo;
 
-//import net.jcflorezr.model.AudioFileLocation;
+//import net.jcflorezr.model.AudioFileBasicInfo;
 
 import net.jcflorezr.endpoint.FlacAudioSplitterByGroup;
-import net.jcflorezr.model.request.AudioFileLocation;
+import net.jcflorezr.model.request.AudioFileBasicInfo;
 
 public class App {
 
@@ -17,17 +17,17 @@ public class App {
         //String audioFileName = "/Users/juancamiloroman/Desktop/3818-2_00.wav";
 //        String audioFileName = "/Users/juancamiloroman/jcflorezr-net/audio-splitter/src/main/test/resources/test-audio-mono-44100.mp3";
         String outputAudioClipsDirectory = "/Users/juancamiloroman/Downloads/voice/2017031307/20170401_103357/";
-        AudioFileLocation audioFileLocation = new AudioFileLocation(audioFileName, outputAudioClipsDirectory, null);
+        AudioFileBasicInfo audioFileBasicInfo = new AudioFileBasicInfo(audioFileName, outputAudioClipsDirectory);
 
-        System.out.println(new FlacAudioSplitterByGroup().generateAudioMonoClips(audioFileLocation));
-//        System.out.println(new FlacAudioSplitterByGroup().generateAudioClips(audioFileLocation));
-//        System.out.println(new WavAudioSplitterByGroup().generateAudioMonoClips(audioFileLocation));
-//        System.out.println(new WavAudioSplitterByGroup().generateAudioClips(audioFileLocation));
+        System.out.println(new FlacAudioSplitterByGroup().generateAudioMonoClips(audioFileBasicInfo));
+//        System.out.println(new FlacAudioSplitterByGroup().generateAudioClips(audioFileBasicInfo));
+//        System.out.println(new WavAudioSplitterByGroup().generateAudioMonoClips(audioFileBasicInfo));
+//        System.out.println(new WavAudioSplitterByGroup().generateAudioClips(audioFileBasicInfo));
 
-//        System.out.println(new WavAudioSplitterBySingleFiles().generateAudioClips(audioFileLocation));
-//        System.out.println(new WavAudioSplitterBySingleFiles().generateAudioMonoClips(audioFileLocation));
-//        System.out.println(new FlacAudioSplitterBySingleFiles().generateAudioClips(audioFileLocation));
-//        System.out.println(new FlacAudioSplitterBySingleFiles().generateAudioMonoClips(audioFileLocation));
+//        System.out.println(new WavAudioSplitterBySingleFiles().generateAudioClips(audioFileBasicInfo));
+//        System.out.println(new WavAudioSplitterBySingleFiles().generateAudioMonoClips(audioFileBasicInfo));
+//        System.out.println(new FlacAudioSplitterBySingleFiles().generateAudioClips(audioFileBasicInfo));
+//        System.out.println(new FlacAudioSplitterBySingleFiles().generateAudioMonoClips(audioFileBasicInfo));
     }
 
 }

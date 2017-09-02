@@ -4,8 +4,10 @@ import org.springframework.cassandra.core.PrimaryKeyType;
 import org.springframework.data.cassandra.mapping.PrimaryKeyClass;
 import org.springframework.data.cassandra.mapping.PrimaryKeyColumn;
 
+import java.io.Serializable;
+
 @PrimaryKeyClass
-public class AudioFileNamePrimaryKey {
+public class AudioFileNamePrimaryKey implements Serializable {
 
     @PrimaryKeyColumn(name = "audio_file_name", ordinal = 0, type = PrimaryKeyType.PARTITIONED)
     private String audioFileName;

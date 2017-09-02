@@ -2,7 +2,7 @@ package net.jcflorezr.audiofileinfo.signal;
 
 import biz.source_code.dsp.model.AudioSignal;
 import net.jcflorezr.api.audiofileinfo.signal.SoundZonesDetector;
-import net.jcflorezr.model.audioclips.AudioClipInfo;
+import net.jcflorezr.model.audioclips.AudioFileClip;
 import net.jcflorezr.model.audiocontent.signal.RmsSignalInfo;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -30,7 +30,7 @@ public class SoundZonesDetectorImpl implements SoundZonesDetector {
     private RmsCalculator rmsCalculator = new RmsCalculator();
 
     @Override
-    public List<AudioClipInfo> retrieveAudioClipsInfo(String audioFileName, AudioSignal audioSignal) {
+    public List<AudioFileClip> retrieveAudioClipsInfo(String audioFileName, AudioSignal audioSignal) {
         int samplingRate = audioSignal.getSamplingRate();
         int segmentSize = samplingRate / 10;
         List<RmsSignalInfo> rmsInfoList = rmsCalculator.retrieveRmsInfo(audioSignal.getData(), segmentSize, samplingRate);
@@ -39,8 +39,8 @@ public class SoundZonesDetectorImpl implements SoundZonesDetector {
         return retrieveSoundZonesBySilenceSegments(rmsInfoList, segmentSize, samplingRate);
     }
 
-    private List<AudioClipInfo> retrieveSoundZonesBySilenceSegments(List<RmsSignalInfo> rmsInfoList, int segmentSize, int samplingRate) {
-        List<AudioClipInfo> audioClips = new ArrayList<>();
+    private List<AudioFileClip> retrieveSoundZonesBySilenceSegments(List<RmsSignalInfo> rmsInfoList, int segmentSize, int samplingRate) {
+        List<AudioFileClip> audioClips = new ArrayList<>();
         int silenceCounter = 0;
         int activeCounter = 0;
         int startActiveZonePosition = 0;
@@ -78,8 +78,8 @@ public class SoundZonesDetectorImpl implements SoundZonesDetector {
         return audioClips;
     }
 
-    private List<AudioClipInfo> retrieveSoundZonesByActiveSegments(List<RmsSignalInfo> rmsInfoList, int segmentSize, int samplingRate) {
-        List<AudioClipInfo> audioClips = new ArrayList<>();
+    private List<AudioFileClip> retrieveSoundZonesByActiveSegments(List<RmsSignalInfo> rmsInfoList, int segmentSize, int samplingRate) {
+        List<AudioFileClip> audioClips = new ArrayList<>();
         int activeCounter = 0;
         int inactiveCounter = 0;
         int startActiveZonePosition = 0;
@@ -107,7 +107,7 @@ public class SoundZonesDetectorImpl implements SoundZonesDetector {
         return audioClips;
     }
 
-    private AudioClipInfo generateSoundZoneInfo(int startPosition, int endPosition, int samplingRate) {
+    private AudioFileClip generateSoundZoneInfo(int startPosition, int endPosition, int samplingRate) {
         float startPositionInSeconds = formatAudioTimeWithMilliseconds((float) startPosition / samplingRate);
         float endPositionInSeconds = formatAudioTimeWithMilliseconds((float) endPosition / samplingRate);
         int startPositionInSecondsInt = (int) startPositionInSeconds;
@@ -122,7 +122,8 @@ public class SoundZonesDetectorImpl implements SoundZonesDetector {
         int seconds = startPositionInSecondsInt % 60;
         int milliseconds = Integer.parseInt(substringAfter(suggestedAudioClipName, "_"));
 
-        AudioClipInfo singleAudioFileSoundZone = new AudioClipInfo.SingleAudioSoundZoneInfoBuilder()
+        AudioFileClip singleAudioFileSoundZone = new AudioFileClip.SingleAudioSoundZoneInfoBuilder()
+                .audioFileName(audioFileName)
                 .groupNumber(groupNumber)
                 .startPosition(startPosition)
                 .startPositionInSeconds(startPositionInSeconds)

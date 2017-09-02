@@ -1,10 +1,10 @@
 package net.jcflorezr.api.audiofileinfo;
 
-import net.jcflorezr.model.audiocontent.AudioFileInfo;
-import net.jcflorezr.model.request.AudioFileLocation;
+import net.jcflorezr.model.audiocontent.AudioFileCompleteInfo;
+import net.jcflorezr.model.request.AudioFileBasicInfo;
 
 public interface AudioFileInfoService {
 
-    AudioFileInfo generateAudioFileInfo(AudioFileLocation audioFileLocation, boolean grouped) throws Exception;
+    AudioFileCompleteInfo generateAudioFileInfo(AudioFileBasicInfo audioFileBasicInfo, boolean grouped) throws Exception;
 
 }

@@ -2,10 +2,10 @@ package net.jcflorezr.audioclips;
 
 import biz.source_code.dsp.model.AudioSignal;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import net.jcflorezr.model.audioclips.AudioClipInfo;
+import net.jcflorezr.model.audioclips.AudioFileClip;
 import net.jcflorezr.model.audioclips.OutputAudioClipsConfig;
 import net.jcflorezr.model.audiocontent.AudioContent;
-import net.jcflorezr.model.audiocontent.AudioMetadata;
+import net.jcflorezr.model.audiocontent.AudioFileMetadata;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,11 +39,11 @@ public class SingleAudioClipSignalGeneratorTest {
 
     @Test
     public void generateSingleAudioMonoSignal() throws Exception {
-        AudioClipInfo singleAudioClipInfo = MAPPER.readValue(thisClass.getResourceAsStream(AUDIO_CLIP_INFO), AudioClipInfo.class);
+        AudioFileClip singleAudioFileClip = MAPPER.readValue(thisClass.getResourceAsStream(AUDIO_CLIP_INFO), AudioFileClip.class);
         boolean asMono = true;
         OutputAudioClipsConfig outputAudioClipsConfig = createDummyOutputAudioClipsConfig(asMono);
 
-        AudioSignal actualAudioClipSignal = singleAudioClipSignalGenerator.generateAudioClip(singleAudioClipInfo, outputAudioClipsConfig);
+        AudioSignal actualAudioClipSignal = singleAudioClipSignalGenerator.generateAudioClip(singleAudioFileClip, outputAudioClipsConfig);
         AudioSignal expectedAudioClipSignal = MAPPER.readValue(thisClass.getResourceAsStream(SINGLE_MONO_SIGNAL), AudioSignal.class);
 
         assertThat(actualAudioClipSignal, is(expectedAudioClipSignal));
@@ -51,11 +51,11 @@ public class SingleAudioClipSignalGeneratorTest {
 
     @Test
     public void generateSingleAudioStereoSignal() throws Exception {
-        AudioClipInfo singleAudioClipInfo = MAPPER.readValue(thisClass.getResourceAsStream(AUDIO_CLIP_INFO), AudioClipInfo.class);
+        AudioFileClip singleAudioFileClip = MAPPER.readValue(thisClass.getResourceAsStream(AUDIO_CLIP_INFO), AudioFileClip.class);
         boolean asMono = false;
         OutputAudioClipsConfig outputAudioClipsConfig = createDummyOutputAudioClipsConfig(asMono);
 
-        AudioSignal actualAudioClipSignal = singleAudioClipSignalGenerator.generateAudioClip(singleAudioClipInfo, outputAudioClipsConfig);
+        AudioSignal actualAudioClipSignal = singleAudioClipSignalGenerator.generateAudioClip(singleAudioFileClip, outputAudioClipsConfig);
         AudioSignal expectedAudioClipSignal = MAPPER.readValue(thisClass.getResourceAsStream(SINGLE_STEREO_SIGNAL), AudioSignal.class);
 
         assertThat(actualAudioClipSignal, is(expectedAudioClipSignal));
@@ -67,8 +67,8 @@ public class SingleAudioClipSignalGeneratorTest {
         int samplingRate = DEFAULT_SAMPLING_RATE;
         float[][] audioSignalData = MAPPER.readValue(thisClass.getResourceAsStream(AUDIO_SIGNAL), float[][].class);
         AudioSignal dummyAudioSignal = new AudioSignal(samplingRate, audioSignalData);
-        AudioMetadata dummyAudioMetadata = new AudioMetadata();
-        AudioContent dummyAudioContent = new AudioContent(dummyAudioSignal, dummyAudioMetadata);
+        AudioFileMetadata dummyAudioFileMetadata = new AudioFileMetadata();
+        AudioContent dummyAudioContent = new AudioContent(dummyAudioSignal, dummyAudioFileMetadata);
 
         String audioFormatExtension = "any-file-extension";
 

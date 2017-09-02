@@ -4,9 +4,9 @@ import biz.source_code.dsp.model.AudioSignal;
 import biz.source_code.dsp.sound.AudioIo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.jcflorezr.model.audiocontent.AudioContent;
-import net.jcflorezr.model.audiocontent.AudioFileInfo;
-import net.jcflorezr.model.audiocontent.AudioMetadata;
-import net.jcflorezr.model.request.AudioFileLocation;
+import net.jcflorezr.model.audiocontent.AudioFileCompleteInfo;
+import net.jcflorezr.model.audiocontent.AudioFileMetadata;
+import net.jcflorezr.model.request.AudioFileBasicInfo;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,7 +14,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.io.File;
+
+import static junit.framework.TestCase.assertTrue;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
@@ -24,7 +29,7 @@ public class AudioContentServiceTest {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
     private static final String EMPTY_AUDIO_METADATA_JSON_FILE = "/audiofileinfo/empty-audio-metadata.json";
-    private static final String MP3_AUDIO_METADATA_JSON_FILE = "/audiofileinfo/mp3AudioMetadata.json";
+    private static final String MP3_AUDIO_METADATA_JSON_FILE = "/audiofileinfo/mp3-audio-metadata.json";
 
     private String testResourcesPath;
     private Class<? extends AudioContentServiceTest> thisClass;
@@ -44,47 +49,60 @@ public class AudioContentServiceTest {
     public void retrieveAudioContent() throws Exception {
         String audioFileName = testResourcesPath + "test-audio-mono-22050.mp3";
         String convertedAudioFileName = "/any-path-to-file/any-file.mp3";
-        AudioFileInfo dummyAudioFileInfo = createDummyAudioFileInfo(audioFileName, convertedAudioFileName);
+        AudioFileCompleteInfo dummyAudioFileCompleteInfo = createDummyAudioFileInfo(new File(audioFileName).getPath(), convertedAudioFileName);
         AudioSignal dummyAudioSignal = createDummyAudioSignal(22050, new float[][]{});
 
         when(audioIo.retrieveAudioSignalFromWavFile(anyString())).thenReturn(dummyAudioSignal);
 
-        AudioContent actualAudioContent = audioContentService.retrieveAudioContent(dummyAudioFileInfo);
+        AudioContent actualAudioContent = audioContentService.retrieveAudioContent(dummyAudioFileCompleteInfo);
 
         float[][] emptyAudioSignalData = new float[][]{};
         float[][] actualAudioSignalData = actualAudioContent.getOriginalAudioData();
-        assertThat(actualAudioSignalData, is(emptyAudioSignalData));
+        assertThat(actualAudioSignalData, equalTo(emptyAudioSignalData));
 
-        AudioMetadata mp3AudioMetadata = MAPPER.readValue(thisClass.getResourceAsStream(MP3_AUDIO_METADATA_JSON_FILE), AudioMetadata.class);
-        AudioMetadata actualAudioMetadata = actualAudioContent.getAudioMetadata();
-        assertThat(actualAudioMetadata, is(mp3AudioMetadata));
+        AudioFileMetadata mp3AudioFileMetadata = MAPPER.readValue(thisClass.getResourceAsStream(MP3_AUDIO_METADATA_JSON_FILE), AudioFileMetadata.class);
+        AudioFileMetadata actualAudioFileMetadata = actualAudioContent.getAudioFileMetadata();
+
+        assertThat(actualAudioFileMetadata.getTitle(), equalTo(mp3AudioFileMetadata.getTitle()));
+        assertThat(actualAudioFileMetadata.getArtist(), equalTo(mp3AudioFileMetadata.getArtist()));
+        assertThat(actualAudioFileMetadata.getAlbum(), equalTo(mp3AudioFileMetadata.getAlbum()));
+        assertThat(actualAudioFileMetadata.getTrackNumber(), equalTo(mp3AudioFileMetadata.getTrackNumber()));
+        assertThat(actualAudioFileMetadata.getGenre(), equalTo(mp3AudioFileMetadata.getGenre()));
+        assertThat(actualAudioFileMetadata.getComments(), equalTo(mp3AudioFileMetadata.getComments()));
+        assertThat(actualAudioFileMetadata.getRawMetadata(), equalTo(mp3AudioFileMetadata.getRawMetadata()));
     }
 
     @Test
     public void audioMetadataIsNotRetrievedForWavFiles() throws Exception {
         String audioFileName = testResourcesPath + "test-audio-mono-22050.wav";
         String convertedAudioFileName = "/any-path-to-file/any-file.wav";
-        AudioFileInfo dummyAudioFileInfo = createDummyAudioFileInfo(audioFileName, convertedAudioFileName);
+        AudioFileCompleteInfo dummyAudioFileCompleteInfo = createDummyAudioFileInfo(audioFileName, convertedAudioFileName);
         AudioSignal dummyAudioSignal = createDummyAudioSignal(22050, new float[][]{});
 
         when(audioIo.retrieveAudioSignalFromWavFile(anyString())).thenReturn(dummyAudioSignal);
 
-        AudioContent actualAudioContent = audioContentService.retrieveAudioContent(dummyAudioFileInfo);
+        AudioContent actualAudioContent = audioContentService.retrieveAudioContent(dummyAudioFileCompleteInfo);
 
         float[][] emptyAudioSignalData = new float[][]{};
         float[][] actualAudioSignalData = actualAudioContent.getOriginalAudioData();
         assertThat(actualAudioSignalData, is(emptyAudioSignalData));
 
-        AudioMetadata emptyAudioMetadata = MAPPER.readValue(thisClass.getResourceAsStream(EMPTY_AUDIO_METADATA_JSON_FILE), AudioMetadata.class);
-        AudioMetadata actualAudioMetadata = actualAudioContent.getAudioMetadata();
-        assertThat(actualAudioMetadata, is(emptyAudioMetadata));
+        AudioFileMetadata actualAudioFileMetadata = actualAudioContent.getAudioFileMetadata();
+
+        assertNull(actualAudioFileMetadata.getTitle());
+        assertNull(actualAudioFileMetadata.getArtist());
+        assertNull(actualAudioFileMetadata.getAlbum());
+        assertNull(actualAudioFileMetadata.getTrackNumber());
+        assertNull(actualAudioFileMetadata.getGenre());
+        assertNull(actualAudioFileMetadata.getComments());
+        assertTrue(actualAudioFileMetadata.getRawMetadata().isEmpty());
     }
 
-    private AudioFileInfo createDummyAudioFileInfo(String audioFileName, String convertedAudioFileName) {
-        AudioFileLocation audioFileLocation = new AudioFileLocation(audioFileName, null, null);
-        audioFileLocation.setConvertedAudioFileName(convertedAudioFileName);
-        AudioFileInfo audioFileInfo = new AudioFileInfo(audioFileLocation);
-        return audioFileInfo;
+    private AudioFileCompleteInfo createDummyAudioFileInfo(String audioFileName, String convertedAudioFileName) {
+        AudioFileBasicInfo audioFileBasicInfo = new AudioFileBasicInfo(audioFileName, null);
+        audioFileBasicInfo.setConvertedAudioFileName(convertedAudioFileName);
+        AudioFileCompleteInfo audioFileCompleteInfo = new AudioFileCompleteInfo(audioFileBasicInfo);
+        return audioFileCompleteInfo;
     }
 
     private AudioSignal createDummyAudioSignal(int samplingRate, float[][] signalData) {

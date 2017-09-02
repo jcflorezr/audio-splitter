@@ -7,7 +7,7 @@ import org.springframework.data.cassandra.mapping.PrimaryKey;
 import org.springframework.data.cassandra.mapping.Table;
 
 @Table(value = "audio_file_info")
-public class AudioFileLocation {
+public class AudioFileBasicInfo {
 
     @PrimaryKey(value = "audio_file_name")
     private String audioFileName;
@@ -15,13 +15,12 @@ public class AudioFileLocation {
     private String outputAudioClipsDirectoryPath;
     private String convertedAudioFileName;
 
-    public AudioFileLocation() {
+    public AudioFileBasicInfo() {
     }
 
-    public AudioFileLocation(String audioFileName, String outputAudioClipsDirectoryPath, String convertedAudioFileName) {
+    public AudioFileBasicInfo(String audioFileName, String outputAudioClipsDirectoryPath) {
         this.audioFileName = audioFileName;
         this.outputAudioClipsDirectoryPath = outputAudioClipsDirectoryPath;
-        this.convertedAudioFileName = convertedAudioFileName;
     }
 
     public String getAudioFileName() {
@@ -61,7 +60,7 @@ public class AudioFileLocation {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        AudioFileLocation that = (AudioFileLocation) o;
+        AudioFileBasicInfo that = (AudioFileBasicInfo) o;
 
         if (audioFileName != null ? !audioFileName.equals(that.audioFileName) : that.audioFileName != null)
             return false;
@@ -77,7 +76,7 @@ public class AudioFileLocation {
 
     @Override
     public String toString() {
-        return "AudioFileLocation{" +
+        return "AudioFileBasicInfo{" +
                 "audioFileName='" + audioFileName + '\'' +
                 ", outputAudioClipsDirectoryPath='" + outputAudioClipsDirectoryPath + '\'' +
                 ", convertedAudioFileName='" + convertedAudioFileName + '\'' +

@@ -5,12 +5,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class AudioContent {
 
-    private AudioMetadata audioMetadata;
+    private AudioFileMetadata audioFileMetadata;
     private AudioSignal originalAudioSignal;
 
-    public AudioContent(AudioSignal originalAudioSignal, AudioMetadata audioMetadata) {
+    public AudioContent(AudioSignal originalAudioSignal, AudioFileMetadata audioFileMetadata) {
         this.originalAudioSignal = originalAudioSignal;
-        this.audioMetadata = audioMetadata;
+        this.audioFileMetadata = audioFileMetadata;
     }
 
     @JsonIgnore
@@ -38,7 +38,7 @@ public class AudioContent {
         return originalAudioSignal.getLength() / originalAudioSignal.getSamplingRate();
     }
 
-    public AudioMetadata getAudioMetadata() {
-        return audioMetadata;
+    public AudioFileMetadata getAudioFileMetadata() {
+        return audioFileMetadata;
     }
 }

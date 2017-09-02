@@ -3,8 +3,8 @@ package net.jcflorezr.audiofileinfo;
 import biz.source_code.dsp.model.AudioSignal;
 import biz.source_code.dsp.sound.AudioIo;
 import net.jcflorezr.model.audiocontent.AudioContent;
-import net.jcflorezr.model.audiocontent.AudioFileInfo;
-import net.jcflorezr.model.audiocontent.AudioMetadata;
+import net.jcflorezr.model.audiocontent.AudioFileCompleteInfo;
+import net.jcflorezr.model.audiocontent.AudioFileMetadata;
 import net.jcflorezr.model.persistence.AudioFileNamePrimaryKey;
 import net.jcflorezr.util.JsonUtils;
 import org.apache.tika.exception.TikaException;
@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.xml.sax.SAXException;
 
 import javax.sound.sampled.UnsupportedAudioFileException;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -34,36 +35,36 @@ class AudioContentService {
 
     private AudioIo audioIo = new AudioIo();
 
-    AudioContent retrieveAudioContent(AudioFileInfo audioFileInfo) throws IOException, UnsupportedAudioFileException, TikaException, SAXException {
-        AudioSignal originalAudioSignal = retrieveOriginalAudioSignal(audioFileInfo);
-        AudioMetadata audioMetadata = extractAudioMetadata(audioFileInfo.getAudioFileLocation().getAudioFileName());
-        return new AudioContent(originalAudioSignal, audioMetadata);
+    AudioContent retrieveAudioContent(AudioFileCompleteInfo audioFileCompleteInfo) throws IOException, UnsupportedAudioFileException, TikaException, SAXException {
+        AudioSignal originalAudioSignal = retrieveOriginalAudioSignal(audioFileCompleteInfo);
+        AudioFileMetadata audioFileMetadata = extractAudioMetadata(audioFileCompleteInfo.getAudioFileBasicInfo().getAudioFileName());
+        return new AudioContent(originalAudioSignal, audioFileMetadata);
     }
 
-    private AudioSignal retrieveOriginalAudioSignal(AudioFileInfo audioFileInfo) throws IOException, UnsupportedAudioFileException {
-        String convertedAudioFileName = audioFileInfo.getAudioFileLocation().getConvertedAudioFileName();
+    private AudioSignal retrieveOriginalAudioSignal(AudioFileCompleteInfo audioFileCompleteInfo) throws IOException, UnsupportedAudioFileException {
+        String convertedAudioFileName = audioFileCompleteInfo.getAudioFileBasicInfo().getConvertedAudioFileName();
         try {
             return audioIo.retrieveAudioSignalFromWavFile(convertedAudioFileName);
         } finally {
             boolean convertedAudioFileExists = Files.exists(Paths.get(convertedAudioFileName));
-            if (audioFileInfo.getAudioFileLocation().audioFileWasConverted() && convertedAudioFileExists) {
+            if (audioFileCompleteInfo.getAudioFileBasicInfo().audioFileWasConverted() && convertedAudioFileExists) {
                 Path fileConvertedPath = Paths.get(convertedAudioFileName);
                 Files.deleteIfExists(fileConvertedPath);
             }
         }
     }
 
-    private AudioMetadata extractAudioMetadata(String audioFileName) throws TikaException, SAXException, IOException {
-        try (InputStream inputstream = Files.newInputStream(Paths.get(audioFileName))) {
+    private AudioFileMetadata extractAudioMetadata(String audioFileName) throws TikaException, SAXException, IOException {
+        try (InputStream inputstream = new FileInputStream(audioFileName)) {
             Metadata metadata = new Metadata();
             BodyContentHandler bodyContentHandler = new BodyContentHandler();
             new AutoDetectParser().parse(inputstream, bodyContentHandler, metadata, new ParseContext());
             Map<String, Object> metadataMap = Stream.of(metadata.names()).collect(toMap(name -> name, name -> metadata.get(name)));
-            metadataMap.put("audioFileName", new AudioFileNamePrimaryKey(audioFileName));
-            AudioMetadata audioMetadata = JsonUtils.convertMapToPojo(metadataMap, AudioMetadata.class);
+            metadataMap.put("audioFileNamePrimaryKey", new AudioFileNamePrimaryKey(audioFileName));
+            AudioFileMetadata audioFileMetadata = JsonUtils.convertMapToPojo(metadataMap, AudioFileMetadata.class);
             List<String> rawMetadata = Arrays.asList(split(bodyContentHandler.toString(), "\n"));
-            audioMetadata.setRawMetadata(rawMetadata);
-            return audioMetadata;
+            audioFileMetadata.setRawMetadata(rawMetadata);
+            return audioFileMetadata;
         }
     }
 

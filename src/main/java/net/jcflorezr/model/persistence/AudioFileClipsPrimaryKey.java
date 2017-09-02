@@ -1,18 +1,19 @@
 package net.jcflorezr.model.persistence;
 
 import org.springframework.cassandra.core.PrimaryKeyType;
-import org.springframework.data.cassandra.mapping.PrimaryKey;
 import org.springframework.data.cassandra.mapping.PrimaryKeyClass;
 import org.springframework.data.cassandra.mapping.PrimaryKeyColumn;
 
-@PrimaryKeyClass
-public class AudioClipsPrimaryKey {
+import java.io.Serializable;
 
-    @PrimaryKey
-    private AudioFileNamePrimaryKey audioFileNamePrimaryKey;
+@PrimaryKeyClass
+public class AudioFileClipsPrimaryKey implements Serializable {
+
+    @PrimaryKeyColumn(name = "audio_file_name", ordinal = 0, type = PrimaryKeyType.PARTITIONED)
+    private String audioFileName;
     @PrimaryKeyColumn(name = "hours", ordinal = 1, type = PrimaryKeyType.CLUSTERED)
     private int hours;
-    @PrimaryKeyColumn(name = "minute", ordinal = 2, type = PrimaryKeyType.CLUSTERED)
+    @PrimaryKeyColumn(name = "minutes", ordinal = 2, type = PrimaryKeyType.CLUSTERED)
     private int minutes;
     @PrimaryKeyColumn(name = "seconds", ordinal = 3, type = PrimaryKeyType.CLUSTERED)
     private int seconds;
@@ -21,11 +22,11 @@ public class AudioClipsPrimaryKey {
     @PrimaryKeyColumn(name = "audio_clip_name", ordinal = 5, type = PrimaryKeyType.CLUSTERED)
     private String audioClipName;
 
-    public AudioClipsPrimaryKey() {
+    public AudioFileClipsPrimaryKey() {
     }
 
-    private AudioClipsPrimaryKey(AudioFileNamePrimaryKey audioFileNamePrimaryKey, int hours, int minutes, int seconds, int milliseconds, String audioClipName) {
-        this.audioFileNamePrimaryKey = audioFileNamePrimaryKey;
+    private AudioFileClipsPrimaryKey(String audioFileName, int hours, int minutes, int seconds, int milliseconds, String audioClipName) {
+        this.audioFileName = audioFileName;
         this.hours = hours;
         this.minutes = minutes;
         this.seconds = seconds;
@@ -33,8 +34,8 @@ public class AudioClipsPrimaryKey {
         this.audioClipName = audioClipName;
     }
 
-    public AudioFileNamePrimaryKey getAudioFileNamePrimaryKey() {
-        return audioFileNamePrimaryKey;
+    public String getAudioFileName() {
+        return audioFileName;
     }
 
     public int getHours() {
@@ -62,20 +63,20 @@ public class AudioClipsPrimaryKey {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        AudioClipsPrimaryKey that = (AudioClipsPrimaryKey) o;
+        AudioFileClipsPrimaryKey that = (AudioFileClipsPrimaryKey) o;
 
         if (hours != that.hours) return false;
         if (minutes != that.minutes) return false;
         if (seconds != that.seconds) return false;
         if (milliseconds != that.milliseconds) return false;
-        if (audioFileNamePrimaryKey != null ? !audioFileNamePrimaryKey.equals(that.audioFileNamePrimaryKey) : that.audioFileNamePrimaryKey != null)
+        if (audioFileName != null ? !audioFileName.equals(that.audioFileName) : that.audioFileName != null)
             return false;
         return audioClipName != null ? audioClipName.equals(that.audioClipName) : that.audioClipName == null;
     }
 
     @Override
     public int hashCode() {
-        int result = audioFileNamePrimaryKey != null ? audioFileNamePrimaryKey.hashCode() : 0;
+        int result = audioFileName != null ? audioFileName.hashCode() : 0;
         result = 31 * result + hours;
         result = 31 * result + minutes;
         result = 31 * result + seconds;
@@ -86,8 +87,8 @@ public class AudioClipsPrimaryKey {
 
     @Override
     public String toString() {
-        return "AudioClipsPrimaryKey{" +
-                "audioFileNamePrimaryKey=" + audioFileNamePrimaryKey +
+        return "AudioFileClipsPrimaryKey{" +
+                "audioFileName=" + audioFileName +
                 ", hours=" + hours +
                 ", minutes=" + minutes +
                 ", seconds=" + seconds +
@@ -98,7 +99,7 @@ public class AudioClipsPrimaryKey {
 
     public static class AudioClipsPrimaryKeyBuilder {
 
-        private AudioFileNamePrimaryKey audioFileNamePrimaryKey;
+        private String audioFileName;
         private int hours;
         private int minutes;
         private int seconds;
@@ -106,7 +107,7 @@ public class AudioClipsPrimaryKey {
         private String audioClipName;
 
         public AudioClipsPrimaryKeyBuilder audioFileName(String audioFileName) {
-            this.audioFileNamePrimaryKey = new AudioFileNamePrimaryKey(audioFileName);
+            this.audioFileName = audioFileName;
             return this;
         }
 
@@ -135,9 +136,9 @@ public class AudioClipsPrimaryKey {
             return this;
         }
 
-        public AudioClipsPrimaryKey build() {
-            return new AudioClipsPrimaryKey(
-                    audioFileNamePrimaryKey,
+        public AudioFileClipsPrimaryKey build() {
+            return new AudioFileClipsPrimaryKey(
+                    audioFileName,
                     hours,
                     minutes,
                     seconds,
