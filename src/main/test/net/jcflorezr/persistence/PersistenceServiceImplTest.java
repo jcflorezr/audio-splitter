@@ -51,7 +51,7 @@ public class PersistenceServiceImplTest {
     private static final ObjectMapper MAPPER = new ObjectMapper();
     private static final String AUDIO_CLIPS_WRITING_RESULT = "/api/endpoint/audio-clips-writing-result.json";
     private static final String AUDIO_CLIPS_INFO = "/audioclips/audio-clips-info-min.json";
-    private static final String MP3_AUDIO_METADATA_JSON_FILE = "/audiofileinfo/mp3-audio-metadata.json";
+    private static final String MP3_AUDIO_METADATA_JSON_FILE = "/audiocontent/mp3-audio-metadata.json";
 
     private Class<? extends PersistenceServiceImplTest> thisClass;
 

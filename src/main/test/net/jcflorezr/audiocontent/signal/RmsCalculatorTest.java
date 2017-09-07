@@ -19,12 +19,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class RmsCalculatorTest {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
-    private static final String BACKGROUND_NOISE_LOW_VOLUME_SIGNAL = "/audiofileinfo/signal/background-noise-low-volume-signal.json";
-    private static final String BACKGROUND_NOISE_LOW_VOLUME_RMS_INFO = "/audiofileinfo/signal/background-noise-low-volume-rms-info.json";
-    private static final String WITH_APPLAUSE_SIGNAL = "/audiofileinfo/signal/with-applause-signal.json";
-    private static final String WITH_APPLAUSE_RMS_INFO = "/audiofileinfo/signal/with-applause-rms-info.json";
-    private static final String STRONG_BACKGROUND_NOISE_SIGNAL = "/audiofileinfo/signal/strong-background-noise-signal.json";
-    private static final String STRONG_BACKGROUND_NOISE_RMS_INFO = "/audiofileinfo/signal/strong-background-noise-rms-info.json";
+    private static final String BACKGROUND_NOISE_LOW_VOLUME_SIGNAL = "/audiocontent/signal/background-noise-low-volume-signal.json";
+    private static final String BACKGROUND_NOISE_LOW_VOLUME_RMS_INFO = "/audiocontent/signal/background-noise-low-volume-rms-info.json";
+    private static final String WITH_APPLAUSE_SIGNAL = "/audiocontent/signal/with-applause-signal.json";
+    private static final String WITH_APPLAUSE_RMS_INFO = "/audiocontent/signal/with-applause-rms-info.json";
+    private static final String STRONG_BACKGROUND_NOISE_SIGNAL = "/audiocontent/signal/strong-background-noise-signal.json";
+    private static final String STRONG_BACKGROUND_NOISE_RMS_INFO = "/audiocontent/signal/strong-background-noise-rms-info.json";
 
     private Class<? extends RmsCalculatorTest> thisClass;
 
