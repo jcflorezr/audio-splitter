@@ -1,6 +1,7 @@
 package net.jcflorezr.audiocontent.signal;
 
 import net.jcflorezr.model.audiocontent.signal.RmsSignalInfo;
+import org.springframework.stereotype.Service;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import java.util.List;
  * <a href="http://en.wikipedia.org/wiki/Root_mean_square">RMS</a> value is computed.
  * For speech audio, a segment size of 100 ms might be reasonable.
  */
+@Service
 public class RmsCalculator {
 
     private static final double SILENCE_THRESHOLD = 0.001;

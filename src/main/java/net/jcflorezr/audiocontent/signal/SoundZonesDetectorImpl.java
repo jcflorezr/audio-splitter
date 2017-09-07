@@ -4,6 +4,7 @@ import biz.source_code.dsp.model.AudioSignal;
 import net.jcflorezr.api.audiocontent.signal.SoundZonesDetector;
 import net.jcflorezr.model.audioclips.AudioFileClipEntity;
 import net.jcflorezr.model.audiocontent.signal.RmsSignalInfo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +28,8 @@ public class SoundZonesDetectorImpl implements SoundZonesDetector {
     private String audioDurationDigitsFormat;
     private String audioFileName;
 
-    private RmsCalculator rmsCalculator = new RmsCalculator();
+    @Autowired
+    private RmsCalculator rmsCalculator;
 
     @Override
     public List<AudioFileClipEntity> retrieveAudioClipsInfo(String audioFileName, AudioSignal audioSignal) {
@@ -88,7 +90,8 @@ public class SoundZonesDetectorImpl implements SoundZonesDetector {
         while (rmsSignalIterator.hasNext()) {
             RmsSignalInfo rmsInfo = rmsSignalIterator.next();
             boolean isLastSegment = !rmsSignalIterator.hasNext();
-            if (rmsInfo.isPossibleActive() && !isLastSegment) {
+            boolean isNotLastSegment = !isLastSegment;
+            if (rmsInfo.isPossibleActive() && isNotLastSegment) {
                 if (++activeCounter == 3) {
                     startActiveZonePosition = rmsInfo.getPosition();
                     if (startActiveZonePosition > (segmentSize * 4)) {
