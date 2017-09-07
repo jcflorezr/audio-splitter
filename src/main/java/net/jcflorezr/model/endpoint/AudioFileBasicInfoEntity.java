@@ -1,4 +1,4 @@
-package net.jcflorezr.model.request;
+package net.jcflorezr.model.endpoint;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSetter;
@@ -7,7 +7,7 @@ import org.springframework.data.cassandra.mapping.PrimaryKey;
 import org.springframework.data.cassandra.mapping.Table;
 
 @Table(value = "audio_file_info")
-public class AudioFileBasicInfo {
+public class AudioFileBasicInfoEntity {
 
     @PrimaryKey(value = "audio_file_name")
     private String audioFileName;
@@ -15,10 +15,10 @@ public class AudioFileBasicInfo {
     private String outputAudioClipsDirectoryPath;
     private String convertedAudioFileName;
 
-    public AudioFileBasicInfo() {
+    public AudioFileBasicInfoEntity() {
     }
 
-    public AudioFileBasicInfo(String audioFileName, String outputAudioClipsDirectoryPath) {
+    public AudioFileBasicInfoEntity(String audioFileName, String outputAudioClipsDirectoryPath) {
         this.audioFileName = audioFileName;
         this.outputAudioClipsDirectoryPath = outputAudioClipsDirectoryPath;
     }
@@ -60,7 +60,7 @@ public class AudioFileBasicInfo {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        AudioFileBasicInfo that = (AudioFileBasicInfo) o;
+        AudioFileBasicInfoEntity that = (AudioFileBasicInfoEntity) o;
 
         if (audioFileName != null ? !audioFileName.equals(that.audioFileName) : that.audioFileName != null)
             return false;
@@ -76,7 +76,7 @@ public class AudioFileBasicInfo {
 
     @Override
     public String toString() {
-        return "AudioFileBasicInfo{" +
+        return "AudioFileBasicInfoEntity{" +
                 "audioFileName='" + audioFileName + '\'' +
                 ", outputAudioClipsDirectoryPath='" + outputAudioClipsDirectoryPath + '\'' +
                 ", convertedAudioFileName='" + convertedAudioFileName + '\'' +

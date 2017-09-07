@@ -1,4 +1,4 @@
-package net.jcflorezr.model.response;
+package net.jcflorezr.model.endpoint;
 
 public class SuccessResponse implements AudioSplitterResponse {
 

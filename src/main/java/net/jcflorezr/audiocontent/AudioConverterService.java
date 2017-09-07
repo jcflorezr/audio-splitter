@@ -1,4 +1,4 @@
-package net.jcflorezr.audiofileinfo;
+package net.jcflorezr.audiocontent;
 
 import biz.source_code.dsp.util.AudioFormatsSupported;
 import net.jcflorezr.util.AudioUtils;

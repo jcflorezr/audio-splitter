@@ -7,12 +7,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import net.jcflorezr.api.persistence.PersistenceService;
 import net.jcflorezr.config.CassandraConfig;
 import net.jcflorezr.config.RootConfig;
-import net.jcflorezr.model.audioclips.AudioFileClip;
-import net.jcflorezr.model.audioclips.AudioFileClipResult;
+import net.jcflorezr.model.audioclips.AudioFileClipEntity;
+import net.jcflorezr.model.audioclips.AudioFileClipResultEntity;
 import net.jcflorezr.model.audiocontent.AudioContent;
 import net.jcflorezr.model.audiocontent.AudioFileCompleteInfo;
-import net.jcflorezr.model.audiocontent.AudioFileMetadata;
-import net.jcflorezr.model.request.AudioFileBasicInfo;
+import net.jcflorezr.model.audiocontent.AudioFileMetadataEntity;
+import net.jcflorezr.model.endpoint.AudioFileBasicInfoEntity;
 import org.apache.cassandra.exceptions.ConfigurationException;
 import org.apache.thrift.transport.TTransportException;
 import org.cassandraunit.utils.EmbeddedCassandraServerHelper;
@@ -87,30 +87,30 @@ public class PersistenceServiceImplTest {
         String audioFileName = "/path/to-find/audio-file";
         String outputAudioClipsDirectoryPath = "/any-path/to-store/the-audio-clips";
 
-        AudioFileBasicInfo dummyAudioFileBasicInfo = createDummyAudioFileLocation(audioFileName, outputAudioClipsDirectoryPath);
-        List<AudioFileClip> dummyAudioFileClips = MAPPER.readValue(thisClass.getResourceAsStream(AUDIO_CLIPS_INFO), new TypeReference<List<AudioFileClip>>(){});
-        AudioFileMetadata dummyAudioFileMetadata = MAPPER.readValue(thisClass.getResourceAsStream(MP3_AUDIO_METADATA_JSON_FILE), AudioFileMetadata.class);
-        AudioContent dummyAudioContent = new AudioContent(null, dummyAudioFileMetadata);
+        AudioFileBasicInfoEntity dummyAudioFileBasicInfoEntity = createDummyAudioFileLocation(audioFileName, outputAudioClipsDirectoryPath);
+        List<AudioFileClipEntity> dummyAudioFileClipEntities = MAPPER.readValue(thisClass.getResourceAsStream(AUDIO_CLIPS_INFO), new TypeReference<List<AudioFileClipEntity>>(){});
+        AudioFileMetadataEntity dummyAudioFileMetadataEntity = MAPPER.readValue(thisClass.getResourceAsStream(MP3_AUDIO_METADATA_JSON_FILE), AudioFileMetadataEntity.class);
+        AudioContent dummyAudioContent = new AudioContent(null, dummyAudioFileMetadataEntity);
 
-        AudioFileCompleteInfo dummyAudioFileCompleteInfo = new AudioFileCompleteInfo(dummyAudioFileBasicInfo, dummyAudioFileClips, dummyAudioContent);
-        List<AudioFileClipResult> dummyAudioFileClipsResults = MAPPER.readValue(thisClass.getResourceAsStream(AUDIO_CLIPS_WRITING_RESULT), new TypeReference<List<AudioFileClipResult>>(){});
+        AudioFileCompleteInfo dummyAudioFileCompleteInfo = new AudioFileCompleteInfo(dummyAudioFileBasicInfoEntity, dummyAudioFileClipEntities, dummyAudioContent);
+        List<AudioFileClipResultEntity> dummyAudioFileClipsResults = MAPPER.readValue(thisClass.getResourceAsStream(AUDIO_CLIPS_WRITING_RESULT), new TypeReference<List<AudioFileClipResultEntity>>(){});
 
-        createTable(AUDIO_FILE_INFO_TABLE, AudioFileBasicInfo.class);
-        createTable(AUDIO_FILE_METADATA_TABLE, AudioFileMetadata.class);
-        createTable(AUDIO_CLIPS_TABLE, AudioFileClip.class);
-        createTable(AUDIO_CLIPS_RESULTS_TABLE, AudioFileClipResult.class);
+        createTable(AUDIO_FILE_INFO_TABLE, AudioFileBasicInfoEntity.class);
+        createTable(AUDIO_FILE_METADATA_TABLE, AudioFileMetadataEntity.class);
+        createTable(AUDIO_CLIPS_TABLE, AudioFileClipEntity.class);
+        createTable(AUDIO_CLIPS_RESULTS_TABLE, AudioFileClipResultEntity.class);
         persistenceService.storeResults(dummyAudioFileCompleteInfo, dummyAudioFileClipsResults);
 
-        AudioFileBasicInfo actualAudioFileBasicInfo = persistenceService.retrieveAudioFileBasicInfo(audioFileName);
-        assertThat(actualAudioFileBasicInfo, equalTo(dummyAudioFileBasicInfo));
+        AudioFileBasicInfoEntity actualAudioFileBasicInfoEntity = persistenceService.retrieveAudioFileBasicInfo(audioFileName);
+        assertThat(actualAudioFileBasicInfoEntity, equalTo(dummyAudioFileBasicInfoEntity));
 
-        AudioFileMetadata actualAudioFileMetadata = persistenceService.retrieveAudioMetadata(audioFileName);
-        assertThat(actualAudioFileMetadata, equalTo(dummyAudioFileMetadata));
+        AudioFileMetadataEntity actualAudioFileMetadataEntity = persistenceService.retrieveAudioMetadata(audioFileName);
+        assertThat(actualAudioFileMetadataEntity, equalTo(dummyAudioFileMetadataEntity));
 
-        List<AudioFileClip> actualAudioFileClips = persistenceService.retrieveAudioFileClips(audioFileName);
-        assertThat(actualAudioFileClips, equalTo(dummyAudioFileClips));
+        List<AudioFileClipEntity> actualAudioFileClipEntities = persistenceService.retrieveAudioFileClips(audioFileName);
+        assertThat(actualAudioFileClipEntities, equalTo(dummyAudioFileClipEntities));
 
-        List<AudioFileClipResult> actualAudioFileClipsResults = persistenceService.retrieveAudioFileClipsResults(audioFileName);
+        List<AudioFileClipResultEntity> actualAudioFileClipsResults = persistenceService.retrieveAudioFileClipsResults(audioFileName);
         assertThat(actualAudioFileClipsResults, equalTo(dummyAudioFileClipsResults));
 
         dropTable(AUDIO_FILE_INFO_TABLE);
@@ -125,8 +125,8 @@ public class PersistenceServiceImplTest {
         EmbeddedCassandraServerHelper.cleanEmbeddedCassandra();
     }
 
-    private AudioFileBasicInfo createDummyAudioFileLocation (String audioFileName, String outputAudioClipsDirectoryPath) {
-        return new AudioFileBasicInfo(audioFileName, outputAudioClipsDirectoryPath);
+    private AudioFileBasicInfoEntity createDummyAudioFileLocation (String audioFileName, String outputAudioClipsDirectoryPath) {
+        return new AudioFileBasicInfoEntity(audioFileName, outputAudioClipsDirectoryPath);
     }
 
 }

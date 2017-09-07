@@ -6,7 +6,7 @@ import org.springframework.data.cassandra.mapping.PrimaryKey;
 import org.springframework.data.cassandra.mapping.Table;
 
 @Table(value = "audio_clips")
-public class AudioFileClip {
+public class AudioFileClipEntity {
 
     @PrimaryKey
     private AudioFileClipsPrimaryKey audioFileClipsPrimaryKey;
@@ -23,10 +23,10 @@ public class AudioFileClip {
     @Column("duration_in_seconds")
     private float durationInSeconds;
 
-    public AudioFileClip() {
+    public AudioFileClipEntity() {
     }
 
-    private AudioFileClip(String audioFileName, int hours, int minutes, int seconds, int milliseconds, int groupNumber, int startPosition, float startPositionInSeconds, int endPosition, float endPositionInSeconds, float durationInSeconds, String audioClipName) {
+    private AudioFileClipEntity(String audioFileName, int hours, int minutes, int seconds, int milliseconds, int groupNumber, int startPosition, float startPositionInSeconds, int endPosition, float endPositionInSeconds, float durationInSeconds, String audioClipName) {
         audioFileClipsPrimaryKey = new AudioFileClipsPrimaryKey.AudioClipsPrimaryKeyBuilder()
                 .audioFileName(audioFileName)
                 .hours(hours)
@@ -96,7 +96,7 @@ public class AudioFileClip {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        AudioFileClip that = (AudioFileClip) o;
+        AudioFileClipEntity that = (AudioFileClipEntity) o;
 
         return audioFileClipsPrimaryKey != null ? audioFileClipsPrimaryKey.equals(that.audioFileClipsPrimaryKey) : that.audioFileClipsPrimaryKey == null;
     }
@@ -108,7 +108,7 @@ public class AudioFileClip {
 
     @Override
     public String toString() {
-        return "AudioFileClip{" +
+        return "AudioFileClipEntity{" +
                 "audioFileClipsPrimaryKey=" + audioFileClipsPrimaryKey +
                 ", groupNumber=" + groupNumber +
                 ", startPosition=" + startPosition +
@@ -194,8 +194,8 @@ public class AudioFileClip {
             return this;
         }
 
-        public AudioFileClip build() {
-            return new AudioFileClip(
+        public AudioFileClipEntity build() {
+            return new AudioFileClipEntity(
                     audioFileName,
                     hours,
                     minutes,

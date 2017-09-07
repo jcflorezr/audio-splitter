@@ -3,7 +3,7 @@ package net.jcflorezr.api.endpoint;
 import net.jcflorezr.exceptions.AudioSplitterCustomException;
 import net.jcflorezr.exceptions.BadRequestException;
 import net.jcflorezr.exceptions.InternalServerErrorException;
-import net.jcflorezr.model.response.ErrorResponse;
+import net.jcflorezr.model.endpoint.ErrorResponse;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

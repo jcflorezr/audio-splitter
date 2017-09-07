@@ -2,16 +2,16 @@ package net.jcflorezr.api.endpoint;
 
 import biz.source_code.dsp.util.AudioFormatsSupported;
 import net.jcflorezr.api.audioclips.AudioClipsGenerator;
-import net.jcflorezr.api.audiofileinfo.AudioFileInfoService;
+import net.jcflorezr.api.audiocontent.AudioFileInfoService;
 import net.jcflorezr.exceptions.AudioFileLocationException;
 import net.jcflorezr.exceptions.BadRequestException;
 import net.jcflorezr.exceptions.InternalServerErrorException;
-import net.jcflorezr.model.audioclips.AudioFileClipResult;
+import net.jcflorezr.model.audioclips.AudioFileClipResultEntity;
 import net.jcflorezr.model.audioclips.OutputAudioClipsConfig;
 import net.jcflorezr.model.audiocontent.AudioFileCompleteInfo;
-import net.jcflorezr.model.request.AudioFileBasicInfo;
-import net.jcflorezr.model.response.AudioSplitterResponse;
-import net.jcflorezr.model.response.SuccessResponse;
+import net.jcflorezr.model.endpoint.AudioFileBasicInfoEntity;
+import net.jcflorezr.model.endpoint.AudioSplitterResponse;
+import net.jcflorezr.model.endpoint.SuccessResponse;
 import net.jcflorezr.api.persistence.PersistenceService;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,27 +40,27 @@ public abstract class AudioSplitter {
     @Autowired
     private PersistenceService persistenceService;
 
-    protected abstract AudioSplitterResponse generateAudioClips(AudioFileBasicInfo audioFileBasicInfo);
+    protected abstract AudioSplitterResponse generateAudioClips(AudioFileBasicInfoEntity audioFileBasicInfoEntity);
 
-    protected abstract AudioSplitterResponse generateAudioMonoClips(AudioFileBasicInfo audioFileBasicInfo);
+    protected abstract AudioSplitterResponse generateAudioMonoClips(AudioFileBasicInfoEntity audioFileBasicInfoEntity);
 
-    public AudioSplitterResponse generateAudioClips(AudioFileBasicInfo audioFileBasicInfo, AudioFormatsSupported audioFormat, boolean asMono) {
-        return generateAudioClips(audioFileBasicInfo, audioFormat, asMono, false, false);
+    public AudioSplitterResponse generateAudioClips(AudioFileBasicInfoEntity audioFileBasicInfoEntity, AudioFormatsSupported audioFormat, boolean asMono) {
+        return generateAudioClips(audioFileBasicInfoEntity, audioFormat, asMono, false, false);
     }
 
-    public AudioSplitterResponse generateAudioClips(AudioFileBasicInfo audioFileBasicInfo, AudioFormatsSupported audioFormat, boolean asMono, boolean generateAudioClipsByGroup, boolean withSeparator) {
+    public AudioSplitterResponse generateAudioClips(AudioFileBasicInfoEntity audioFileBasicInfoEntity, AudioFormatsSupported audioFormat, boolean asMono, boolean generateAudioClipsByGroup, boolean withSeparator) {
         try {
-            validateAudioFileLocationInfo(audioFileBasicInfo);
-            AudioFileCompleteInfo audioFileCompleteInfo = audioFileInfoService.generateAudioFileInfo(audioFileBasicInfo, generateAudioClipsByGroup);
+            validateAudioFileLocationInfo(audioFileBasicInfoEntity);
+            AudioFileCompleteInfo audioFileCompleteInfo = audioFileInfoService.generateAudioFileInfo(audioFileBasicInfoEntity, generateAudioClipsByGroup);
             OutputAudioClipsConfig outputAudioClipsConfig = audioFileCompleteInfo.getOutputAudioClipsConfig(audioFormat, asMono, withSeparator);
-            List<AudioFileClipResult> audioFileClipResult = audioClipsGenerator.generateAudioClip(audioFileBasicInfo.getAudioFileName(), audioFileCompleteInfo, outputAudioClipsConfig, generateAudioClipsByGroup);
+            List<AudioFileClipResultEntity> audioFileClipResultEntity = audioClipsGenerator.generateAudioClip(audioFileBasicInfoEntity.getAudioFileName(), audioFileCompleteInfo, outputAudioClipsConfig, generateAudioClipsByGroup);
 
             // TODO this process should not be synchronous
             // perhaps we can make it asynchronous using reactive streams,
             // or apache kafka, or another tool...
-            persistenceService.storeResults(audioFileCompleteInfo, audioFileClipResult);
+            persistenceService.storeResults(audioFileCompleteInfo, audioFileClipResultEntity);
 
-            Map<Boolean, Long> soundZonesGenerationResult = audioFileClipResult.stream()
+            Map<Boolean, Long> soundZonesGenerationResult = audioFileClipResultEntity.stream()
                     .collect(Collectors.partitioningBy(clipInfo -> clipInfo.isSuccess(), Collectors.counting()));
             return new SuccessResponse(soundZonesGenerationResult.get(true), soundZonesGenerationResult.get(false));
         } catch (IOException e) {
@@ -72,20 +72,20 @@ public abstract class AudioSplitter {
         }
     }
 
-    private void validateAudioFileLocationInfo(AudioFileBasicInfo audioFileBasicInfo) {
-        if (audioFileBasicInfo == null) throw AudioFileLocationException.emptyAudioFileLocationObject();
-        if (isBlank(audioFileBasicInfo.getAudioFileName()) || isBlank(audioFileBasicInfo.getOutputAudioClipsDirectoryPath())) {
+    private void validateAudioFileLocationInfo(AudioFileBasicInfoEntity audioFileBasicInfoEntity) {
+        if (audioFileBasicInfoEntity == null) throw AudioFileLocationException.emptyAudioFileLocationObject();
+        if (isBlank(audioFileBasicInfoEntity.getAudioFileName()) || isBlank(audioFileBasicInfoEntity.getOutputAudioClipsDirectoryPath())) {
             throw AudioFileLocationException.mandatoryFieldsException();
         }
 
-        Path audioFileNamePath = Paths.get(new File(audioFileBasicInfo.getAudioFileName()).getPath());
-        Path outputAudioClipsPath = Paths.get(new File(audioFileBasicInfo.getOutputAudioClipsDirectoryPath()).getPath());
+        Path audioFileNamePath = Paths.get(new File(audioFileBasicInfoEntity.getAudioFileName()).getPath());
+        Path outputAudioClipsPath = Paths.get(new File(audioFileBasicInfoEntity.getOutputAudioClipsDirectoryPath()).getPath());
 
         if (!Files.exists(audioFileNamePath)) throw AudioFileLocationException.audioFileDoesNotExist(audioFileNamePath);
         if (Files.isDirectory(audioFileNamePath)) throw AudioFileLocationException.audioFileShouldNotBeDirectory(audioFileNamePath);
         if (!Files.exists(outputAudioClipsPath)) throw AudioFileLocationException.outputDirectoryDoesNotExist(outputAudioClipsPath);
 
-        Path audioFilePath = Paths.get(FilenameUtils.getFullPath(new File(audioFileBasicInfo.getAudioFileName()).getPath()));
+        Path audioFilePath = Paths.get(FilenameUtils.getFullPath(new File(audioFileBasicInfoEntity.getAudioFileName()).getPath()));
         if (audioFilePath.equals(outputAudioClipsPath)) throw AudioFileLocationException.sameAudioFileAndOutputDirectoryLocation();
     }
 

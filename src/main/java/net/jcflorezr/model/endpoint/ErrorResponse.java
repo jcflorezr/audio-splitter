@@ -1,4 +1,4 @@
-package net.jcflorezr.model.response;
+package net.jcflorezr.model.endpoint;
 
 import net.jcflorezr.exceptions.AudioSplitterCustomException;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;

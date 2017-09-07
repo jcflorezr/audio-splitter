@@ -26,8 +26,8 @@ public class AudioFileLocationException extends BadRequestException {
     }
 
     public static AudioFileLocationException emptyAudioFileLocationObject() {
-        String suggestion = "Example of body request: {\"audioFileName\": \"/any-audio-file.wav\", \"outputAudioClipsDirectoryPath\": \"/any-output-directory/\"}";
-        return new AudioFileLocationException("There is no body in the current request.", suggestion);
+        String suggestion = "Example of body endpoint: {\"audioFileName\": \"/any-audio-file.wav\", \"outputAudioClipsDirectoryPath\": \"/any-output-directory/\"}";
+        return new AudioFileLocationException("There is no body in the current endpoint.", suggestion);
     }
 
     public static AudioFileLocationException mandatoryFieldsException() {

@@ -1,9 +1,9 @@
-package net.jcflorezr.audiofileinfo.signal;
+package net.jcflorezr.audiocontent.signal;
 
 import biz.source_code.dsp.model.AudioSignal;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import net.jcflorezr.model.audioclips.AudioFileClip;
+import net.jcflorezr.model.audioclips.AudioFileClipEntity;
 import net.jcflorezr.model.audiocontent.signal.RmsSignalInfo;
 import org.junit.Before;
 import org.junit.Test;
@@ -73,8 +73,8 @@ public class SoundZonesDetectorImplTest {
 
         String audioFileName = "/path/to-find/audio-file";
         AudioSignal withApplauseSignal = MAPPER.readValue(thisClass.getResourceAsStream(audioSignalFileName), AudioSignal.class);
-        List<AudioFileClip> actualAudioClips = soundZonesDetector.retrieveAudioClipsInfo(audioFileName, withApplauseSignal);
-        List<AudioFileClip> expectedAudioClips = MAPPER.readValue(thisClass.getResourceAsStream(expectedAudioClipsFileName), new TypeReference<List<AudioFileClip>>() {});
+        List<AudioFileClipEntity> actualAudioClips = soundZonesDetector.retrieveAudioClipsInfo(audioFileName, withApplauseSignal);
+        List<AudioFileClipEntity> expectedAudioClips = MAPPER.readValue(thisClass.getResourceAsStream(expectedAudioClipsFileName), new TypeReference<List<AudioFileClipEntity>>() {});
 
         assertThat(actualAudioClips, equalTo(expectedAudioClips));
     }

@@ -1,22 +1,22 @@
 package net.jcflorezr.api.persistence;
 
-import net.jcflorezr.model.audioclips.AudioFileClip;
-import net.jcflorezr.model.audioclips.AudioFileClipResult;
+import net.jcflorezr.model.audioclips.AudioFileClipEntity;
+import net.jcflorezr.model.audioclips.AudioFileClipResultEntity;
 import net.jcflorezr.model.audiocontent.AudioFileCompleteInfo;
-import net.jcflorezr.model.audiocontent.AudioFileMetadata;
-import net.jcflorezr.model.request.AudioFileBasicInfo;
+import net.jcflorezr.model.audiocontent.AudioFileMetadataEntity;
+import net.jcflorezr.model.endpoint.AudioFileBasicInfoEntity;
 
 import java.util.List;
 
 public interface PersistenceService {
 
-    void storeResults(AudioFileCompleteInfo audioFileCompleteInfo, List<AudioFileClipResult> audioFileClipResult);
+    void storeResults(AudioFileCompleteInfo audioFileCompleteInfo, List<AudioFileClipResultEntity> audioFileClipResultEntity);
 
-    AudioFileBasicInfo retrieveAudioFileBasicInfo(String audioFileName);
+    AudioFileBasicInfoEntity retrieveAudioFileBasicInfo(String audioFileName);
 
-    AudioFileMetadata retrieveAudioMetadata(String audioFileName);
+    AudioFileMetadataEntity retrieveAudioMetadata(String audioFileName);
 
-    List<AudioFileClip> retrieveAudioFileClips(String audioFileName);
+    List<AudioFileClipEntity> retrieveAudioFileClips(String audioFileName);
 
-    List<AudioFileClipResult> retrieveAudioFileClipsResults(String audioFileName);
+    List<AudioFileClipResultEntity> retrieveAudioFileClipsResults(String audioFileName);
 }

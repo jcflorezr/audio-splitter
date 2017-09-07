@@ -1,7 +1,7 @@
 package net.jcflorezr.audioclips;
 
 import biz.source_code.dsp.model.AudioSignal;
-import net.jcflorezr.model.audioclips.AudioFileClip;
+import net.jcflorezr.model.audioclips.AudioFileClipEntity;
 import net.jcflorezr.model.audioclips.OutputAudioClipsConfig;
 import net.jcflorezr.model.audiocontent.AudioContent;
 import org.apache.commons.lang3.ArrayUtils;
@@ -21,7 +21,7 @@ class GroupAudioClipSignalGenerator {
     private static final int MONO_CHANNELS = 1;
     private static final int STEREO_CHANNELS = 2;
 
-    AudioSignal generateAudioClip(List<AudioFileClip> groupAudioClipsInfo, OutputAudioClipsConfig outputAudioClipsConfig) {
+    AudioSignal generateAudioClip(List<AudioFileClipEntity> groupAudioClipsInfo, OutputAudioClipsConfig outputAudioClipsConfig) {
         AudioContent audioContent = outputAudioClipsConfig.getAudioContent();
         float[][] finalAudioSignalData = generateAudioClipSignals(groupAudioClipsInfo,
                         audioContent.getOriginalAudioSignal(),
@@ -31,7 +31,7 @@ class GroupAudioClipSignalGenerator {
         return new AudioSignal(audioSamplingRate, finalAudioSignalData);
     }
 
-    private float[][] generateAudioClipSignals(List<AudioFileClip> groupAudioClipsInfo, AudioSignal originalAudioFileSignal, boolean mono, boolean withSeparator) {
+    private float[][] generateAudioClipSignals(List<AudioFileClipEntity> groupAudioClipsInfo, AudioSignal originalAudioFileSignal, boolean mono, boolean withSeparator) {
         Stream<float[][]> audioClipsSignalsStream = groupAudioClipsInfo.stream()
                 .map(audioClipInfo -> getAudioClipSignalData(audioClipInfo, originalAudioFileSignal, mono));
         if (withSeparator) {
@@ -41,7 +41,7 @@ class GroupAudioClipSignalGenerator {
         }
     }
 
-    private float[][] generateAudioClipSignalsWithSeparator(List<AudioFileClip> groupAudioClipsInfo, AudioSignal originalAudioFileSignal, List<float[][]> audioClipsSignals, boolean mono) {
+    private float[][] generateAudioClipSignalsWithSeparator(List<AudioFileClipEntity> groupAudioClipsInfo, AudioSignal originalAudioFileSignal, List<float[][]> audioClipsSignals, boolean mono) {
         float [][] groupSeparatorSignal = retrieveSeparatorAudioSignalData(originalAudioFileSignal, mono);
         List<float[][]> groupSeparatorSignals = Stream.generate(() -> groupSeparatorSignal)
                 .limit(groupAudioClipsInfo.size())
@@ -51,14 +51,14 @@ class GroupAudioClipSignalGenerator {
                 .orElse(new float[][]{});
     }
 
-    private float[][] getAudioClipSignalData(AudioFileClip audioFileClip, AudioSignal originalAudioFileSignal, boolean mono) {
+    private float[][] getAudioClipSignalData(AudioFileClipEntity audioFileClipEntity, AudioSignal originalAudioFileSignal, boolean mono) {
         int channels = mono ? MONO_CHANNELS : STEREO_CHANNELS;
         int originalAudioChannels = originalAudioFileSignal.getChannels();
         float[][] audioClipSignalData = new float[channels][];
         for (int i = 0; i < channels; i++) {
             float[] currentChannelData = originalAudioChannels < channels ? originalAudioFileSignal.getData()[0]
                                                                           : originalAudioFileSignal.getData()[i];
-            audioClipSignalData[i] = copyOfRange(currentChannelData, audioFileClip.getStartPosition(), audioFileClip.getEndPosition());
+            audioClipSignalData[i] = copyOfRange(currentChannelData, audioFileClipEntity.getStartPosition(), audioFileClipEntity.getEndPosition());
         }
         return audioClipSignalData;
     }

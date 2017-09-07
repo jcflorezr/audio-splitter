@@ -7,7 +7,7 @@ import org.springframework.data.cassandra.mapping.PrimaryKey;
 import org.springframework.data.cassandra.mapping.Table;
 
 @Table(value = "audio_clips_results")
-public class AudioFileClipResult {
+public class AudioFileClipResultEntity {
 
     @PrimaryKey
     private AudioFileClipsPrimaryKey audioFileClipsPrimaryKey;
@@ -16,16 +16,16 @@ public class AudioFileClipResult {
     @Column("exception")
     private String exception;
 
-    public AudioFileClipResult() {
+    public AudioFileClipResultEntity() {
     }
 
-    public AudioFileClipResult(String audioFileName, AudioFileClip audioFileClip, AudioFileWritingResult audioFileWritingResult, String audioClipName) {
+    public AudioFileClipResultEntity(String audioFileName, AudioFileClipEntity audioFileClipEntity, AudioFileWritingResult audioFileWritingResult, String audioClipName) {
         audioFileClipsPrimaryKey = new AudioFileClipsPrimaryKey.AudioClipsPrimaryKeyBuilder()
                 .audioFileName(audioFileName)
-                .hours(audioFileClip.getHours())
-                .minutes(audioFileClip.getMinutes())
-                .seconds(audioFileClip.getSeconds())
-                .milliseconds(audioFileClip.getMilliseconds())
+                .hours(audioFileClipEntity.getHours())
+                .minutes(audioFileClipEntity.getMinutes())
+                .seconds(audioFileClipEntity.getSeconds())
+                .milliseconds(audioFileClipEntity.getMilliseconds())
                 .audioClipName(audioClipName)
                 .build();
         this.success = audioFileWritingResult.isSuccess();
@@ -49,7 +49,7 @@ public class AudioFileClipResult {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        AudioFileClipResult that = (AudioFileClipResult) o;
+        AudioFileClipResultEntity that = (AudioFileClipResultEntity) o;
 
         if (success != that.success) return false;
         return audioFileClipsPrimaryKey != null ? audioFileClipsPrimaryKey.equals(that.audioFileClipsPrimaryKey) : that.audioFileClipsPrimaryKey == null;
@@ -64,7 +64,7 @@ public class AudioFileClipResult {
 
     @Override
     public String toString() {
-        return "AudioFileClipResult{" +
+        return "AudioFileClipResultEntity{" +
                 "audioFileClipsPrimaryKey=" + audioFileClipsPrimaryKey +
                 ", success=" + success +
                 ", exception='" + exception + '\'' +

@@ -1,10 +1,10 @@
-package net.jcflorezr.audiofileinfo;
+package net.jcflorezr.audiocontent;
 
 import biz.source_code.dsp.model.AudioSignal;
 import biz.source_code.dsp.sound.AudioIo;
 import net.jcflorezr.model.audiocontent.AudioContent;
 import net.jcflorezr.model.audiocontent.AudioFileCompleteInfo;
-import net.jcflorezr.model.audiocontent.AudioFileMetadata;
+import net.jcflorezr.model.audiocontent.AudioFileMetadataEntity;
 import net.jcflorezr.model.persistence.AudioFileNamePrimaryKey;
 import net.jcflorezr.util.JsonUtils;
 import org.apache.tika.exception.TikaException;
@@ -37,34 +37,34 @@ class AudioContentService {
 
     AudioContent retrieveAudioContent(AudioFileCompleteInfo audioFileCompleteInfo) throws IOException, UnsupportedAudioFileException, TikaException, SAXException {
         AudioSignal originalAudioSignal = retrieveOriginalAudioSignal(audioFileCompleteInfo);
-        AudioFileMetadata audioFileMetadata = extractAudioMetadata(audioFileCompleteInfo.getAudioFileBasicInfo().getAudioFileName());
-        return new AudioContent(originalAudioSignal, audioFileMetadata);
+        AudioFileMetadataEntity audioFileMetadataEntity = extractAudioMetadata(audioFileCompleteInfo.getAudioFileBasicInfoEntity().getAudioFileName());
+        return new AudioContent(originalAudioSignal, audioFileMetadataEntity);
     }
 
     private AudioSignal retrieveOriginalAudioSignal(AudioFileCompleteInfo audioFileCompleteInfo) throws IOException, UnsupportedAudioFileException {
-        String convertedAudioFileName = audioFileCompleteInfo.getAudioFileBasicInfo().getConvertedAudioFileName();
+        String convertedAudioFileName = audioFileCompleteInfo.getAudioFileBasicInfoEntity().getConvertedAudioFileName();
         try {
             return audioIo.retrieveAudioSignalFromWavFile(convertedAudioFileName);
         } finally {
             boolean convertedAudioFileExists = Files.exists(Paths.get(convertedAudioFileName));
-            if (audioFileCompleteInfo.getAudioFileBasicInfo().audioFileWasConverted() && convertedAudioFileExists) {
+            if (audioFileCompleteInfo.getAudioFileBasicInfoEntity().audioFileWasConverted() && convertedAudioFileExists) {
                 Path fileConvertedPath = Paths.get(convertedAudioFileName);
                 Files.deleteIfExists(fileConvertedPath);
             }
         }
     }
 
-    private AudioFileMetadata extractAudioMetadata(String audioFileName) throws TikaException, SAXException, IOException {
+    private AudioFileMetadataEntity extractAudioMetadata(String audioFileName) throws TikaException, SAXException, IOException {
         try (InputStream inputstream = new FileInputStream(audioFileName)) {
             Metadata metadata = new Metadata();
             BodyContentHandler bodyContentHandler = new BodyContentHandler();
             new AutoDetectParser().parse(inputstream, bodyContentHandler, metadata, new ParseContext());
             Map<String, Object> metadataMap = Stream.of(metadata.names()).collect(toMap(name -> name, name -> metadata.get(name)));
             metadataMap.put("audioFileNamePrimaryKey", new AudioFileNamePrimaryKey(audioFileName));
-            AudioFileMetadata audioFileMetadata = JsonUtils.convertMapToPojo(metadataMap, AudioFileMetadata.class);
+            AudioFileMetadataEntity audioFileMetadataEntity = JsonUtils.convertMapToPojo(metadataMap, AudioFileMetadataEntity.class);
             List<String> rawMetadata = Arrays.asList(split(bodyContentHandler.toString(), "\n"));
-            audioFileMetadata.setRawMetadata(rawMetadata);
-            return audioFileMetadata;
+            audioFileMetadataEntity.setRawMetadata(rawMetadata);
+            return audioFileMetadataEntity;
         }
     }
 

@@ -1,4 +1,4 @@
-package net.jcflorezr.audiofileinfo;
+package net.jcflorezr.audiocontent;
 
 import net.jcflorezr.exceptions.InternalServerErrorException;
 import net.jcflorezr.util.AudioUtils;

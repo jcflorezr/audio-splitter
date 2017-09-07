@@ -2,42 +2,42 @@ package net.jcflorezr.model.audiocontent;
 
 import biz.source_code.dsp.util.AudioFormatsSupported;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import net.jcflorezr.model.audioclips.AudioFileClip;
+import net.jcflorezr.model.audioclips.AudioFileClipEntity;
 import net.jcflorezr.model.audioclips.OutputAudioClipsConfig;
-import net.jcflorezr.model.request.AudioFileBasicInfo;
+import net.jcflorezr.model.endpoint.AudioFileBasicInfoEntity;
 
 import java.util.List;
 
 public class AudioFileCompleteInfo {
 
-    private AudioFileBasicInfo audioFileBasicInfo;
-    private List<AudioFileClip> audioClipsInfo;
+    private AudioFileBasicInfoEntity audioFileBasicInfoEntity;
+    private List<AudioFileClipEntity> audioClipsInfo;
     private AudioContent audioContent;
 
-    public AudioFileCompleteInfo(AudioFileBasicInfo audioFileBasicInfo) {
-        this.audioFileBasicInfo = audioFileBasicInfo;
+    public AudioFileCompleteInfo(AudioFileBasicInfoEntity audioFileBasicInfoEntity) {
+        this.audioFileBasicInfoEntity = audioFileBasicInfoEntity;
     }
 
-    public AudioFileCompleteInfo(AudioFileBasicInfo audioFileBasicInfo, List<AudioFileClip> audioClipsInfo, AudioContent audioContent) {
-        this.audioFileBasicInfo = audioFileBasicInfo;
+    public AudioFileCompleteInfo(AudioFileBasicInfoEntity audioFileBasicInfoEntity, List<AudioFileClipEntity> audioClipsInfo, AudioContent audioContent) {
+        this.audioFileBasicInfoEntity = audioFileBasicInfoEntity;
         this.audioClipsInfo = audioClipsInfo;
         this.audioContent = audioContent;
     }
 
-    public AudioFileBasicInfo getAudioFileBasicInfo() {
-        return audioFileBasicInfo;
+    public AudioFileBasicInfoEntity getAudioFileBasicInfoEntity() {
+        return audioFileBasicInfoEntity;
     }
 
-    public List<AudioFileClip> getAudioClipsInfo() {
+    public List<AudioFileClipEntity> getAudioClipsInfo() {
         return audioClipsInfo;
     }
 
-    public void setAudioClipsInfo(List<AudioFileClip> audioClipsInfo) {
+    public void setAudioClipsInfo(List<AudioFileClipEntity> audioClipsInfo) {
         this.audioClipsInfo = audioClipsInfo;
     }
 
-    public void setAudioFileBasicInfo(AudioFileBasicInfo audioFileBasicInfo) {
-        this.audioFileBasicInfo = audioFileBasicInfo;
+    public void setAudioFileBasicInfoEntity(AudioFileBasicInfoEntity audioFileBasicInfoEntity) {
+        this.audioFileBasicInfoEntity = audioFileBasicInfoEntity;
     }
 
     public AudioContent getAudioContent() {
@@ -51,7 +51,7 @@ public class AudioFileCompleteInfo {
     @JsonIgnore
     public OutputAudioClipsConfig getOutputAudioClipsConfig(AudioFormatsSupported audioFormat, boolean asMono, boolean withSeparator) {
         return new OutputAudioClipsConfig(
-                audioFileBasicInfo.getOutputAudioClipsDirectoryPath(),
+                audioFileBasicInfoEntity.getOutputAudioClipsDirectoryPath(),
                 audioContent,
                 audioFormat.getExtension(),
                 asMono,

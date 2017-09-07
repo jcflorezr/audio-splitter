@@ -1,12 +1,12 @@
-package net.jcflorezr.audiofileinfo;
+package net.jcflorezr.audiocontent;
 
 import biz.source_code.dsp.model.AudioSignal;
 import biz.source_code.dsp.sound.AudioIo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.jcflorezr.model.audiocontent.AudioContent;
 import net.jcflorezr.model.audiocontent.AudioFileCompleteInfo;
-import net.jcflorezr.model.audiocontent.AudioFileMetadata;
-import net.jcflorezr.model.request.AudioFileBasicInfo;
+import net.jcflorezr.model.audiocontent.AudioFileMetadataEntity;
+import net.jcflorezr.model.endpoint.AudioFileBasicInfoEntity;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -60,16 +60,16 @@ public class AudioContentServiceTest {
         float[][] actualAudioSignalData = actualAudioContent.getOriginalAudioData();
         assertThat(actualAudioSignalData, equalTo(emptyAudioSignalData));
 
-        AudioFileMetadata mp3AudioFileMetadata = MAPPER.readValue(thisClass.getResourceAsStream(MP3_AUDIO_METADATA_JSON_FILE), AudioFileMetadata.class);
-        AudioFileMetadata actualAudioFileMetadata = actualAudioContent.getAudioFileMetadata();
+        AudioFileMetadataEntity mp3AudioFileMetadataEntity = MAPPER.readValue(thisClass.getResourceAsStream(MP3_AUDIO_METADATA_JSON_FILE), AudioFileMetadataEntity.class);
+        AudioFileMetadataEntity actualAudioFileMetadataEntity = actualAudioContent.getAudioFileMetadataEntity();
 
-        assertThat(actualAudioFileMetadata.getTitle(), equalTo(mp3AudioFileMetadata.getTitle()));
-        assertThat(actualAudioFileMetadata.getArtist(), equalTo(mp3AudioFileMetadata.getArtist()));
-        assertThat(actualAudioFileMetadata.getAlbum(), equalTo(mp3AudioFileMetadata.getAlbum()));
-        assertThat(actualAudioFileMetadata.getTrackNumber(), equalTo(mp3AudioFileMetadata.getTrackNumber()));
-        assertThat(actualAudioFileMetadata.getGenre(), equalTo(mp3AudioFileMetadata.getGenre()));
-        assertThat(actualAudioFileMetadata.getComments(), equalTo(mp3AudioFileMetadata.getComments()));
-        assertThat(actualAudioFileMetadata.getRawMetadata(), equalTo(mp3AudioFileMetadata.getRawMetadata()));
+        assertThat(actualAudioFileMetadataEntity.getTitle(), equalTo(mp3AudioFileMetadataEntity.getTitle()));
+        assertThat(actualAudioFileMetadataEntity.getArtist(), equalTo(mp3AudioFileMetadataEntity.getArtist()));
+        assertThat(actualAudioFileMetadataEntity.getAlbum(), equalTo(mp3AudioFileMetadataEntity.getAlbum()));
+        assertThat(actualAudioFileMetadataEntity.getTrackNumber(), equalTo(mp3AudioFileMetadataEntity.getTrackNumber()));
+        assertThat(actualAudioFileMetadataEntity.getGenre(), equalTo(mp3AudioFileMetadataEntity.getGenre()));
+        assertThat(actualAudioFileMetadataEntity.getComments(), equalTo(mp3AudioFileMetadataEntity.getComments()));
+        assertThat(actualAudioFileMetadataEntity.getRawMetadata(), equalTo(mp3AudioFileMetadataEntity.getRawMetadata()));
     }
 
     @Test
@@ -87,21 +87,21 @@ public class AudioContentServiceTest {
         float[][] actualAudioSignalData = actualAudioContent.getOriginalAudioData();
         assertThat(actualAudioSignalData, is(emptyAudioSignalData));
 
-        AudioFileMetadata actualAudioFileMetadata = actualAudioContent.getAudioFileMetadata();
+        AudioFileMetadataEntity actualAudioFileMetadataEntity = actualAudioContent.getAudioFileMetadataEntity();
 
-        assertNull(actualAudioFileMetadata.getTitle());
-        assertNull(actualAudioFileMetadata.getArtist());
-        assertNull(actualAudioFileMetadata.getAlbum());
-        assertNull(actualAudioFileMetadata.getTrackNumber());
-        assertNull(actualAudioFileMetadata.getGenre());
-        assertNull(actualAudioFileMetadata.getComments());
-        assertTrue(actualAudioFileMetadata.getRawMetadata().isEmpty());
+        assertNull(actualAudioFileMetadataEntity.getTitle());
+        assertNull(actualAudioFileMetadataEntity.getArtist());
+        assertNull(actualAudioFileMetadataEntity.getAlbum());
+        assertNull(actualAudioFileMetadataEntity.getTrackNumber());
+        assertNull(actualAudioFileMetadataEntity.getGenre());
+        assertNull(actualAudioFileMetadataEntity.getComments());
+        assertTrue(actualAudioFileMetadataEntity.getRawMetadata().isEmpty());
     }
 
     private AudioFileCompleteInfo createDummyAudioFileInfo(String audioFileName, String convertedAudioFileName) {
-        AudioFileBasicInfo audioFileBasicInfo = new AudioFileBasicInfo(audioFileName, null);
-        audioFileBasicInfo.setConvertedAudioFileName(convertedAudioFileName);
-        AudioFileCompleteInfo audioFileCompleteInfo = new AudioFileCompleteInfo(audioFileBasicInfo);
+        AudioFileBasicInfoEntity audioFileBasicInfoEntity = new AudioFileBasicInfoEntity(audioFileName, null);
+        audioFileBasicInfoEntity.setConvertedAudioFileName(convertedAudioFileName);
+        AudioFileCompleteInfo audioFileCompleteInfo = new AudioFileCompleteInfo(audioFileBasicInfoEntity);
         return audioFileCompleteInfo;
     }
 

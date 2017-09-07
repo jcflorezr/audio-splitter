@@ -1,4 +1,4 @@
-package net.jcflorezr.audiofileinfo.signal;
+package net.jcflorezr.audiocontent.signal;
 
 import net.jcflorezr.model.audiocontent.signal.RmsSignalInfo;
 

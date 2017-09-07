@@ -13,7 +13,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Table(value = "audio_file_metadata")
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class AudioFileMetadata {
+public class AudioFileMetadataEntity {
 
     private static final String PREFIX = "xmpDM:";
 
@@ -34,7 +34,7 @@ public class AudioFileMetadata {
     @Column("raw_metadata")
     private List<String> rawMetadata;
 
-    public AudioFileMetadata() {
+    public AudioFileMetadataEntity() {
     }
 
     @JsonGetter("audioFileNamePrimaryKey")
@@ -90,7 +90,7 @@ public class AudioFileMetadata {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        AudioFileMetadata that = (AudioFileMetadata) o;
+        AudioFileMetadataEntity that = (AudioFileMetadataEntity) o;
 
         if (audioFileNamePrimaryKey != null ? !audioFileNamePrimaryKey.equals(that.audioFileNamePrimaryKey) : that.audioFileNamePrimaryKey != null)
             return false;
@@ -110,7 +110,7 @@ public class AudioFileMetadata {
 
     @Override
     public String toString() {
-        return "AudioFileMetadata{" +
+        return "AudioFileMetadataEntity{" +
                 "audioFileNamePrimaryKey=" + audioFileNamePrimaryKey +
                 ", title='" + title + '\'' +
                 ", album='" + album + '\'' +

@@ -3,10 +3,10 @@ package net.jcflorezr.audioclips;
 import biz.source_code.dsp.model.AudioSignal;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import net.jcflorezr.model.audioclips.AudioFileClip;
+import net.jcflorezr.model.audioclips.AudioFileClipEntity;
 import net.jcflorezr.model.audioclips.OutputAudioClipsConfig;
 import net.jcflorezr.model.audiocontent.AudioContent;
-import net.jcflorezr.model.audiocontent.AudioFileMetadata;
+import net.jcflorezr.model.audiocontent.AudioFileMetadataEntity;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,7 +43,7 @@ public class GroupAudioClipSignalGeneratorTest {
 
     @Test
     public void generateAudioMonoSignalWithoutSeparator() throws Exception {
-        List<AudioFileClip> groupAudioClipsInfo = MAPPER.readValue(thisClass.getResourceAsStream(AUDIO_CLIPS_INFO), new TypeReference<List<AudioFileClip>>(){});
+        List<AudioFileClipEntity> groupAudioClipsInfo = MAPPER.readValue(thisClass.getResourceAsStream(AUDIO_CLIPS_INFO), new TypeReference<List<AudioFileClipEntity>>(){});
         boolean asMono = true;
         boolean withSeparator = false;
         OutputAudioClipsConfig outputAudioClipsConfig = createDummyOutputAudioClipsConfig(asMono, withSeparator);
@@ -56,7 +56,7 @@ public class GroupAudioClipSignalGeneratorTest {
 
     @Test
     public void generateAudioMonoSignalWithSeparator() throws Exception {
-        List<AudioFileClip> groupAudioClipsInfo = MAPPER.readValue(thisClass.getResourceAsStream(AUDIO_CLIPS_INFO), new TypeReference<List<AudioFileClip>>(){});
+        List<AudioFileClipEntity> groupAudioClipsInfo = MAPPER.readValue(thisClass.getResourceAsStream(AUDIO_CLIPS_INFO), new TypeReference<List<AudioFileClipEntity>>(){});
         boolean asMono = true;
         boolean withSeparator = true;
         OutputAudioClipsConfig outputAudioClipsConfig = createDummyOutputAudioClipsConfig(asMono, withSeparator);
@@ -69,7 +69,7 @@ public class GroupAudioClipSignalGeneratorTest {
 
     @Test
     public void generateAudioStereoSignalWithoutSeparator() throws Exception {
-        List<AudioFileClip> groupAudioClipsInfo = MAPPER.readValue(thisClass.getResourceAsStream(AUDIO_CLIPS_INFO), new TypeReference<List<AudioFileClip>>(){});
+        List<AudioFileClipEntity> groupAudioClipsInfo = MAPPER.readValue(thisClass.getResourceAsStream(AUDIO_CLIPS_INFO), new TypeReference<List<AudioFileClipEntity>>(){});
         boolean asMono = false;
         boolean withSeparator = false;
         OutputAudioClipsConfig outputAudioClipsConfig = createDummyOutputAudioClipsConfig(asMono, withSeparator);
@@ -82,7 +82,7 @@ public class GroupAudioClipSignalGeneratorTest {
 
     @Test
     public void generateAudioStereoSignalWithSeparator() throws Exception {
-        List<AudioFileClip> groupAudioClipsInfo = MAPPER.readValue(thisClass.getResourceAsStream(AUDIO_CLIPS_INFO), new TypeReference<List<AudioFileClip>>(){});
+        List<AudioFileClipEntity> groupAudioClipsInfo = MAPPER.readValue(thisClass.getResourceAsStream(AUDIO_CLIPS_INFO), new TypeReference<List<AudioFileClipEntity>>(){});
         boolean asMono = false;
         boolean withSeparator = true;
         OutputAudioClipsConfig outputAudioClipsConfig = createDummyOutputAudioClipsConfig(asMono, withSeparator);
@@ -99,8 +99,8 @@ public class GroupAudioClipSignalGeneratorTest {
         int samplingRate = DEFAULT_SAMPLING_RATE;
         float[][] audioSignalData = MAPPER.readValue(thisClass.getResourceAsStream(AUDIO_SIGNAL), float[][].class);
         AudioSignal dummyAudioSignal = new AudioSignal(samplingRate, audioSignalData);
-        AudioFileMetadata dummyAudioFileMetadata = new AudioFileMetadata();
-        AudioContent dummyAudioContent = new AudioContent(dummyAudioSignal, dummyAudioFileMetadata);
+        AudioFileMetadataEntity dummyAudioFileMetadataEntity = new AudioFileMetadataEntity();
+        AudioContent dummyAudioContent = new AudioContent(dummyAudioSignal, dummyAudioFileMetadataEntity);
 
         String audioFormatExtension = "any-file-extension";
 

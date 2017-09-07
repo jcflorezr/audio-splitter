@@ -1,4 +1,4 @@
-package net.jcflorezr.audiofileinfo.signal;
+package net.jcflorezr.audiocontent.signal;
 
 import biz.source_code.dsp.model.AudioSignal;
 import com.fasterxml.jackson.core.type.TypeReference;
