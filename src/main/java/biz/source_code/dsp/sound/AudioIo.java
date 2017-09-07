@@ -31,6 +31,7 @@ import java.util.Arrays;
 /**
  * Audio i/o utilities.
  */
+// TODO this class DOES need an unit test class
 @Service
 public class AudioIo {
 
