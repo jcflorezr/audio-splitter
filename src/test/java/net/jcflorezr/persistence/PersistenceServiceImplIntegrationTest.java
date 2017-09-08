@@ -36,7 +36,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {RootConfig.class, CassandraConfig.class})
-public class PersistenceServiceImplTest {
+public class PersistenceServiceImplIntegrationTest {
 
     private static final String CASSANDRA_CONTACT_POINTS = "127.0.0.1";
     private static final int CASSANDRA_PORT = 9142;
@@ -53,7 +53,7 @@ public class PersistenceServiceImplTest {
     private static final String AUDIO_CLIPS_INFO = "/audioclips/audio-clips-info-min.json";
     private static final String MP3_AUDIO_METADATA_JSON_FILE = "/audiocontent/mp3-audio-metadata.json";
 
-    private Class<? extends PersistenceServiceImplTest> thisClass;
+    private Class<? extends PersistenceServiceImplIntegrationTest> thisClass;
 
     @Autowired
     private CassandraAdminOperations adminTemplate;
