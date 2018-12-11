@@ -15,7 +15,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class AudioClipsGeneratorImpl implements AudioClipsGenerator {
+public class AudioClipsGeneratorImpl
+        implements AudioClipsGenerator
+{
 
     @Autowired
     private GroupAudioClipSignalGenerator groupAudioClipSignalGenerator;
@@ -28,6 +30,13 @@ public class AudioClipsGeneratorImpl implements AudioClipsGenerator {
 
     @Override
     public List<AudioFileClipResultEntity> generateAudioClip(String audioFileName, AudioFileCompleteInfo audioFileCompleteInfo, OutputAudioClipsConfig outputAudioClipsConfig, boolean generateAudioClipsByGroup) {
+
+
+        start reviewing what doe this class and how this class is connected to AudioIo for creating
+        audio clipes from audio signals
+
+
+
         List<AudioFileClipEntity> audioClipsInfo = audioFileCompleteInfo.getAudioClipsInfo();
         if (generateAudioClipsByGroup) {
             return audioClipsInfo.stream()
@@ -46,7 +55,7 @@ public class AudioClipsGeneratorImpl implements AudioClipsGenerator {
         AudioSignal audioClipSignal = groupAudioClipSignalGenerator.generateAudioClip(audioClipsGroupInfo, outputAudioClipsConfig);
         String suggestedAudioClipName = audioClipsGroupInfo.get(0).getAudioClipName();
         String groupAudioFileNameAndPath = outputAudioClipsConfig.getOutputAudioClipsDirectoryPath() + suggestedAudioClipName;
-        AudioFileWritingResult audioFileWritingResult = audioIo.saveAudioFile(groupAudioFileNameAndPath, outputAudioClipsConfig.getAudioFormatExtension(), audioClipSignal);
+        AudioFileWritingResult audioFileWritingResult = null;//audioIo.saveAudioFile(groupAudioFileNameAndPath, outputAudioClipsConfig.getAudioFormatExtension(), audioClipSignal);
         return new AudioFileClipResultEntity(audioFileName, audioClipsGroupInfo.get(0), audioFileWritingResult, suggestedAudioClipName);
     }
 

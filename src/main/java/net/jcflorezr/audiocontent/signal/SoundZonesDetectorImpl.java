@@ -34,7 +34,7 @@ public class SoundZonesDetectorImpl implements SoundZonesDetector {
     @Override
     public List<AudioFileClipEntity> retrieveAudioClipsInfo(String audioFileName, AudioSignal audioSignal) {
         int samplingRate = audioSignal.getSamplingRate();
-        int segmentSize = samplingRate / 10;
+        int segmentSize = samplingRate / 10; // 0.1 secs
         List<RmsSignalInfo> rmsInfoList = rmsCalculator.retrieveRmsInfo(audioSignal.getData(), segmentSize, samplingRate);
         audioDurationDigitsFormat = getNumOfDigitsFormat(audioSignal);
         this.audioFileName = audioFileName;
@@ -154,7 +154,7 @@ public class SoundZonesDetectorImpl implements SoundZonesDetector {
     }
 
     private String getNumOfDigitsFormat(AudioSignal audioSignal) {
-        return "%0" + String.valueOf(Math.round(audioSignal.getLength() / audioSignal.getSamplingRate())).length() + "d";
+        return "%0" + String.valueOf(Math.round((float) audioSignal.getLength() / audioSignal.getSamplingRate())).length() + "d";
     }
 
 }

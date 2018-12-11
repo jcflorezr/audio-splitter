@@ -36,10 +36,7 @@ public class SoundZonesDetectorImplTest {
 
     private Class<? extends SoundZonesDetectorImplTest> thisClass;
 
-    @Mock
-    private RmsCalculator rmsCalculator;
-    @InjectMocks
-    private SoundZonesDetectorImpl soundZonesDetector;
+
 
     @Before
     public void setUp() throws Exception {
@@ -69,11 +66,11 @@ public class SoundZonesDetectorImplTest {
 
     private void testAudioClipsProcess(String rmsSignalInfoFileName, String audioSignalFileName, String expectedAudioClipsFileName) throws Exception {
         List<RmsSignalInfo> rmsSignalInfo = MAPPER.readValue(thisClass.getResourceAsStream(rmsSignalInfoFileName), new TypeReference<List<RmsSignalInfo>>() {});
-        when(rmsCalculator.retrieveRmsInfo(anyObject(), anyInt(), anyInt())).thenReturn(rmsSignalInfo);
+        //when(rmsCalculator.retrieveRmsInfo(anyObject(), anyInt(), anyInt())).thenReturn(rmsSignalInfo);
 
         String audioFileName = "/path/to-find/audio-file";
         AudioSignal withApplauseSignal = MAPPER.readValue(thisClass.getResourceAsStream(audioSignalFileName), AudioSignal.class);
-        List<AudioFileClipEntity> actualAudioClips = soundZonesDetector.retrieveAudioClipsInfo(audioFileName, withApplauseSignal);
+        List<AudioFileClipEntity> actualAudioClips = new SoundZonesDetectorImpl().retrieveAudioClipsInfo(audioFileName, withApplauseSignal);
         List<AudioFileClipEntity> expectedAudioClips = MAPPER.readValue(thisClass.getResourceAsStream(expectedAudioClipsFileName), new TypeReference<List<AudioFileClipEntity>>() {});
 
         assertThat(actualAudioClips, equalTo(expectedAudioClips));

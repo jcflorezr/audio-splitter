@@ -22,12 +22,13 @@ public class AudioFileInfoServiceImpl implements AudioFileInfoService {
 
     @Override
     public AudioFileCompleteInfo generateAudioFileInfo(AudioFileBasicInfoEntity audioFileBasicInfoEntity, boolean grouped) throws Exception {
-        String convertedAudioFileName = audioConverterService.convertFileToWavIfNeeded(audioFileBasicInfoEntity.getAudioFileName());
-        audioFileBasicInfoEntity.setConvertedAudioFileName(convertedAudioFileName);
-        AudioFileCompleteInfo audioFileCompleteInfo = new AudioFileCompleteInfo(audioFileBasicInfoEntity);
-        AudioContent audioContent = audioContentService.retrieveAudioContent(audioFileCompleteInfo);
-        audioFileCompleteInfo.setAudioContent(audioContent);
-        audioFileCompleteInfo.setAudioClipsInfo(soundZonesDetector.retrieveAudioClipsInfo(audioFileBasicInfoEntity.getAudioFileName(), audioContent.getOriginalAudioSignal()));
-        return audioFileCompleteInfo;
+//        String convertedAudioFileName = audioConverterService.convertFileToWavIfNeeded(audioFileBasicInfoEntity.getAudioFileName());
+//        audioFileBasicInfoEntity.setConvertedAudioFileName(convertedAudioFileName);
+//        AudioFileCompleteInfo audioFileCompleteInfo = new AudioFileCompleteInfo(audioFileBasicInfoEntity);
+//        AudioContent audioContent = audioContentService.retrieveAudioContent(audioFileCompleteInfo);
+//        audioFileCompleteInfo.setAudioContent(audioContent);
+//        audioFileCompleteInfo.setAudioClipsInfo(soundZonesDetector.retrieveAudioClipsInfo(audioFileBasicInfoEntity.getAudioFileName(), audioContent.getOriginalAudioSignal()));
+//        return audioFileCompleteInfo;
+        return null;
     }
 }

@@ -1,8 +1,8 @@
 package net.jcflorezr.kafka;
 
-import kafka.producer.KeyedMessage;
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.ProducerRecord;
+//import kafka.producer.KeyedMessage;
+//import org.apache.kafka.clients.producer.KafkaProducer;
+//import org.apache.kafka.clients.producer.ProducerRecord;
 
 import java.util.Date;
 import java.util.Properties;
@@ -10,7 +10,7 @@ import java.util.Random;
 
 public class MyKafkaProducerWithPartitioner {
 
-    private final KafkaProducer<String, String> producer;
+//    private final KafkaProducer<String, String> producer;
 
     public MyKafkaProducerWithPartitioner() {
         Properties props = new Properties();
@@ -30,14 +30,14 @@ public class MyKafkaProducerWithPartitioner {
         // client waits	until the server acknowledges the request as successful.
         props.put("request.required.acks", "1");
 
-        producer = new KafkaProducer<>(props);
+//        producer = new KafkaProducer<>(props);
     }
 
     public static void main(String[] args) {
         int argsCount = args.length;
         if (argsCount == 0 || argsCount == 1)
-            throw new IllegalArgumentException("Please provide topic name and Message count	as arguments");
-        // Topic name and the message count	to be published	is passed from the
+            throw new IllegalArgumentException("Please provide topic entityName and Message count	as arguments");
+        // Topic entityName and the message count	to be published	is passed from the
         // command line http://freepdf-books.com
         String topic = args[0];
         String count = args[1];
@@ -50,19 +50,19 @@ public class MyKafkaProducerWithPartitioner {
     }
 
     private void publishMessage(String topic, int messageCount) {
-        Random random = new Random();
-        for (int mCount = 0; mCount < messageCount; mCount++) {
-            String clientIp = "192.168.14." + random.nextInt(255);
-            String accessTime = new Date().toString();
-            String msg = accessTime + ", kafka.apache.org, " + clientIp;
-            System.out.println(msg);
-            // Creates a KeyedMessage instance
-            KeyedMessage<String, String> data = new KeyedMessage<>(topic, clientIp, msg);
-            // Publish the message
-            producer.send(new ProducerRecord<>(topic, clientIp, msg));
-        }
-        // Close producer connection with broker.
-        producer.close();
+//        Random random = new Random();
+//        for (int mCount = 0; mCount < messageCount; mCount++) {
+//            String clientIp = "192.168.14." + random.nextInt(255);
+//            String accessTime = new Date().toString();
+//            String msg = accessTime + ", kafka.apache.org, " + clientIp;
+//            System.out.println(msg);
+//            // Creates a KeyedMessage instance
+//            KeyedMessage<String, String> data = new KeyedMessage<>(topic, clientIp, msg);
+//            // Publish the message
+//            producer.send(new ProducerRecord<>(topic, clientIp, msg));
+//        }
+//        // Close producer connection with broker.
+//        producer.close();
     }
 
 }

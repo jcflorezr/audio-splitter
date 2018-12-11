@@ -34,14 +34,13 @@ public class RmsCalculator {
             DecimalFormat df = new DecimalFormat("#.###");
             double rms = Double.parseDouble(df.format(computeRms(signal, pos, endPos - pos)));
             float positionInSeconds = (float) pos / samplingRate;
-            int position = pos;
 
             double diff = Double.parseDouble(df.format(prevRms - rms));
             boolean silence = Math.abs(diff) <= SILENCE_THRESHOLD;
             double deepDiff = Double.parseDouble(df.format(prevDiff - diff));
             boolean active = Math.abs(deepDiff) >= ACTIVE_THRESHOLD;
 
-            rmsSignalInfo.add(new RmsSignalInfo(rms, positionInSeconds, position, silence, active));
+            rmsSignalInfo.add(new RmsSignalInfo(rms, positionInSeconds, pos, silence, active));
 
             prevRms = rms;
             pos = endPos;

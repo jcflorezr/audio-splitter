@@ -25,11 +25,15 @@ public class InternalServerErrorException extends AudioSplitterCustomException {
     private String getSimplifiedStackTrace(StackTraceElement[] stackTraceElements) {
         AtomicInteger counter = new AtomicInteger(1);
         return Stream.of(stackTraceElements)
-                .collect(Collectors.groupingBy(
-                            stackTraceElement -> counter + "_" + stackTraceElement.getClassName(),
-                            LinkedHashMap::new,
-                            Collectors.mapping(stackTraceElement -> String.valueOf(stackTraceElement.getLineNumber()),
-                                                                    Collectors.joining(ELEMENTS_DELIMITER))))
+    .collect(
+        Collectors.groupingBy(
+            stackTraceElement -> counter + "_" + stackTraceElement.getClassName(),
+            LinkedHashMap::new,
+            Collectors.mapping(stackTraceElement ->
+                String.valueOf(stackTraceElement.getLineNumber()), Collectors.joining(ELEMENTS_DELIMITER)
+            )
+        )
+    )
         .toString();
     }
 

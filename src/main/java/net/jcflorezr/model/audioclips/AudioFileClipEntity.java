@@ -1,9 +1,9 @@
 package net.jcflorezr.model.audioclips;
 
 import net.jcflorezr.model.persistence.AudioFileClipsPrimaryKey;
-import org.springframework.data.cassandra.mapping.Column;
-import org.springframework.data.cassandra.mapping.PrimaryKey;
-import org.springframework.data.cassandra.mapping.Table;
+import org.springframework.data.cassandra.core.mapping.Column;
+import org.springframework.data.cassandra.core.mapping.PrimaryKey;
+import org.springframework.data.cassandra.core.mapping.Table;
 
 @Table(value = "audio_clips")
 public class AudioFileClipEntity {

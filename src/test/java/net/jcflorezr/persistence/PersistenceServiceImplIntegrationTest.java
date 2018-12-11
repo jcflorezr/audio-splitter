@@ -22,8 +22,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cassandra.core.cql.CqlIdentifier;
 import org.springframework.data.cassandra.core.CassandraAdminOperations;
+import org.springframework.data.cassandra.core.cql.CqlIdentifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -53,7 +53,7 @@ public class PersistenceServiceImplIntegrationTest {
     private static final String AUDIO_CLIPS_INFO = "/audioclips/audio-clips-info-min.json";
     private static final String MP3_AUDIO_METADATA_JSON_FILE = "/audiocontent/mp3-audio-metadata.json";
 
-    private Class<? extends PersistenceServiceImplIntegrationTest> thisClass;
+    private Class<? extends CassandraDaoIntegrationTest> thisClass;
 
     @Autowired
     private CassandraAdminOperations adminTemplate;
@@ -73,7 +73,7 @@ public class PersistenceServiceImplIntegrationTest {
 
     @Before
     public void setUp() throws Exception {
-        thisClass = this.getClass();
+        //thisClass = this.getClass();
     }
 
     private void createTable(String tableName, Class aClass) {

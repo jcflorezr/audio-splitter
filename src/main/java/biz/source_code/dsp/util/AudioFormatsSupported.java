@@ -37,10 +37,10 @@ public enum AudioFormatsSupported {
         return fileType;
     }
 
-    public static String getExtension(String mimeType) {
+    public static AudioFormatsSupported getExtension(String mimeType) {
         for(AudioFormatsSupported supportedAudioFormat : AudioFormatsSupported.values()) {
             if (supportedAudioFormat.mimeType.equals(mimeType)) {
-                return supportedAudioFormat.extension;
+                return supportedAudioFormat;
             }
         }
         throw new UnsupportedOperationException("The file type '" + mimeType + "' is not supported.");

@@ -35,7 +35,7 @@ class AudioConverterService {
 
     private boolean audioFileNeedsToBeConverted(String audioFileName) {
         String audioFileMimeType = TIKA.detect(audioFileName);
-        String audioFileExtension = AudioFormatsSupported.getExtension(audioFileMimeType);
+        String audioFileExtension = AudioFormatsSupported.getExtension(audioFileMimeType).getExtension();
         return !compareExtensions.test(WAV, audioFileExtension);
     }
 

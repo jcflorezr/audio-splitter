@@ -2,9 +2,9 @@ package net.jcflorezr.model.audioclips;
 
 import biz.source_code.dsp.model.AudioFileWritingResult;
 import net.jcflorezr.model.persistence.AudioFileClipsPrimaryKey;
-import org.springframework.data.cassandra.mapping.Column;
-import org.springframework.data.cassandra.mapping.PrimaryKey;
-import org.springframework.data.cassandra.mapping.Table;
+import org.springframework.data.cassandra.core.mapping.Column;
+import org.springframework.data.cassandra.core.mapping.PrimaryKey;
+import org.springframework.data.cassandra.core.mapping.Table;
 
 @Table(value = "audio_clips_results")
 public class AudioFileClipResultEntity {

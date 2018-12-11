@@ -51,7 +51,7 @@ public class BadRequestException extends AudioSplitterCustomException {
 
     @Override
     public String toString() {
-        return "BadRequestException{" +
+        return "audioSplitterCustomException{" +
                 "message='" + message + '\'' +
                 ", suggestion='" + suggestion + '\'' +
                 '}';
