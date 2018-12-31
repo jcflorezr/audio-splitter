@@ -15,6 +15,12 @@ import net.jcflorezr.broker.Subscriber
 import net.jcflorezr.broker.Topic
 import net.jcflorezr.core.AudioSplitter
 import net.jcflorezr.core.AudioSplitterImpl
+import net.jcflorezr.dao.AudioSignalDao
+import net.jcflorezr.dao.AudioSignalDaoImpl
+import net.jcflorezr.dao.AudioSignalRmsDao
+import net.jcflorezr.dao.AudioSignalRmsDaoImpl
+import net.jcflorezr.dao.SourceFileDao
+import net.jcflorezr.dao.SourceFileDaoImpl
 import net.jcflorezr.model.AudioClipInfo
 import net.jcflorezr.model.AudioSignalRmsInfoKt
 import net.jcflorezr.model.InitialConfiguration

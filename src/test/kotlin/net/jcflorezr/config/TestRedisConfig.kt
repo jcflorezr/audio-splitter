@@ -4,10 +4,10 @@ import biz.source_code.dsp.model.AudioSignalKt
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import net.jcflorezr.model.AudioSignalRmsInfoKt
-import net.jcflorezr.persistence.AudioSignalDao
-import net.jcflorezr.persistence.AudioSignalDaoImpl
-import net.jcflorezr.persistence.AudioSignalRmsDao
-import net.jcflorezr.persistence.AudioSignalRmsDaoImpl
+import net.jcflorezr.dao.AudioSignalDao
+import net.jcflorezr.dao.AudioSignalDaoImpl
+import net.jcflorezr.dao.AudioSignalRmsDao
+import net.jcflorezr.dao.AudioSignalRmsDaoImpl
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.beans.factory.config.ConfigurableBeanFactory
 import org.springframework.context.annotation.Bean
@@ -59,20 +59,12 @@ class TestRedisConfig {
         return template
     }
 
-    /*
-    DAOs
-     */
-
-    @Profile("test") @Bean fun audioSignalDao(): AudioSignalDao = AudioSignalDaoImpl()
-
-    @Profile("test") @Bean fun audioSignalRmsDao(): AudioSignalRmsDao = AudioSignalRmsDaoImpl()
-
 }
 
 
 /**
- * Subclass of Jackson Serializer for Redis which does
- * contain a Jackson mapper for Kotlin classes
+ * Subclass of Jackson Serializer for Redis, this serializer
+ * does supply a Jackson mapper for Kotlin classes
  */
 class Jackson2JsonRedisSerializerKotlin<T>(
     private val classType: Class<T>

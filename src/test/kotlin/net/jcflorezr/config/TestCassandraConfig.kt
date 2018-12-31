@@ -1,7 +1,7 @@
 package net.jcflorezr.config
 
-import net.jcflorezr.persistence.SourceFileDao
-import net.jcflorezr.persistence.SourceFileDaoImpl
+import net.jcflorezr.dao.SourceFileDao
+import net.jcflorezr.dao.SourceFileDaoImpl
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -85,11 +85,5 @@ class TestCassandraConfig : AbstractCassandraConfiguration() {
     fun cassandraAdminTemplate(): CassandraOperations {
         return CassandraAdminTemplate(session().getObject(), converter())
     }
-
-    /*
-    DAOs
-     */
-
-    @Profile("test") @Bean fun sourceFileDao(): SourceFileDao = SourceFileDaoImpl()
 
 }

@@ -1,4 +1,4 @@
-package net.jcflorezr.persistence;
+package net.jcflorezr.dao;
 
 import com.datastax.driver.core.querybuilder.QueryBuilder;
 import com.datastax.driver.core.querybuilder.Select;

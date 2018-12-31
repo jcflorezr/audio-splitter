@@ -5,13 +5,14 @@ import biz.source_code.dsp.sound.AudioIo
 import net.jcflorezr.model.AudioClipInfo
 import net.jcflorezr.model.AudioSignalRmsInfoKt
 import net.jcflorezr.model.InitialConfiguration
-import net.jcflorezr.persistence.AudioSignalDao
-import net.jcflorezr.persistence.AudioSignalRmsDao
-import net.jcflorezr.persistence.SourceFileDao
+import net.jcflorezr.dao.AudioSignalDao
+import net.jcflorezr.dao.AudioSignalRmsDao
+import net.jcflorezr.dao.SourceFileDao
 import net.jcflorezr.signal.RmsCalculator
 import net.jcflorezr.signal.SoundZonesDetector
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import java.nio.ByteBuffer
 import javax.annotation.PostConstruct
 
 interface Subscriber {
@@ -29,9 +30,7 @@ final class SourceFileSubscriber : Subscriber {
     private lateinit var sourceFileDao: SourceFileDao
 
     @PostConstruct
-    fun init() {
-        sourceFileTopic.register(this)
-    }
+    fun init() = sourceFileTopic.register(this)
 
     override suspend fun update() {
         val initialConfiguration = sourceFileTopic.getMessage()
@@ -56,15 +55,20 @@ final class SignalSubscriber : Subscriber {
     private lateinit var audioSignalDao: AudioSignalDao
 
     @PostConstruct
-    fun init() {
-        signalTopic.register(this)
-    }
+    fun init() = signalTopic.register(this)
 
     override suspend fun update() {
         val audioSignal = signalTopic.getMessage()
-        audioSignalDao.storeAudioSignal(audioSignal = audioSignal).takeIf { it }
-        ?.let {
-            rmsCalculator.generateRmsInfo(audioSignal = audioSignal)
+        audioSignalDao.storeAudioSignalPart(audioSignal = audioSignal)
+        .takeIf {
+            it.audioFileName == audioSignal.audioFileName &&
+            it.index == audioSignal.index &&
+            it.content == ByteBuffer.wrap(audioSignal.dataInBytes)
+        }?.run {
+            audioSignalDao.storeAudioSignal(audioSignal = audioSignal).takeIf { it }
+            ?.let {
+                rmsCalculator.generateRmsInfo(audioSignal = audioSignal)
+            }
         } ?: throw RuntimeException()
         // TODO: provide custom Exception
     }
@@ -82,9 +86,7 @@ final class SignalRmsSubscriber : Subscriber {
     private lateinit var audioSignalRmsDao: AudioSignalRmsDao
 
     @PostConstruct
-    fun init() {
-        audioSignalRmsTopic.register(this)
-    }
+    fun init() = audioSignalRmsTopic.register(this)
 
     override suspend fun update() {
         val audioSignalRms = audioSignalRmsTopic.getMessage()
@@ -107,9 +109,7 @@ final class AudioClipSubscriber : Subscriber {
     private lateinit var audioClipTopic: Topic<AudioClipInfo>
 
     @PostConstruct
-    fun init() {
-        audioClipTopic.register(this)
-    }
+    fun init() = audioClipTopic.register(this)
 
     override suspend fun update() {
         val audioClip = audioClipTopic.getMessage()

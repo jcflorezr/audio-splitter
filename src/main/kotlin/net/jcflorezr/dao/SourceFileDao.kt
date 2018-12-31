@@ -1,4 +1,4 @@
-package net.jcflorezr.persistence
+package net.jcflorezr.dao
 
 import com.datastax.driver.core.querybuilder.QueryBuilder
 import net.jcflorezr.model.AudioFileMetadataEntity
@@ -8,9 +8,7 @@ import org.springframework.data.cassandra.core.CassandraOperations
 import org.springframework.data.cassandra.core.selectOne
 import org.springframework.stereotype.Repository
 
-interface CassandraDao
-
-interface SourceFileDao : CassandraDao {
+interface SourceFileDao {
     fun storeAudioFileMetadata(initialConfiguration: InitialConfiguration): AudioFileMetadataEntity
     fun retrieveAudioFileMetadata(audioFileName: String): AudioFileMetadataEntity?
 }

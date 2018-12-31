@@ -1,33 +1,16 @@
-package net.jcflorezr.persistence
+package net.jcflorezr.dao
 
 import com.datastax.driver.core.Cluster
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
-import net.jcflorezr.config.TestCassandraConfig
-import net.jcflorezr.model.AudioFileMetadataEntity
-import net.jcflorezr.model.InitialConfiguration
 import org.cassandraunit.utils.EmbeddedCassandraServerHelper
-import org.hamcrest.CoreMatchers
-import org.hamcrest.MatcherAssert
-import org.junit.ClassRule
-import org.junit.Test
 import org.junit.rules.TestRule
 import org.junit.runner.Description
-import org.junit.runner.RunWith
 import org.junit.runners.model.Statement
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.cassandra.core.CassandraAdminTemplate
 import org.springframework.data.cassandra.core.convert.MappingCassandraConverter
 import org.springframework.data.cassandra.core.cql.CqlIdentifier
-import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.ContextConfiguration
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner
-import java.io.File
-import java.util.*
-import org.hamcrest.CoreMatchers.`is` as Is
+import java.util.HashMap
 
-class CassandraDaoIntegrationTest : TestRule {
+class CassandraInitializer : TestRule {
 
     companion object {
         private const val CONTACT_POINTS= "localhost"
@@ -75,37 +58,6 @@ class CassandraDaoIntegrationTest : TestRule {
 
     fun dropTable(tableName: String) {
         cassandraAdminTemplate!!.dropTable(CqlIdentifier.cqlId(tableName))
-    }
-
-}
-
-@ActiveProfiles("test")
-@RunWith(SpringJUnit4ClassRunner::class)
-@ContextConfiguration(classes = [TestCassandraConfig::class])
-class SourceFileDaoImplIntegrationTest {
-
-    @Autowired
-    private lateinit var sourceFileDao: SourceFileDao
-
-    private val thisClass: Class<SourceFileDaoImplIntegrationTest> = this.javaClass
-    private val testResourcesPath: String = thisClass.getResource("/source/").path
-
-    companion object {
-        @JvmField
-        @ClassRule
-        val initializer = CassandraDaoIntegrationTest()
-        private val MAPPER = ObjectMapper().registerKotlinModule()
-        private const val AUDIO_FILE_METADATA_TABLE = "AUDIO_FILE_METADATA"
-    }
-
-    @Test
-    fun storeInitialConfigurationWithAudioMetadata() {
-        initializer.createTable(AUDIO_FILE_METADATA_TABLE, AudioFileMetadataEntity::class.java)
-        val initialConfiguration = MAPPER.readValue<InitialConfiguration>(File(testResourcesPath + "initial-configuration.json"))
-        val storedAudioMetadata = sourceFileDao.storeAudioFileMetadata(initialConfiguration)
-        val actualAudioMetadata = sourceFileDao.retrieveAudioFileMetadata(storedAudioMetadata.audioFileName)
-        MatcherAssert.assertThat(actualAudioMetadata, Is(CoreMatchers.equalTo(storedAudioMetadata)))
-        initializer.dropTable(AUDIO_FILE_METADATA_TABLE)
     }
 
 }

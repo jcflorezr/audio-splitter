@@ -1,4 +1,4 @@
-package net.jcflorezr.persistence;
+package net.jcflorezr.dao;
 
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
@@ -53,7 +53,7 @@ public class PersistenceServiceImplIntegrationTest {
     private static final String AUDIO_CLIPS_INFO = "/audioclips/audio-clips-info-min.json";
     private static final String MP3_AUDIO_METADATA_JSON_FILE = "/audiocontent/mp3-audio-metadata.json";
 
-    private Class<? extends CassandraDaoIntegrationTest> thisClass;
+    private Class<? extends CassandraInitializer> thisClass;
 
     @Autowired
     private CassandraAdminOperations adminTemplate;

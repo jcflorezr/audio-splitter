@@ -2,14 +2,12 @@ package net.jcflorezr.broker
 
 import biz.source_code.dsp.model.AudioSignalKt
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import net.jcflorezr.model.AudioClipInfo
 import net.jcflorezr.model.InitialConfiguration
 import net.jcflorezr.model.AudioSignalRmsInfoKt
 import org.apache.commons.io.FilenameUtils
-import org.hamcrest.CoreMatchers
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Assert
@@ -37,12 +35,11 @@ final class SourceFileSubscriberTest : Subscriber {
     fun init() {
         sourceFileTopic.register(this)
         thisClass = this.javaClass
-        testResourcesPath = thisClass.getResource("/source/").path
+        testResourcesPath = thisClass.getResource("/source").path
     }
 
     override suspend fun update() {
-        val expectedConfiguration =
-            MAPPER.readValue<InitialConfiguration>(File(testResourcesPath + "initial-configuration.json"))
+        val expectedConfiguration = MAPPER.readValue<InitialConfiguration>(File("$testResourcesPath/initial-configuration.json"))
         println("testing initial configuration...")
         val initialConfiguration = sourceFileTopic.getMessage()
         assertThat(initialConfiguration.toString(), Is(equalTo(expectedConfiguration.toString())))
@@ -67,16 +64,15 @@ final class SignalSubscriberTest : Subscriber {
     fun init() {
         signalTopic.register(this)
         thisClass = this.javaClass
-        testResourcesPath = thisClass.getResource("/sound/").path
+        testResourcesPath = thisClass.getResource("/sound").path
     }
 
     override suspend fun update() {
         val audioSignal = signalTopic.getMessage()
         val folderName = FilenameUtils.getBaseName(audioSignal.audioFileName)
-        val path = "$testResourcesPath$folderName/"
-        val signalPart = File(path).listFiles()
-            .filter { it.extension == "json" }
-            .find { it.nameWithoutExtension == "${audioSignal.index}-$folderName" }
+        val signalPartFilePath = "$testResourcesPath/$folderName/${audioSignal.index}-$folderName.json"
+        val signalPart = File(signalPartFilePath)
+            .takeIf { it.exists() }
             ?.let { signalJsonFile -> MAPPER.readValue<AudioSignalKt>(signalJsonFile) }
         println("check if current signal part exists")
         assertNotNull(signalPart)
@@ -102,7 +98,7 @@ final class SignalRmsSubscriberTest : Subscriber {
     fun init() {
         audioSignalRmsTopic.register(this)
         thisClass = this.javaClass
-        testResourcesPath = thisClass.getResource("/signal/").path
+        testResourcesPath = thisClass.getResource("/signal").path
     }
 
     override suspend fun update() {
@@ -112,7 +108,7 @@ final class SignalRmsSubscriberTest : Subscriber {
         val folderName = FilenameUtils.getBaseName(signalRms.audioFileName)
         val signalRmsListType = MAPPER.typeFactory.constructCollectionType(List::class.java, AudioSignalRmsInfoKt::class.java)
         val audioSignalRmsList: List<AudioSignalRmsInfoKt> =
-            MAPPER.readValue(File("$testResourcesPath$folderName/$folderName.json"), signalRmsListType)
+            MAPPER.readValue(File("$testResourcesPath/$folderName/$folderName.json"), signalRmsListType)
         Assert.assertTrue(audioSignalRmsList.contains(signalRms))
     }
 
@@ -135,7 +131,7 @@ final class AudioClipSubscriberTest : Subscriber {
     fun init() {
         audioClipTopic.register(this)
         thisClass = this.javaClass
-        testResourcesPath = thisClass.getResource("/clip/").path
+        testResourcesPath = thisClass.getResource("/clip").path
     }
 
     override suspend fun update() {
@@ -144,7 +140,7 @@ final class AudioClipSubscriberTest : Subscriber {
         val folderName = FilenameUtils.getBaseName(audioClip.audioFileName)
         val audioClipListType = MAPPER.typeFactory.constructCollectionType(List::class.java, AudioClipInfo::class.java)
         val audioClipList: List<AudioClipInfo> =
-            MAPPER.readValue(File("$testResourcesPath$folderName/$folderName.json"), audioClipListType)
+            MAPPER.readValue(File("$testResourcesPath/$folderName/$folderName.json"), audioClipListType)
         Assert.assertTrue(audioClipList.contains(audioClip))
     }
 
