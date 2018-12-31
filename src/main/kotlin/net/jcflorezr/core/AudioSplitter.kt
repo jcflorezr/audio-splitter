@@ -1,6 +1,9 @@
 package net.jcflorezr.core
 
 import javazoom.jl.decoder.JavaLayerException
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import net.jcflorezr.broker.MessageLauncher
 import net.jcflorezr.broker.Topic
 import net.jcflorezr.exception.AudioFileLocationException
 import net.jcflorezr.exception.InternalServerErrorException
@@ -28,7 +31,7 @@ interface AudioSplitter {
 final class AudioSplitterImpl : AudioSplitter {
 
     @Autowired
-    private lateinit var sourceFileTopic: Topic<InitialConfiguration>
+    private lateinit var messageLauncher: MessageLauncher<InitialConfiguration>
 
     override fun generateAudioClips(configuration: InitialConfiguration) {
         val sourceAudioFile = configuration.validateConfiguration()
@@ -37,8 +40,7 @@ final class AudioSplitterImpl : AudioSplitter {
             convertedAudioFileLocation = convertedAudioFile.name,
             audioFileMetadata = sourceAudioFile.extractAudioMetadata()
         )
-        // TODO: Thread is not the option
-        Thread { sourceFileTopic.postMessage(msg = initialConfiguration) }.start()
+        messageLauncher.launchMessage(msg = initialConfiguration)
         // TODO: Should return a Response object
     }
 

@@ -5,6 +5,7 @@ import net.jcflorezr.persistence.SourceFileDaoImpl
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Profile
 import org.springframework.context.annotation.PropertySource
 import org.springframework.data.cassandra.config.AbstractCassandraConfiguration
 import org.springframework.data.cassandra.config.CassandraClusterFactoryBean
@@ -37,6 +38,7 @@ class TestCassandraConfig : AbstractCassandraConfiguration() {
 
     override fun getKeyspaceName() = keySpace
 
+    @Profile("test")
     @Bean
     override fun cluster(): CassandraClusterFactoryBean {
         val cluster = CassandraClusterFactoryBean()
@@ -46,6 +48,7 @@ class TestCassandraConfig : AbstractCassandraConfiguration() {
         return cluster
     }
 
+    @Profile("test")
     @Bean
     fun mappingContext(): CassandraMappingContext {
         val mappingContext = BasicCassandraMappingContext()
@@ -53,9 +56,11 @@ class TestCassandraConfig : AbstractCassandraConfiguration() {
         return mappingContext
     }
 
+    @Profile("test")
     @Bean
     fun converter(): CassandraConverter = MappingCassandraConverter(mappingContext())
 
+    @Profile("test")
     @Bean
     override fun session(): CassandraSessionFactoryBean {
         val session = CassandraSessionFactoryBean()
@@ -67,13 +72,15 @@ class TestCassandraConfig : AbstractCassandraConfiguration() {
         return session
     }
 
-    @Bean override fun cassandraMapping(): CassandraMappingContext = BasicCassandraMappingContext()
+    @Profile("test") @Bean override fun cassandraMapping(): CassandraMappingContext = BasicCassandraMappingContext()
 
+    @Profile("test")
     @Bean
     fun cassandraCustomTemplate(): CassandraOperations {
         return CassandraTemplate(session().getObject())
     }
 
+    @Profile("test")
     @Bean
     fun cassandraAdminTemplate(): CassandraOperations {
         return CassandraAdminTemplate(session().getObject(), converter())
@@ -83,6 +90,6 @@ class TestCassandraConfig : AbstractCassandraConfiguration() {
     DAOs
      */
 
-    @Bean fun sourceFileDao(): SourceFileDao = SourceFileDaoImpl()
+    @Profile("test") @Bean fun sourceFileDao(): SourceFileDao = SourceFileDaoImpl()
 
 }

@@ -1,15 +1,16 @@
 package biz.source_code.dsp.sound
 
+import net.jcflorezr.model.AudioFormatEncodings
+import net.jcflorezr.model.AudioSourceInfo
 import java.io.IOException
-import javax.sound.sampled.AudioFormat
 
 internal object AudioBytesUnpacker {
 
     @Throws(IOException::class)
     fun generateAudioSignal(
-        audioInfo: AudioInputStreamInfo,
-        bytesBuffer: ByteArray,
-        framesToRead: Int
+            audioInfo: AudioSourceInfo,
+            bytesBuffer: ByteArray,
+            framesToRead: Int
     ): Array<FloatArray?> {
 //        if (trBytes <= 0) {
 //            if (audioInfo.encoding === AudioFormat.Encoding.PCM_FLOAT && pos * audioInfo.frameSize == totalFrames) {
@@ -37,9 +38,9 @@ internal object AudioBytesUnpacker {
      * A utility routine to unpack the data of a Java Sound audio stream.
      */
     private fun unpackAudioStreamBytes(
-        audioInfo: AudioInputStreamInfo,
-        bytesBuffer: ByteArray,
-        frames: Int
+            audioInfo: AudioSourceInfo,
+            bytesBuffer: ByteArray,
+            frames: Int
     ): Array<FloatArray?> {
         val signal = arrayOfNulls<FloatArray>(audioInfo.channels)
         for (channel in 0 until audioInfo.channels) {
@@ -52,11 +53,11 @@ internal object AudioBytesUnpacker {
             val outBuff = signal[channel]
             for (i in 0 until frames) {
                 when (encoding) {
-                    AudioFormat.Encoding.PCM_SIGNED -> {
-                        val v = unpackSignedInt(bytesBuffer, p0 + i * audioInfo.frameSize, audioInfo.sampleSizeBits, audioInfo.isBigEndian)
+                    AudioFormatEncodings.PCM_SIGNED -> {
+                        val v = unpackSignedInt(bytesBuffer, p0 + i * audioInfo.frameSize, audioInfo.sampleSizeBits, audioInfo.bigEndian)
                         outBuff!![i] = v / maxValue
                     }
-                    AudioFormat.Encoding.PCM_FLOAT -> outBuff!![i] = unpackFloat(bytesBuffer, p0 + i * audioInfo.frameSize, audioInfo.isBigEndian)
+                    AudioFormatEncodings.PCM_FLOAT -> outBuff!![i] = unpackFloat(bytesBuffer, p0 + i * audioInfo.frameSize, audioInfo.bigEndian)
                     else -> throw UnsupportedOperationException("Audio stream format not supported (not signed PCM or Float).")
                 }
             }

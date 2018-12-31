@@ -17,6 +17,7 @@ import org.junit.runner.Description
 import org.junit.runner.RunWith
 import org.junit.runners.model.Statement
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner
 import redis.embedded.RedisServer
@@ -46,6 +47,7 @@ class RedisDaoIntegrationTest : TestRule {
 
 }
 
+@ActiveProfiles("test")
 @RunWith(SpringJUnit4ClassRunner::class)
 @ContextConfiguration(classes = [TestRedisConfig::class])
 class AudioSignalDaoIntegrationTest {
@@ -72,7 +74,7 @@ class AudioSignalDaoIntegrationTest {
             assertTrue(audioSignalDao.storeAudioSignal(audioSignal = it))
         }
         val actualAudioSignalSet =
-            audioSignalDao.retrieveAudioSignal(
+            audioSignalDao.retrieveAudioSignalFromRange(
                 key = audioSignalList[0].entityName + "_" + audioSignalList[0].audioFileName,
                 min = 1.0,
                 max = audioSignalList.size.toDouble()
@@ -93,7 +95,7 @@ class AudioSignalDaoIntegrationTest {
             assertTrue(audioSignalDao.storeAudioSignal(audioSignal = it))
         }
         val actualAudioSignalSet =
-            audioSignalDao.retrieveAudioSignal(
+            audioSignalDao.retrieveAudioSignalFromRange(
                 key = audioSignalList[0].entityName + "_" + audioSignalList[0].audioFileName,
                 min = 1.0,
                 max = audioSignalList.size.toDouble()
@@ -114,7 +116,7 @@ class AudioSignalDaoIntegrationTest {
             assertTrue(audioSignalDao.storeAudioSignal(audioSignal = it))
         }
         val actualAudioSignalSet =
-            audioSignalDao.retrieveAudioSignal(
+            audioSignalDao.retrieveAudioSignalFromRange(
                 key = audioSignalList[0].entityName + "_" + audioSignalList[0].audioFileName,
                 min = 1.0,
                 max = audioSignalList.size.toDouble()
@@ -128,6 +130,7 @@ class AudioSignalDaoIntegrationTest {
 
 }
 
+@ActiveProfiles("test")
 @RunWith(SpringJUnit4ClassRunner::class)
 @ContextConfiguration(classes = [TestRedisConfig::class])
 class AudioSignalRmsDaoIntegrationTest {
@@ -158,10 +161,10 @@ class AudioSignalRmsDaoIntegrationTest {
             assertTrue(audioSignalRmsDao.storeAudioSignalRms(audioSignalRms = it))
         }
         val actualAudioSignalRmsSet =
-                audioSignalRmsDao.retrieveAudioSignalRms(
-                        key = audioSignalRmsList[0].entityName + "_" + audioSignalRmsList[0].audioFileName,
-                        min = 0.0,
-                        max = 43.5
+                audioSignalRmsDao.retrieveAudioSignalRmsFromRange(
+                    key = audioSignalRmsList[0].entityName + "_" + audioSignalRmsList[0].audioFileName,
+                    min = 0.0,
+                    max = 43.5
                 )
         assertTrue(actualAudioSignalRmsSet?.isNotEmpty() ?: false)
         assertThat(actualAudioSignalRmsSet?.size, Is(equalTo(audioSignalRmsList.size)))
@@ -178,10 +181,10 @@ class AudioSignalRmsDaoIntegrationTest {
             assertTrue(audioSignalRmsDao.storeAudioSignalRms(audioSignalRms = it))
         }
         val actualAudioSignalRmsSet =
-                audioSignalRmsDao.retrieveAudioSignalRms(
-                        key = audioSignalRmsList[0].entityName + "_" + audioSignalRmsList[0].audioFileName,
-                        min = 0.0,
-                        max = 40.9
+                audioSignalRmsDao.retrieveAudioSignalRmsFromRange(
+                    key = audioSignalRmsList[0].entityName + "_" + audioSignalRmsList[0].audioFileName,
+                    min = 0.0,
+                    max = 40.9
                 )
         assertTrue(actualAudioSignalRmsSet?.isNotEmpty() ?: false)
         assertThat(actualAudioSignalRmsSet?.size, Is(equalTo(audioSignalRmsList.size)))
@@ -198,10 +201,10 @@ class AudioSignalRmsDaoIntegrationTest {
             assertTrue(audioSignalRmsDao.storeAudioSignalRms(audioSignalRms = it))
         }
         val actualAudioSignalRmsSet =
-                audioSignalRmsDao.retrieveAudioSignalRms(
-                        key = audioSignalRmsList[0].entityName + "_" + audioSignalRmsList[0].audioFileName,
-                        min = 0.0,
-                        max = 40.9
+                audioSignalRmsDao.retrieveAudioSignalRmsFromRange(
+                    key = audioSignalRmsList[0].entityName + "_" + audioSignalRmsList[0].audioFileName,
+                    min = 0.0,
+                    max = 40.9
                 )
         assertTrue(actualAudioSignalRmsSet?.isNotEmpty() ?: false)
         assertThat(actualAudioSignalRmsSet?.size, Is(equalTo(audioSignalRmsList.size)))

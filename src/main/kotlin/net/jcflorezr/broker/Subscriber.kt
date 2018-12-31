@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service
 import javax.annotation.PostConstruct
 
 interface Subscriber {
-    fun update()
+    suspend fun update()
 }
 
 @Service
@@ -33,7 +33,7 @@ final class SourceFileSubscriber : Subscriber {
         sourceFileTopic.register(this)
     }
 
-    override fun update() {
+    override suspend fun update() {
         val initialConfiguration = sourceFileTopic.getMessage()
         sourceFileDao.storeAudioFileMetadata(
             initialConfiguration = initialConfiguration
@@ -60,7 +60,7 @@ final class SignalSubscriber : Subscriber {
         signalTopic.register(this)
     }
 
-    override fun update() {
+    override suspend fun update() {
         val audioSignal = signalTopic.getMessage()
         audioSignalDao.storeAudioSignal(audioSignal = audioSignal).takeIf { it }
         ?.let {
@@ -86,12 +86,16 @@ final class SignalRmsSubscriber : Subscriber {
         audioSignalRmsTopic.register(this)
     }
 
-    override fun update() {
+    override suspend fun update() {
         val audioSignalRms = audioSignalRmsTopic.getMessage()
-        audioSignalRmsDao.storeAudioSignalRms(audioSignalRms = audioSignalRms).takeIf { it }
-
-        // TODO: we need to find a way to optimize calls to SoundZonesDetector
-        //soundZonesDetector.getSoundZones(audioRmsInfoList = audioSignal)
+        // TODO: implement custom exception
+        audioSignalRmsDao.storeAudioSignalRms(audioSignalRms)
+            .takeIf { it } ?: throw java.lang.RuntimeException()
+//        val audioRmsInfoList =
+//            audioSignalRmsDao.retrieveAllAudioSignalsRms(
+//                key = audioSignalRms.entityName + "_" + audioSignalRms.audioFileName
+//            ).toList()
+//        soundZonesDetector.generateSoundZones(audioRmsInfoList)
     }
 
 }
@@ -107,9 +111,11 @@ final class AudioClipSubscriber : Subscriber {
         audioClipTopic.register(this)
     }
 
-    override fun update() {
+    override suspend fun update() {
         val audioClip = audioClipTopic.getMessage()
-        // TODO: we need to find a way to group the audioClips
+//        1. store the last audio clip received
+//            (audio clip generator should retrieve the sound
+//            zones from database and determine if they are enough to build a grouped audio clip)
     }
 
 }

@@ -1,13 +1,16 @@
 package biz.source_code.dsp.sound
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import javafx.application.Application.launch
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.newSingleThreadContext
+import kotlinx.coroutines.runBlocking
 import net.jcflorezr.config.TestRootConfig
 import net.jcflorezr.model.AudioFileMetadata
 import net.jcflorezr.model.InitialConfiguration
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner
 import java.io.File
@@ -18,6 +21,7 @@ import java.io.File
  * re-construct an audio file from several parts of audio signals
  */
 // TODO: create net.jcflorezr package in test resource folder and put all the existing folders in there
+@ActiveProfiles("test")
 @RunWith(SpringJUnit4ClassRunner::class)
 @ContextConfiguration(classes = [TestRootConfig::class])
 class AudioIoImplIntegrationTest {
@@ -79,9 +83,6 @@ class AudioIoImplIntegrationTest {
     }
 
     private fun retrieveSignalFromAudioFile(audioFileLocation: String, audioFileName: String) {
-        // TODO: this call spawns new threads in the background
-        // and assertion errors are being "swallowed"
-        // we should learn to implement coroutines
         audioIo.generateAudioSignalFromAudioFile(
             InitialConfiguration(
                 audioFileLocation = audioFileLocation,

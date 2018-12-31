@@ -10,12 +10,7 @@ interface RedisDao
 
 interface AudioSignalDao : RedisDao {
     fun storeAudioSignal(audioSignal: AudioSignalKt) : Boolean
-    fun retrieveAudioSignal(key: String, min: Double, max: Double): MutableSet<AudioSignalKt>?
-}
-
-interface AudioSignalRmsDao : RedisDao {
-    fun storeAudioSignalRms(audioSignalRms: AudioSignalRmsInfoKt) : Boolean
-    fun retrieveAudioSignalRms(key: String, min: Double, max: Double): MutableSet<AudioSignalRmsInfoKt>?
+    fun retrieveAudioSignalFromRange(key: String, min: Double, max: Double): MutableSet<AudioSignalKt>?
 }
 
 @Repository
@@ -30,7 +25,7 @@ class AudioSignalDaoImpl : AudioSignalDao {
             .boundZSetOps(audioSignal.entityName + "_" + audioSignal.audioFileName)
             .add(audioSignal, audioSignal.index.toDouble())!!
 
-    override fun retrieveAudioSignal(
+    override fun retrieveAudioSignalFromRange(
         key: String,
         min: Double,
         max: Double
@@ -39,6 +34,12 @@ class AudioSignalDaoImpl : AudioSignalDao {
             .boundZSetOps(key)
             .rangeByScore(min, max)
 
+}
+
+interface AudioSignalRmsDao : RedisDao {
+    fun storeAudioSignalRms(audioSignalRms: AudioSignalRmsInfoKt) : Boolean
+    fun retrieveAllAudioSignalsRms(key: String): MutableSet<AudioSignalRmsInfoKt>
+    fun retrieveAudioSignalRmsFromRange(key: String, min: Double, max: Double): MutableSet<AudioSignalRmsInfoKt>?
 }
 
 @Repository
@@ -53,7 +54,14 @@ class AudioSignalRmsDaoImpl : AudioSignalRmsDao {
             .boundZSetOps(audioSignalRms.entityName + "_" + audioSignalRms.audioFileName)
             .add(audioSignalRms, audioSignalRms.index)!!
 
-    override fun retrieveAudioSignalRms(
+    override fun retrieveAllAudioSignalsRms(
+            key: String
+    ): MutableSet<AudioSignalRmsInfoKt> =
+        audioSignalRmsTemplate
+            .boundZSetOps(key)
+            .range(0, -1)!!
+
+    override fun retrieveAudioSignalRmsFromRange(
         key: String,
         min: Double,
         max: Double

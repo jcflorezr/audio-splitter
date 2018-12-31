@@ -4,7 +4,8 @@ import biz.source_code.dsp.model.AudioFileWritingResult
 import biz.source_code.dsp.model.AudioSignal
 import biz.source_code.dsp.model.AudioSignalKt
 import biz.source_code.dsp.util.AudioFormatsSupported
-import net.jcflorezr.broker.Topic
+import net.jcflorezr.broker.MessageLauncher
+import net.jcflorezr.model.AudioSourceInfo
 import net.jcflorezr.model.InitialConfiguration
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -26,7 +27,7 @@ interface AudioIo {
 final class AudioIoImpl : AudioIo {
 
     @Autowired
-    private lateinit var signalTopic: Topic<AudioSignalKt>
+    private lateinit var messageLauncher: MessageLauncher<AudioSignalKt>
 
     override fun saveAudioFile(fileName: String, extension: String, signal: AudioSignal, pos: Int, len: Int): AudioFileWritingResult {
         throw UnsupportedAudioFileException()
@@ -44,10 +45,9 @@ final class AudioIoImpl : AudioIo {
                 ?: throw IOException("Sound file too long.")
             val sampleRate = stream.format.sampleRate.toInt()
             val blockFrames = sampleRate.takeIf { it < totalFrames } ?: totalFrames // used to be 0x4000
-            val audioInfo = AudioInputStreamInfo.getAudioInfo(stream.format)
+            val audioInfo = AudioSourceInfo.getAudioInfo(stream.format)
             val (position, index) = 0 to 1
-            generateSequence(position to index)
-            {
+            generateSequence(position to index) {
                 val requiredFrames = Math.min(totalFrames - it.first, blockFrames).let {
                     reqFrames -> if (reqFrames < blockFrames) { reqFrames * audioInfo.frameSize } else { reqFrames }
                 }
@@ -69,14 +69,15 @@ final class AudioIoImpl : AudioIo {
                     initialPositionInSeconds = it.first.toFloat() / sampleRate.toFloat(),
                     endPosition = it.first + framesToRead,
                     endPositionInSeconds = (it.first + framesToRead).toFloat() / sampleRate.toFloat(),
-                    data = AudioBytesUnpacker.generateAudioSignal(audioInfo, bytesBuffer, framesToRead)
+                    data = AudioBytesUnpacker.generateAudioSignal(audioInfo, bytesBuffer, framesToRead),
+                    dataInBytes = bytesBuffer,
+                    audioSourceInfo = audioInfo
                 )
-                // TODO: Thread is not the option
-                Thread { signalTopic.postMessage(msg = audioSignal) }.start()
+                messageLauncher.launchMessage(msg = audioSignal)
                 Pair(it.first + framesToRead, it.second + 1)
             }.takeWhile { it.first < totalFrames }
             .toList()
-            // TODO: return an object for auditing process
+            // TODO: return an object for auditing process, perhaps an Aspect receive the consolidated result
         }
     }
 

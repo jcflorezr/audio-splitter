@@ -1,103 +1,33 @@
 package net.jcflorezr.broker
 
-import biz.source_code.dsp.model.AudioSignalKt
-import net.jcflorezr.model.AudioClipInfo
-import net.jcflorezr.model.AudioSignalRmsInfoKt
-import net.jcflorezr.model.InitialConfiguration
 import org.springframework.stereotype.Service
 
-abstract class Topic<T> {
+interface Message
 
-    private val observers = mutableListOf<Subscriber>()
-    protected val mutex = Any()
+@Service
+final class Topic<T : Message> {
+
+    private val subscribers = mutableListOf<Subscriber>()
+    private lateinit var message: T
 
     fun register(subscriber: Subscriber) {
-        synchronized(mutex) {
-            observers.add(subscriber)
-        }
+        subscribers.add(subscriber)
     }
 
     fun unregister(subscriber: Subscriber) {
-        synchronized(mutex) {
-            observers.remove(subscriber)
+        subscribers.remove(subscriber)
+    }
+
+    suspend fun postMessage(msg: T) {
+        if (!::message.isInitialized || this.message != msg) {
+            message = msg
+            notifyObservers()
         }
     }
 
-    abstract fun postMessage(msg: T)
+    suspend fun getMessage() = message
 
-    abstract fun getMessage() : T
-
-    fun notifyObservers() {
-        synchronized(mutex) {
-            observers.forEach { it.update() }
-        }
+    private suspend fun notifyObservers() {
+        subscribers.forEach { it.update() }
     }
-}
-
-@Service
-final class SourceFile : Topic<InitialConfiguration>() {
-
-    private lateinit var message: InitialConfiguration
-
-    override fun postMessage(message: InitialConfiguration) {
-        this.message = message
-        notifyObservers()
-    }
-
-    override fun getMessage() = message
-
-}
-
-@Service
-final class Signal : Topic<AudioSignalKt>() {
-
-    private lateinit var message: AudioSignalKt
-
-    override fun postMessage(msg: AudioSignalKt) {
-        synchronized(mutex) {
-            if (!::message.isInitialized || this.message != msg) {
-                message = msg
-                notifyObservers()
-            }
-        }
-    }
-
-    override fun getMessage() = message
-
-}
-
-@Service
-final class SignalRms : Topic<AudioSignalRmsInfoKt>() {
-
-    private lateinit var message: AudioSignalRmsInfoKt
-
-    override fun postMessage(msg: AudioSignalRmsInfoKt) {
-        synchronized(mutex) {
-            if (!::message.isInitialized || this.message != msg) {
-                message = msg
-                notifyObservers()
-            }
-        }
-    }
-
-    override fun getMessage() = message
-
-}
-
-@Service
-final class AudioClip : Topic<AudioClipInfo>() {
-
-    private lateinit var message: AudioClipInfo
-
-    override fun postMessage(msg: AudioClipInfo) {
-        synchronized(mutex) {
-            if (!::message.isInitialized || this.message != msg) {
-                message = msg
-                notifyObservers()
-            }
-        }
-    }
-
-    override fun getMessage() = message
-
 }

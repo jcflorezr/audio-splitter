@@ -1,11 +1,13 @@
 package biz.source_code.dsp.sound
 
+import net.jcflorezr.model.AudioFormatEncodings
+import net.jcflorezr.model.AudioSourceInfo
 import java.io.InputStream
 import javax.sound.sampled.AudioFormat
 
 internal class AudioBytesPacker(
     private val format: AudioFormat,
-    private val inBufs: Array<FloatArray?>,
+    private val signal: Array<FloatArray?>,
     private val inOffs: Int,
     private val inLen: Int
 ) : InputStream() {
@@ -16,7 +18,7 @@ internal class AudioBytesPacker(
     private val sampleSizeBits: Int
     private val frameSize: Int
     private val bigEndian: Boolean
-    private val encoding: AudioFormat.Encoding
+    private val encoding: AudioFormatEncodings
 
     private val bytesSignedInt16: List<(Int) -> Byte>
     private val bytesSignedInt24: List<(Int) -> Byte>
@@ -26,12 +28,12 @@ internal class AudioBytesPacker(
     private val bytesUnsignedIntReversed: List<(Int) -> Byte>
 
     init {
-        val audioInfo = AudioInputStreamInfo.getAudioInfo(format, inBufs)
+        val audioInfo = AudioSourceInfo.getAudioInfo(format, signal)
         frameSize = audioInfo.frameSize
         sampleSize = audioInfo.sampleSize
         sampleSizeBits = audioInfo.sampleSizeBits
         channels = audioInfo.channels
-        bigEndian = audioInfo.isBigEndian
+        bigEndian = audioInfo.bigEndian
         encoding = audioInfo.encoding
         bytesSignedInt16 = listOf(
             {i -> (i and 0xFF).toByte()},
@@ -54,7 +56,7 @@ internal class AudioBytesPacker(
         }
         val reqFrames = outLen / format.frameSize
         val trFrames = Math.min(remFrames, reqFrames)
-        packAudioStreamBytes(inBufs, inOffs + pos, outBuf, outOffs, trFrames)
+        packAudioStreamBytes(signal, inOffs + pos, outBuf, outOffs, trFrames)
         pos += trFrames
         return trFrames * format.frameSize
     }
@@ -70,11 +72,11 @@ internal class AudioBytesPacker(
             for (i in 0 until frames) {
                 val clipped = Math.max(-1f, Math.min(1f, inBuf!![inPos + i]))
                 when(encoding) {
-                    AudioFormat.Encoding.PCM_SIGNED -> {
+                    AudioFormatEncodings.PCM_SIGNED -> {
                         val v = Math.round(clipped * maxValue)
                         packSignedInt(v, outBuf, p0 + i * frameSize, sampleSizeBits, bigEndian)
                     }
-                    AudioFormat.Encoding.PCM_FLOAT -> packFloat(clipped, outBuf, p0 + i * frameSize, bigEndian)
+                    AudioFormatEncodings.PCM_FLOAT -> packFloat(clipped, outBuf, p0 + i * frameSize, bigEndian)
                     else -> throw UnsupportedOperationException("Audio stream format not supported (not signed PCM or Float).")
                 }
             }

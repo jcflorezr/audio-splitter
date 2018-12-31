@@ -2,15 +2,18 @@ package net.jcflorezr.broker
 
 import biz.source_code.dsp.model.AudioSignalKt
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import net.jcflorezr.model.AudioClipInfo
 import net.jcflorezr.model.InitialConfiguration
 import net.jcflorezr.model.AudioSignalRmsInfoKt
 import org.apache.commons.io.FilenameUtils
+import org.hamcrest.CoreMatchers
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Assert
+import org.junit.Assert.assertNotNull
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.io.File
@@ -37,7 +40,7 @@ final class SourceFileSubscriberTest : Subscriber {
         testResourcesPath = thisClass.getResource("/source/").path
     }
 
-    override fun update() {
+    override suspend fun update() {
         val expectedConfiguration =
             MAPPER.readValue<InitialConfiguration>(File(testResourcesPath + "initial-configuration.json"))
         println("testing initial configuration...")
@@ -67,15 +70,17 @@ final class SignalSubscriberTest : Subscriber {
         testResourcesPath = thisClass.getResource("/sound/").path
     }
 
-    override fun update() {
+    override suspend fun update() {
         val audioSignal = signalTopic.getMessage()
         val folderName = FilenameUtils.getBaseName(audioSignal.audioFileName)
         val path = "$testResourcesPath$folderName/"
-        val signalParts = File(path).listFiles()
+        val signalPart = File(path).listFiles()
             .filter { it.extension == "json" }
-            .map { signalJsonFile -> MAPPER.readValue<AudioSignalKt>(signalJsonFile) }
+            .find { it.nameWithoutExtension == "${audioSignal.index}-$folderName" }
+            ?.let { signalJsonFile -> MAPPER.readValue<AudioSignalKt>(signalJsonFile) }
         println("check if current signal part exists")
-        Assert.assertTrue(signalParts.contains(audioSignal))
+        assertNotNull(signalPart)
+        assertThat(audioSignal, Is(equalTo(signalPart)))
     }
 
 }
@@ -100,7 +105,7 @@ final class SignalRmsSubscriberTest : Subscriber {
         testResourcesPath = thisClass.getResource("/signal/").path
     }
 
-    override fun update() {
+    override suspend fun update() {
         val signalRms = audioSignalRmsTopic.getMessage()
         // TODO: implement a logger
         println("check if current signal rms exists")
@@ -133,7 +138,7 @@ final class AudioClipSubscriberTest : Subscriber {
         testResourcesPath = thisClass.getResource("/clip/").path
     }
 
-    override fun update() {
+    override suspend fun update() {
         val audioClip = audioClipTopic.getMessage()
         println("check if current audio clip exists")
         val folderName = FilenameUtils.getBaseName(audioClip.audioFileName)

@@ -32,8 +32,8 @@ public class AudioClipsGeneratorImpl
     public List<AudioFileClipResultEntity> generateAudioClip(String audioFileName, AudioFileCompleteInfo audioFileCompleteInfo, OutputAudioClipsConfig outputAudioClipsConfig, boolean generateAudioClipsByGroup) {
 
 
-        start reviewing what doe this class and how this class is connected to AudioIo for creating
-        audio clipes from audio signals
+//        start reviewing what doe this class and how this class is connected to AudioIo for creating
+//        audio clipes from audio signals
 
 
 

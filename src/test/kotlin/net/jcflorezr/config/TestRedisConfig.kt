@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.beans.factory.config.ConfigurableBeanFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Profile
 import org.springframework.context.annotation.PropertySource
 import org.springframework.context.annotation.Scope
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration
@@ -31,6 +32,7 @@ class TestRedisConfig {
     @Value("\${redis.port}")
     private lateinit var port: Integer
 
+    @Profile("test")
     @Bean
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     fun jedisConnectionFactory(): JedisConnectionFactory {
@@ -39,6 +41,7 @@ class TestRedisConfig {
         )
     }
 
+    @Profile("test")
     @Bean
     fun audioSignalDaoTemplate(): RedisTemplate<String, AudioSignalKt> {
         val template = RedisTemplate<String, AudioSignalKt>()
@@ -47,6 +50,7 @@ class TestRedisConfig {
         return template
     }
 
+    @Profile("test")
     @Bean
     fun audioSignalRmsDaoTemplate(): RedisTemplate<String, AudioSignalRmsInfoKt> {
         val template = RedisTemplate<String, AudioSignalRmsInfoKt>()
@@ -59,9 +63,9 @@ class TestRedisConfig {
     DAOs
      */
 
-    @Bean fun audioSignalDao(): AudioSignalDao = AudioSignalDaoImpl()
+    @Profile("test") @Bean fun audioSignalDao(): AudioSignalDao = AudioSignalDaoImpl()
 
-    @Bean fun audioSignalRmsDao(): AudioSignalRmsDao = AudioSignalRmsDaoImpl()
+    @Profile("test") @Bean fun audioSignalRmsDao(): AudioSignalRmsDao = AudioSignalRmsDaoImpl()
 
 }
 

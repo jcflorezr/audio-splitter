@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.cassandra.core.CassandraAdminTemplate
 import org.springframework.data.cassandra.core.convert.MappingCassandraConverter
 import org.springframework.data.cassandra.core.cql.CqlIdentifier
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner
 import java.io.File
@@ -78,6 +79,7 @@ class CassandraDaoIntegrationTest : TestRule {
 
 }
 
+@ActiveProfiles("test")
 @RunWith(SpringJUnit4ClassRunner::class)
 @ContextConfiguration(classes = [TestCassandraConfig::class])
 class SourceFileDaoImplIntegrationTest {

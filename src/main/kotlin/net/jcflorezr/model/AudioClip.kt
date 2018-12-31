@@ -1,5 +1,7 @@
 package net.jcflorezr.model
 
+import net.jcflorezr.broker.Message
+
 data class AudioClipInfo(
     val audioFileName: String,
     val entityName: String = "audioClip",
@@ -13,4 +15,4 @@ data class AudioClipInfo(
     val seconds: Int,
     val tenthsOfSecond: Int,
     val audioClipName: String
-)
+) : Message

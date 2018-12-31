@@ -1,5 +1,8 @@
 package net.jcflorezr.signal
 
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import net.jcflorezr.broker.MessageLauncher
 import net.jcflorezr.broker.Topic
 import net.jcflorezr.model.AudioClipInfo
 import net.jcflorezr.model.AudioSignalRmsInfoKt
@@ -8,20 +11,20 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 interface SoundZonesDetector {
-    fun getSoundZones(audioRmsInfoList: List<AudioSignalRmsInfoKt>)
+    fun generateSoundZones(audioRmsInfoList: List<AudioSignalRmsInfoKt>)
 }
 
 @Service
 class SoundZonesDetectorImpl : SoundZonesDetector {
 
     @Autowired
-    private lateinit var audioClipTopic : Topic<AudioClipInfo>
+    private lateinit var messageLauncher: MessageLauncher<AudioClipInfo>
 
     companion object {
         private const val MAX_ACTIVE_COUNTER = 80
     }
 
-    override fun getSoundZones(audioRmsInfoList: List<AudioSignalRmsInfoKt>) {
+    override fun generateSoundZones(audioRmsInfoList: List<AudioSignalRmsInfoKt>) {
         var silenceCounter = 0
         var activeCounter = 0
         var startActiveZonePosition = 0
@@ -36,13 +39,13 @@ class SoundZonesDetectorImpl : SoundZonesDetector {
                         if (activeCounter >= MAX_ACTIVE_COUNTER) {
                             val from = startActiveZonePosition / rmsInfo.segmentSize
                             val to = rmsInfo.initialPosition / rmsInfo.segmentSize
-                            getSoundZonesByActiveSegments(audioRmsInfoList.subList(from, to), rmsInfo.segmentSize, rmsInfo.samplingRate)
+                            getSoundZonesByActiveSegments(audioRmsInfoList.subList(from, to), rmsInfo.segmentSize)
                         } else {
                             startActiveZonePosition = Math.max(startActiveZonePosition - rmsInfo.segmentSize * 2, 0)
                             endActiveZonePosition = rmsInfo.initialPosition
 
                             val audioClipInfo = generateAudioClipInfo(startActiveZonePosition, endActiveZonePosition, rmsInfo)
-                            Thread { audioClipTopic.postMessage(msg = audioClipInfo) }.run()
+                            messageLauncher.launchMessage(msg = audioClipInfo)
                         }
                     } else {
                         startActiveZonePosition = rmsInfo.initialPosition
@@ -60,7 +63,7 @@ class SoundZonesDetectorImpl : SoundZonesDetector {
         }
     }
 
-    private fun getSoundZonesByActiveSegments(rmsInfoList: List<AudioSignalRmsInfoKt>, segmentSize: Int, samplingRate: Int) {
+    private fun getSoundZonesByActiveSegments(rmsInfoList: List<AudioSignalRmsInfoKt>, segmentSize: Int) {
         var activeCounter = 0
         var inactiveCounter = 0
         var startActiveZonePosition = 0
@@ -81,7 +84,8 @@ class SoundZonesDetectorImpl : SoundZonesDetector {
                 if (activeCounter >= 3) {
                     endActiveZonePosition = rmsInfo.initialPosition
                     val audioClipInfo = generateAudioClipInfo(startActiveZonePosition, endActiveZonePosition, rmsInfo)
-                    Thread { audioClipTopic.postMessage(msg = audioClipInfo) }.run()
+                    // TODO: replace this with coroutine
+                    messageLauncher.launchMessage(msg = audioClipInfo)
                 }
                 activeCounter = 0
             }

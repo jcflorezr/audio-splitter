@@ -1,6 +1,9 @@
 package net.jcflorezr.signal
 
 import biz.source_code.dsp.model.AudioSignalKt
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import net.jcflorezr.broker.MessageLauncher
 import net.jcflorezr.broker.Topic
 import net.jcflorezr.model.AudioSignalRmsInfoKt
 import net.jcflorezr.util.AudioUtilsKt
@@ -15,7 +18,7 @@ interface RmsCalculator {
 class RmsCalculatorImpl : RmsCalculator {
 
     @Autowired
-    private lateinit var audioSignalRmsTopic: Topic<AudioSignalRmsInfoKt>
+    private lateinit var messageLauncher: MessageLauncher<AudioSignalRmsInfoKt>
 
     companion object {
         private const val SILENCE_THRESHOLD = 0.001
@@ -56,8 +59,7 @@ class RmsCalculatorImpl : RmsCalculator {
                 silence = silence,
                 active = active
             )
-            // TODO: Thread is not the option
-            Thread { audioSignalRmsTopic.postMessage(msg = rmsSignalInfo) }.start()
+            messageLauncher.launchMessage(msg = rmsSignalInfo)
             RmsValues(pos = endPos, index = it.index + 1, rms = currentRms, diff = currentDiff)
         }.takeWhile { it.pos < signal.size }
         .toList()
