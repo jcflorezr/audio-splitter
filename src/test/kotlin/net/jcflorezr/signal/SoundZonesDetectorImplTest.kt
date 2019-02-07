@@ -3,7 +3,10 @@ package net.jcflorezr.signal
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import net.jcflorezr.config.TestRootConfig
+import net.jcflorezr.model.AudioClipInfo
 import net.jcflorezr.model.AudioSignalRmsInfoKt
+import org.hamcrest.CoreMatchers.equalTo
+import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -11,6 +14,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner
 import java.io.File
+import org.hamcrest.CoreMatchers.`is` as Is
 
 @ActiveProfiles("test")
 @RunWith(SpringJUnit4ClassRunner::class)
@@ -24,32 +28,62 @@ class SoundZonesDetectorImplTest {
         private val MAPPER = ObjectMapper().registerKotlinModule()
     }
 
-    private val testResourcesPath: String
+    private val signalResourcesPath: String
+    private val clipsResourcesPath: String
     private val thisClass: Class<SoundZonesDetectorImplTest> = this.javaClass
 
     init {
-        testResourcesPath = thisClass.getResource("/signal/").path
+        signalResourcesPath = thisClass.getResource("/signal/").path
+        clipsResourcesPath = thisClass.getResource("/clip/").path
     }
 
     @Test
     fun generateAudioClipsInfoForFileWithBackgroundNoiseAndLowVoiceVolume() {
-        generateRmsInfo(path = testResourcesPath + "background-noise-low-volume/background-noise-low-volume.json")
+        detectSoundZones(
+            path = signalResourcesPath + "background-noise-low-volume/background-noise-low-volume.json",
+            folderName = "background-noise-low-volume"
+        )
     }
+
+//    @Test
+//    fun generateIncompleteAudioClipsInfoForFileWithBackgroundNoiseAndLowVoiceVolume() {
+//        detectSoundZones(
+//            path = signalResourcesPath + "background-noise-low-volume/background-noise-low-volume-incomplete.json",
+//            folderName = "background-noise-low-volume"
+//        )
+//    }
 
     @Test
     fun generateAudioClipsInfoForFileWithApplause() {
-        generateRmsInfo(path = testResourcesPath + "with-applause/with-applause.json")
+        detectSoundZones(
+            path = signalResourcesPath + "with-applause/with-applause.json",
+            folderName = "with-applause"
+        )
     }
+
+//    @Test
+//    fun generateIncompleteAudioClipsInfoForFileWithApplause() {
+//        detectSoundZones(
+//            path = signalResourcesPath + "with-applause/with-applause-incomplete.json",
+//            folderName = "with-applause"
+//        )
+//    }
 
     @Test
     fun generateAudioClipsInfoForFileWithStrongBackgroundNoise() {
-        generateRmsInfo(path = testResourcesPath + "strong-background-noise/strong-background-noise.json")
+        detectSoundZones(
+            path = signalResourcesPath + "strong-background-noise/strong-background-noise.json",
+            folderName = "strong-background-noise"
+        )
     }
 
-    private fun generateRmsInfo(path: String) {
-        val signalRmsListType = MAPPER.typeFactory.constructCollectionType(List::class.java, AudioSignalRmsInfoKt::class.java)
-        val audioSignalRmsList: List<AudioSignalRmsInfoKt> = MAPPER.readValue(File(path), signalRmsListType)
-        soundZonesDetector.generateSoundZones(audioRmsInfoList = audioSignalRmsList)
-        Thread.sleep(2000L)
+    private fun detectSoundZones(path: String, folderName: String) {
+//        val signalRmsListType = MAPPER.typeFactory.constructCollectionType(List::class.java, AudioSignalRmsInfoKt::class.java)
+//        val audioSignalRmsList: List<AudioSignalRmsInfoKt> = MAPPER.readValue(File(path), signalRmsListType)
+//        val actualAudioClipsInfoList = soundZonesDetector.generateSoundZones(audioRmsInfoList = audioSignalRmsList)
+//        val audioClipListType = MAPPER.typeFactory.constructCollectionType(List::class.java, AudioClipInfo::class.java)
+//        val expectedAudioClipsInfoList: List<AudioClipInfo> =
+//            MAPPER.readValue(File("$clipsResourcesPath/$folderName/$folderName.json"), audioClipListType)
+//        assertThat(actualAudioClipsInfoList, Is(equalTo(expectedAudioClipsInfoList)))
     }
 }

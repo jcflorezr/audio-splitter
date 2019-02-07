@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.type.CollectionType
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import kotlinx.coroutines.runBlocking
 import net.jcflorezr.config.SignalDaoConfig
 import net.jcflorezr.config.SignalRmsDaoConfig
 import net.jcflorezr.model.AudioPartEntity
@@ -164,10 +165,12 @@ class AudioSignalRmsDaoIntegrationTest {
 
     private fun storeSignalRms(sourceFilePath: String, minIndex: Double, maxIndex: Double) {
         val audioSignalRmsList: List<AudioSignalRmsInfoKt> = MAPPER.readValue(File(sourceFilePath), signalRmsListType)
-        audioSignalRmsList.forEach {
-            assertTrue(audioSignalRmsDao.storeAudioSignalRms(audioSignalRms = it))
+        runBlocking {
+            audioSignalRmsList.forEach {
+                assertTrue(audioSignalRmsDao.storeAudioSignalRms(audioSignalRms = it))
+            }
         }
-        val actualAudioSignalRmsSet = audioSignalRmsDao.retrieveAudioSignalRmsFromRange(
+        val actualAudioSignalRmsSet = audioSignalRmsDao.retrieveAudioSignalsRmsFromRange(
             key = audioSignalRmsList[0].entityName + "_" + audioSignalRmsList[0].audioFileName,
             min = minIndex,
             max = maxIndex

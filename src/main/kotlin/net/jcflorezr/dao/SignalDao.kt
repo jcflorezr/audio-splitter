@@ -4,6 +4,7 @@ import biz.source_code.dsp.model.AudioSignalKt
 import com.datastax.driver.core.querybuilder.QueryBuilder
 import net.jcflorezr.model.AudioPartEntity
 import net.jcflorezr.model.AudioSignalRmsInfoKt
+import net.jcflorezr.util.AudioUtilsKt.tenthsSecondsFormat
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.cassandra.core.CassandraOperations
 import org.springframework.data.cassandra.core.selectOne
@@ -15,7 +16,7 @@ interface AudioSignalDao {
     fun storeAudioSignal(audioSignal: AudioSignalKt) : Boolean
     fun storeAudioSignalPart(audioSignal: AudioSignalKt) : AudioPartEntity
     fun retrieveAudioSignalPart(audioFileName: String, index: Int) : AudioPartEntity?
-    fun retrieveAudioSignalFromRange(key: String, min: Double, max: Double): MutableSet<AudioSignalKt>?
+    fun retrieveAudioSignalFromRange(key: String, min: Double, max: Double): List<AudioSignalKt>?
 }
 
 @Repository
@@ -62,17 +63,19 @@ class AudioSignalDaoImpl : AudioSignalDao {
         key: String,
         min: Double,
         max: Double
-    ): MutableSet<AudioSignalKt>? =
+    ): List<AudioSignalKt>? =
         audioSignalTemplate
             .boundZSetOps(key)
-            .rangeByScore(min, max)
+            .rangeByScore(min, max)?.toList()
 
 }
 
 interface AudioSignalRmsDao {
     fun storeAudioSignalRms(audioSignalRms: AudioSignalRmsInfoKt) : Boolean
-    fun retrieveAllAudioSignalsRms(key: String): MutableSet<AudioSignalRmsInfoKt>
-    fun retrieveAudioSignalRmsFromRange(key: String, min: Double, max: Double): MutableSet<AudioSignalRmsInfoKt>?
+    fun storeAudioSignalsRms(audioSignalsRms: List<AudioSignalRmsInfoKt>)
+    fun retrieveAllAudioSignalsRms(key: String): List<AudioSignalRmsInfoKt>
+    fun retrieveAudioSignalsRmsFromRange(key: String, min: Double, max: Double): List<AudioSignalRmsInfoKt>
+    fun removeAudioSignalsRmsFromRange(key: String, min: Double, max: Double): Long
 }
 
 @Repository
@@ -81,26 +84,40 @@ class AudioSignalRmsDaoImpl : AudioSignalRmsDao {
     @Autowired
     private lateinit var audioSignalRmsTemplate: RedisTemplate<String, AudioSignalRmsInfoKt>
 
+    override fun storeAudioSignalsRms(
+        audioSignalsRms: List<AudioSignalRmsInfoKt>
+    ): Unit = audioSignalsRms.forEach { storeAudioSignalRms(audioSignalRms = it) }
+
     override fun storeAudioSignalRms(
         audioSignalRms: AudioSignalRmsInfoKt
-    ) = audioSignalRmsTemplate
-            .boundZSetOps(audioSignalRms.entityName + "_" + audioSignalRms.audioFileName)
+    ): Boolean =
+        audioSignalRmsTemplate
+            .boundZSetOps("${audioSignalRms.entityName}_${audioSignalRms.audioFileName}")
             .add(audioSignalRms, audioSignalRms.index)!!
 
     override fun retrieveAllAudioSignalsRms(
-            key: String
-    ): MutableSet<AudioSignalRmsInfoKt> =
-        audioSignalRmsTemplate
+        key: String
+    ) = audioSignalRmsTemplate
             .boundZSetOps(key)
-            .range(0, -1)!!
+            .range(0, -1)?.toList() ?: ArrayList()
 
-    override fun retrieveAudioSignalRmsFromRange(
+    override fun retrieveAudioSignalsRmsFromRange(
         key: String,
         min: Double,
         max: Double
-    ): MutableSet<AudioSignalRmsInfoKt>? =
-        audioSignalRmsTemplate
+    ) = audioSignalRmsTemplate
             .boundZSetOps(key)
-            .rangeByScore(min, max)
+            .rangeByScore(tenthsSecondsFormat(min), tenthsSecondsFormat(max))
+            ?.toList() ?: ArrayList()
+
+    override fun removeAudioSignalsRmsFromRange(
+        key: String,
+        min: Double,
+        max: Double
+    ) : Long {
+        return audioSignalRmsTemplate
+            .boundZSetOps(key)
+            .removeRangeByScore(tenthsSecondsFormat(min), tenthsSecondsFormat(max)) ?: 0L
+    }
 
 }

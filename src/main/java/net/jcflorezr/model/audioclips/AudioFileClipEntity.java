@@ -111,8 +111,8 @@ public class AudioFileClipEntity {
         return "AudioFileClipEntity{" +
                 "audioFileClipsPrimaryKey=" + audioFileClipsPrimaryKey +
                 ", groupNumber=" + groupNumber +
-                ", startPosition=" + startPosition +
-                ", startPositionInSeconds=" + startPositionInSeconds +
+                ", initialPosition=" + startPosition +
+                ", initialPositionInSeconds=" + startPositionInSeconds +
                 ", endPosition=" + endPosition +
                 ", endPositionInSeconds=" + endPositionInSeconds +
                 ", durationInSeconds=" + durationInSeconds +

@@ -82,7 +82,7 @@ class AudioIoImplIntegrationTest {
 
     }
 
-    private fun retrieveSignalFromAudioFile(audioFileLocation: String, audioFileName: String) {
+    private fun retrieveSignalFromAudioFile(audioFileLocation: String, audioFileName: String) = runBlocking {
         audioIo.generateAudioSignalFromAudioFile(
             InitialConfiguration(
                 audioFileLocation = audioFileLocation,

@@ -1,5 +1,6 @@
 package net.jcflorezr.core
 
+import kotlinx.coroutines.runBlocking
 import net.jcflorezr.config.TestRootConfig
 import net.jcflorezr.model.InitialConfiguration
 import org.apache.commons.io.FilenameUtils
@@ -29,23 +30,17 @@ class AudioSplitterImplTest {
     }
 
     @Test
-    fun generateAudioClips() {
+    fun generateAudioClips() = runBlocking {
         val audioFileLocation = testResourcesPath
         val audioFileName = "test-audio-mono-22050.mp3"
-
-        /* TODO: this call spawns new threads in the background
-            and assertion errors are being "swallowed"
-            we should learn to implement coroutines
-         */
         /* TODO: this test is going to fail due to the fixed audioFileLocation
             stored in InitialConfiguration
          */
-        audioSplitter.generateAudioClips(
+        audioSplitter.splitAudioIntoClips(
             configuration = InitialConfiguration(
                 audioFileLocation = audioFileLocation + audioFileName
             )
         )
-        Thread.sleep(2000L)
         val convertedAudioFileName = FilenameUtils.getBaseName(audioFileName) + ".wav"
         File(audioFileLocation + convertedAudioFileName).delete()
     }

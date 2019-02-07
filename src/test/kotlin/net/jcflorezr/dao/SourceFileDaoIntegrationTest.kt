@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import net.jcflorezr.config.SourceFileDaoConfig
-import net.jcflorezr.config.TestCassandraConfig
 import net.jcflorezr.model.AudioFileMetadataEntity
 import net.jcflorezr.model.InitialConfiguration
 import org.hamcrest.CoreMatchers.equalTo

@@ -3,84 +3,63 @@ package net.jcflorezr.config
 import biz.source_code.dsp.model.AudioSignalKt
 import biz.source_code.dsp.sound.AudioIo
 import biz.source_code.dsp.sound.AudioIoImpl
-import net.jcflorezr.broker.AudioClipLauncherTest
-import net.jcflorezr.broker.AudioClipSubscriberTest
-import net.jcflorezr.broker.AudioSignalLauncherTest
-import net.jcflorezr.broker.AudioSignalRmsLauncherTest
-import net.jcflorezr.broker.SignalRmsSubscriberTest
-import net.jcflorezr.broker.SignalSubscriberTest
-import net.jcflorezr.broker.SourceFileLauncherTest
-import net.jcflorezr.broker.SourceFileSubscriberTest
+import net.jcflorezr.broker.AudioClipSubscriberMock
+import net.jcflorezr.broker.SignalRmsSubscriberMock
+import net.jcflorezr.broker.SignalSubscriberMock
+import net.jcflorezr.broker.SourceFileSubscriberMock
 import net.jcflorezr.broker.Subscriber
 import net.jcflorezr.broker.Topic
 import net.jcflorezr.core.AudioSplitter
 import net.jcflorezr.core.AudioSplitterImpl
-import net.jcflorezr.dao.AudioSignalDao
-import net.jcflorezr.dao.AudioSignalDaoImpl
-import net.jcflorezr.dao.AudioSignalRmsDao
-import net.jcflorezr.dao.AudioSignalRmsDaoImpl
-import net.jcflorezr.dao.SourceFileDao
-import net.jcflorezr.dao.SourceFileDaoImpl
 import net.jcflorezr.model.AudioClipInfo
-import net.jcflorezr.model.AudioSignalRmsInfoKt
+import net.jcflorezr.model.AudioSignalsRmsInfo
 import net.jcflorezr.model.InitialConfiguration
 import net.jcflorezr.signal.RmsCalculator
 import net.jcflorezr.signal.RmsCalculatorImpl
 import net.jcflorezr.signal.SoundZonesDetector
-import net.jcflorezr.signal.SoundZonesDetectorImpl
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.EnableAspectJAutoProxy
 import org.springframework.context.annotation.Profile
 
 @Configuration
+@EnableAspectJAutoProxy
 class TestRootConfig {
 
     /*
     Services
      */
 
-    @Profile("test") @Bean fun audioSplitter(): AudioSplitter = AudioSplitterImpl()
+    @Profile("test") @Bean fun audioSplitterTest(): AudioSplitter = AudioSplitterImpl()
 
-    @Profile("test") @Bean fun audioIo(): AudioIo = AudioIoImpl()
+    @Profile("test") @Bean fun audioIoTest(): AudioIo = AudioIoImpl()
 
-    @Profile("test") @Bean fun rmsCalculator(): RmsCalculator = RmsCalculatorImpl()
+    @Profile("test") @Bean fun rmsCalculatorTest(): RmsCalculator = RmsCalculatorImpl()
 
-    @Profile("test") @Bean fun soundZonesDetector(): SoundZonesDetector = SoundZonesDetectorImpl()
+    @Profile("test") @Bean fun soundZonesDetectorTest(): SoundZonesDetector = SoundZonesDetector()
 
     /*
     Topics
      */
 
-    @Bean fun sourceFileTopic() = Topic<InitialConfiguration>()
+    @Profile("test") @Bean fun sourceFileTopicTest() = Topic<InitialConfiguration>()
 
-    @Bean fun signalTopic() = Topic<AudioSignalKt>()
+    @Profile("test") @Bean fun signalTopicTest() = Topic<AudioSignalKt>()
 
-    @Bean fun signalRmsTopic() = Topic<AudioSignalRmsInfoKt>()
+    @Profile("test") @Bean fun signalRmsTopicTest() = Topic<AudioSignalsRmsInfo>()
 
-    @Bean fun audioClipTopic() = Topic<AudioClipInfo>()
-
-    /*
-    Message Launchers
-     */
-
-    @Profile("test") @Bean fun sourceFileLauncher() = SourceFileLauncherTest()
-
-    @Profile("test") @Bean fun signalLauncher() = AudioSignalLauncherTest()
-
-    @Profile("test") @Bean fun signalRmsLauncher() = AudioSignalRmsLauncherTest()
-
-    @Profile("test") @Bean fun audioClipLauncher() = AudioClipLauncherTest()
+    @Profile("test") @Bean fun audioClipTopicTest() = Topic<AudioClipInfo>()
 
     /*
-    Subscribers
+    Subscribers Mocks
      */
 
-    @Profile("test") @Bean fun sourceFileSubscriber(): Subscriber = SourceFileSubscriberTest()
+    @Profile("test") @Bean fun sourceFileSubscriberTest(): Subscriber<InitialConfiguration> = SourceFileSubscriberMock()
 
-    @Profile("test") @Bean fun signalSubscriber(): Subscriber = SignalSubscriberTest()
+    @Profile("test") @Bean fun signalSubscriberTest(): Subscriber<AudioSignalKt> = SignalSubscriberMock()
 
-    @Profile("test") @Bean fun signalRmsSubscriber(): Subscriber = SignalRmsSubscriberTest()
+    @Profile("test") @Bean fun signalRmsSubscriberTest(): Subscriber<AudioSignalsRmsInfo> = SignalRmsSubscriberMock()
 
-    @Profile("test") @Bean fun audioClipSubscriber(): Subscriber = AudioClipSubscriberTest()
+    @Profile("test") @Bean fun audioClipSubscriberTest(): Subscriber<AudioClipInfo> = AudioClipSubscriberMock()
 
 }

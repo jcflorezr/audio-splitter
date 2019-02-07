@@ -28,8 +28,7 @@ public class SoundZonesDetectorImpl implements SoundZonesDetector {
     private String audioDurationDigitsFormat;
     private String audioFileName;
 
-    @Autowired
-    private RmsCalculator rmsCalculator;
+    private RmsCalculator rmsCalculator = new RmsCalculator();
 
     @Override
     public List<AudioFileClipEntity> retrieveAudioClipsInfo(String audioFileName, AudioSignal audioSignal) {

@@ -4,7 +4,9 @@ import biz.source_code.dsp.model.AudioFileWritingResult
 import biz.source_code.dsp.model.AudioSignal
 import biz.source_code.dsp.model.AudioSignalKt
 import biz.source_code.dsp.util.AudioFormatsSupported
-import net.jcflorezr.broker.MessageLauncher
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import net.jcflorezr.broker.Topic
 import net.jcflorezr.model.AudioSourceInfo
 import net.jcflorezr.model.InitialConfiguration
 import org.springframework.beans.factory.annotation.Autowired
@@ -18,7 +20,7 @@ import javax.sound.sampled.AudioSystem
 import javax.sound.sampled.UnsupportedAudioFileException
 
 interface AudioIo {
-    fun generateAudioSignalFromAudioFile(configuration: InitialConfiguration)
+    suspend fun generateAudioSignalFromAudioFile(configuration: InitialConfiguration)
     fun saveAudioFile(fileName: String, extension: String, signal: AudioSignalKt): AudioFileWritingResult
     fun saveAudioFile(fileName: String, extension: String, signal: AudioSignal, pos: Int, len: Int): AudioFileWritingResult
 }
@@ -27,7 +29,7 @@ interface AudioIo {
 final class AudioIoImpl : AudioIo {
 
     @Autowired
-    private lateinit var messageLauncher: MessageLauncher<AudioSignalKt>
+    private lateinit var audioSignalTopic: Topic<AudioSignalKt>
 
     override fun saveAudioFile(fileName: String, extension: String, signal: AudioSignal, pos: Int, len: Int): AudioFileWritingResult {
         throw UnsupportedAudioFileException()
@@ -39,7 +41,7 @@ final class AudioIoImpl : AudioIo {
         return writeAudioFile(audioInputStream, fileType, fileName + extension)
     }
 
-    override fun generateAudioSignalFromAudioFile(configuration: InitialConfiguration) {
+    override suspend fun generateAudioSignalFromAudioFile(configuration: InitialConfiguration) = coroutineScope<Unit> {
         AudioSystem.getAudioInputStream(File(configuration.convertedAudioFileLocation)).use { stream ->
             val totalFrames = stream.frameLength.takeIf { it <= Integer.MAX_VALUE }?.toInt()
                 ?: throw IOException("Sound file too long.")
@@ -73,7 +75,9 @@ final class AudioIoImpl : AudioIo {
                     dataInBytes = bytesBuffer,
                     audioSourceInfo = audioInfo
                 )
-                messageLauncher.launchMessage(msg = audioSignal)
+                launch {
+                    audioSignalTopic.postMessage(message = audioSignal)
+                }
                 Pair(it.first + framesToRead, it.second + 1)
             }.takeWhile { it.first < totalFrames }
             .toList()

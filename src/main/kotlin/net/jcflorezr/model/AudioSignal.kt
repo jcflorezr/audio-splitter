@@ -1,11 +1,16 @@
 package net.jcflorezr.model
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import net.jcflorezr.broker.Message
 import org.springframework.data.cassandra.core.cql.PrimaryKeyType
 import org.springframework.data.cassandra.core.mapping.Column
 import org.springframework.data.cassandra.core.mapping.PrimaryKeyColumn
 import org.springframework.data.cassandra.core.mapping.Table
 import java.nio.ByteBuffer
+
+data class AudioSignalsRmsInfo(
+    val audioSignals: List<AudioSignalRmsInfoKt>
+) : Message
 
 // TODO: rename it when its java equivalent is removed
 data class AudioSignalRmsInfoKt(
@@ -21,7 +26,13 @@ data class AudioSignalRmsInfoKt(
     val segmentSizeInSeconds: Float,
     val silence: Boolean,
     val active: Boolean
-) : Message
+) {
+
+    @JsonIgnore fun isFirstSegment() = initialPosition == 0
+
+    @JsonIgnore fun isLastSegment() = initialPosition + segmentSize == audioLength ||
+        audioLength - (initialPosition + segmentSize) < segmentSize
+}
 
 @Table(value = "audio_part")
 data class AudioPartEntity(

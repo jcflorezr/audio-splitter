@@ -7,27 +7,21 @@ interface Message
 @Service
 final class Topic<T : Message> {
 
-    private val subscribers = mutableListOf<Subscriber>()
-    private lateinit var message: T
+    private val subscribers = mutableListOf<Subscriber<T>>()
 
-    fun register(subscriber: Subscriber) {
+    fun register(subscriber: Subscriber<T>) {
         subscribers.add(subscriber)
     }
 
-    fun unregister(subscriber: Subscriber) {
+    fun unregister(subscriber: Subscriber<T>) {
         subscribers.remove(subscriber)
     }
 
-    suspend fun postMessage(msg: T) {
-        if (!::message.isInitialized || this.message != msg) {
-            message = msg
-            notifyObservers()
-        }
+    suspend fun postMessage(message: T) {
+        notifyObservers(message)
     }
 
-    suspend fun getMessage() = message
-
-    private suspend fun notifyObservers() {
-        subscribers.forEach { it.update() }
+    private suspend fun notifyObservers(message: T) {
+        subscribers.forEach { it.update(message) }
     }
 }

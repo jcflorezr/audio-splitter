@@ -36,7 +36,7 @@ class CassandraInitializer : TestRule {
                 session.execute(KEYSPACE_ACTIVATION_SCRIPT)
                 cassandraAdminTemplate = CassandraAdminTemplate(session, MappingCassandraConverter())
                 // Giving some time while the keyspace is created
-                Thread.sleep(1000)
+                Thread.sleep(1000L)
                 try {
                     statement.evaluate()
                 } finally {

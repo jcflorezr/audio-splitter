@@ -21,6 +21,8 @@ import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer
 import org.springframework.data.redis.serializer.SerializationException
 import org.springframework.lang.Nullable
+import redis.clients.jedis.JedisPoolConfig
+import java.time.Duration
 
 
 @Configuration
@@ -36,6 +38,30 @@ class TestRedisConfig {
     @Bean
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     fun jedisConnectionFactory(): JedisConnectionFactory {
+
+        /*
+         TODO: currently a new connection is open for each redis transaction,
+            let us investigate how to open a single connection for all transactions
+          */
+
+//        val poolConfig = JedisPoolConfig()
+//        poolConfig.maxTotal = 128
+//        poolConfig.maxIdle = 128
+//        poolConfig.minIdle = 16
+//        poolConfig.testOnBorrow = true
+//        poolConfig.testOnReturn = true
+//        poolConfig.testWhileIdle = true
+//        poolConfig.minEvictableIdleTimeMillis = Duration.ofSeconds(60).toMillis()
+//        poolConfig.timeBetweenEvictionRunsMillis = Duration.ofSeconds(30).toMillis()
+//        poolConfig.numTestsPerEvictionRun = 3
+//        poolConfig.blockWhenExhausted = true
+//
+//        val factory = JedisConnectionFactory(poolConfig)
+//        factory.hostName = hostName
+//        factory.usePool = true
+//        factory.port = port.toInt()
+//        return factory
+
         return JedisConnectionFactory(
             RedisStandaloneConfiguration(hostName, port.toInt())
         )
@@ -43,7 +69,7 @@ class TestRedisConfig {
 
     @Profile("test")
     @Bean
-    fun audioSignalDaoTemplate(): RedisTemplate<String, AudioSignalKt> {
+    fun audioSignalDaoTemplateTest(): RedisTemplate<String, AudioSignalKt> {
         val template = RedisTemplate<String, AudioSignalKt>()
         template.setConnectionFactory(jedisConnectionFactory())
         template.valueSerializer = Jackson2JsonRedisSerializerKotlin(AudioSignalKt::class.java)
@@ -52,7 +78,7 @@ class TestRedisConfig {
 
     @Profile("test")
     @Bean
-    fun audioSignalRmsDaoTemplate(): RedisTemplate<String, AudioSignalRmsInfoKt> {
+    fun audioSignalRmsDaoTemplateTest(): RedisTemplate<String, AudioSignalRmsInfoKt> {
         val template = RedisTemplate<String, AudioSignalRmsInfoKt>()
         template.setConnectionFactory(jedisConnectionFactory())
         template.valueSerializer = Jackson2JsonRedisSerializerKotlin(AudioSignalRmsInfoKt::class.java)

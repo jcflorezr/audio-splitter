@@ -1,9 +1,6 @@
 package net.jcflorezr.core
 
 import javazoom.jl.decoder.JavaLayerException
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import net.jcflorezr.broker.MessageLauncher
 import net.jcflorezr.broker.Topic
 import net.jcflorezr.exception.AudioFileLocationException
 import net.jcflorezr.exception.InternalServerErrorException
@@ -24,23 +21,23 @@ import java.io.FileInputStream
 import java.io.IOException
 
 interface AudioSplitter {
-    fun generateAudioClips(configuration: InitialConfiguration)
+    suspend fun splitAudioIntoClips(configuration: InitialConfiguration)
 }
 
 @Service
 final class AudioSplitterImpl : AudioSplitter {
 
     @Autowired
-    private lateinit var messageLauncher: MessageLauncher<InitialConfiguration>
+    private lateinit var messageLauncher: Topic<InitialConfiguration>
 
-    override fun generateAudioClips(configuration: InitialConfiguration) {
+    override suspend fun splitAudioIntoClips(configuration: InitialConfiguration) {
         val sourceAudioFile = configuration.validateConfiguration()
         val convertedAudioFile = sourceAudioFile.convertFileToWavIfNeeded()
         val initialConfiguration = configuration.copy(
             convertedAudioFileLocation = convertedAudioFile.name,
             audioFileMetadata = sourceAudioFile.extractAudioMetadata()
         )
-        messageLauncher.launchMessage(msg = initialConfiguration)
+        messageLauncher.postMessage(message = initialConfiguration)
         // TODO: Should return a Response object
     }
 

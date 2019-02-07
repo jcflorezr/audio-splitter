@@ -1,7 +1,5 @@
 package net.jcflorezr.config
 
-import net.jcflorezr.dao.SourceFileDao
-import net.jcflorezr.dao.SourceFileDaoImpl
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -50,7 +48,7 @@ class TestCassandraConfig : AbstractCassandraConfiguration() {
 
     @Profile("test")
     @Bean
-    fun mappingContext(): CassandraMappingContext {
+    fun mappingContextTest(): CassandraMappingContext {
         val mappingContext = BasicCassandraMappingContext()
         mappingContext.setUserTypeResolver(SimpleUserTypeResolver(cluster().getObject(), keyspaceName))
         return mappingContext
@@ -58,7 +56,7 @@ class TestCassandraConfig : AbstractCassandraConfiguration() {
 
     @Profile("test")
     @Bean
-    fun converter(): CassandraConverter = MappingCassandraConverter(mappingContext())
+    fun converterTest(): CassandraConverter = MappingCassandraConverter(mappingContextTest())
 
     @Profile("test")
     @Bean
@@ -66,7 +64,7 @@ class TestCassandraConfig : AbstractCassandraConfiguration() {
         val session = CassandraSessionFactoryBean()
         session.setCluster(cluster().getObject())
         session.setKeyspaceName(keyspaceName)
-        session.setConverter(converter())
+        session.setConverter(converterTest())
         session.schemaAction = SchemaAction.NONE
         session.afterPropertiesSet()
         return session
@@ -76,14 +74,14 @@ class TestCassandraConfig : AbstractCassandraConfiguration() {
 
     @Profile("test")
     @Bean
-    fun cassandraCustomTemplate(): CassandraOperations {
+    fun cassandraCustomTemplateTest(): CassandraOperations {
         return CassandraTemplate(session().getObject())
     }
 
     @Profile("test")
     @Bean
-    fun cassandraAdminTemplate(): CassandraOperations {
-        return CassandraAdminTemplate(session().getObject(), converter())
+    fun cassandraAdminTemplateTest(): CassandraOperations {
+        return CassandraAdminTemplate(session().getObject(), converterTest())
     }
 
 }
