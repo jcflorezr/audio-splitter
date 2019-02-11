@@ -6,18 +6,21 @@ import com.fasterxml.jackson.databind.type.CollectionType
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import kotlinx.coroutines.runBlocking
-import net.jcflorezr.config.SignalDaoConfig
-import net.jcflorezr.config.SignalRmsDaoConfig
+import net.jcflorezr.config.TestSignalDaoConfig
+import net.jcflorezr.config.TestSignalRmsDaoConfig
 import net.jcflorezr.model.AudioPartEntity
+import net.jcflorezr.model.AudioSignalRmsEntity
 import net.jcflorezr.model.AudioSignalRmsInfoKt
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
+import org.junit.After
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.ClassRule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner
@@ -26,7 +29,7 @@ import org.hamcrest.CoreMatchers.`is` as Is
 
 @ActiveProfiles("test")
 @RunWith(SpringJUnit4ClassRunner::class)
-@ContextConfiguration(classes = [SignalDaoConfig::class])
+@ContextConfiguration(classes = [TestSignalDaoConfig::class])
 class AudioSignalDaoIntegrationTest {
 
     @Autowired
@@ -115,7 +118,8 @@ class AudioSignalDaoIntegrationTest {
 
 @ActiveProfiles("test")
 @RunWith(SpringJUnit4ClassRunner::class)
-@ContextConfiguration(classes = [SignalRmsDaoConfig::class])
+@ContextConfiguration(classes = [TestSignalRmsDaoConfig::class])
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class AudioSignalRmsDaoIntegrationTest {
 
     @Autowired
@@ -129,7 +133,11 @@ class AudioSignalRmsDaoIntegrationTest {
         @JvmField
         @ClassRule
         val redisInitializer = RedisInitializer()
+        @JvmField
+        @ClassRule
+        val cassandraInitializer = CassandraInitializer()
         private val MAPPER = ObjectMapper().registerKotlinModule()
+        private const val AUDIO_SIGNAL_RMS_TABLE = "AUDIO_SIGNAL_RMS"
     }
 
     init {
@@ -164,22 +172,30 @@ class AudioSignalRmsDaoIntegrationTest {
     }
 
     private fun storeSignalRms(sourceFilePath: String, minIndex: Double, maxIndex: Double) {
+        cassandraInitializer.createTable(AUDIO_SIGNAL_RMS_TABLE, AudioSignalRmsEntity::class.java)
         val audioSignalRmsList: List<AudioSignalRmsInfoKt> = MAPPER.readValue(File(sourceFilePath), signalRmsListType)
         runBlocking {
-            audioSignalRmsList.forEach {
-                assertTrue(audioSignalRmsDao.storeAudioSignalRms(audioSignalRms = it))
-            }
+            audioSignalRmsDao.storeAudioSignalsRms(audioSignalRmsList)
         }
         val actualAudioSignalRmsSet = audioSignalRmsDao.retrieveAudioSignalsRmsFromRange(
             key = audioSignalRmsList[0].entityName + "_" + audioSignalRmsList[0].audioFileName,
             min = minIndex,
             max = maxIndex
         )
-        assertTrue(actualAudioSignalRmsSet?.isNotEmpty() ?: false)
-        assertThat(actualAudioSignalRmsSet?.size, Is(equalTo(audioSignalRmsList.size)))
+        assertTrue(actualAudioSignalRmsSet.isNotEmpty())
+        assertThat(actualAudioSignalRmsSet.size, Is(equalTo(audioSignalRmsList.size)))
         audioSignalRmsList.forEach{
-            assertTrue(actualAudioSignalRmsSet?.contains(it) ?: false)
+            assertTrue(actualAudioSignalRmsSet.contains(it))
         }
+        val actualPersistedAudioSignalRmsList = audioSignalRmsDao.retrieveAllAudioSignalsRmsPersisted(
+            audioFileName = audioSignalRmsList[0].audioFileName
+        )
+        assertTrue(actualPersistedAudioSignalRmsList.isNotEmpty())
+        assertThat(actualPersistedAudioSignalRmsList.size, Is(equalTo(audioSignalRmsList.size)))
+        audioSignalRmsList.forEach{
+            assertTrue(actualPersistedAudioSignalRmsList.contains(AudioSignalRmsEntity(audioSignalRms = it)))
+        }
+        cassandraInitializer.dropTable(AUDIO_SIGNAL_RMS_TABLE)
     }
 
 }

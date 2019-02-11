@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Profile
 
 @Configuration
 @Import(value = [TestCassandraConfig::class])
-class SourceFileDaoConfig {
+class TestSourceFileDaoConfig {
 
     @Profile("test") @Bean fun sourceFileDao(): SourceFileDao = SourceFileDaoImpl()
 
@@ -21,15 +21,15 @@ class SourceFileDaoConfig {
 
 @Configuration
 @Import(value = [TestCassandraConfig::class, TestRedisConfig::class])
-class SignalDaoConfig {
+class TestSignalDaoConfig {
 
     @Profile("test") @Bean fun audioSignalDao(): AudioSignalDao = AudioSignalDaoImpl()
 
 }
 
 @Configuration
-@Import(value = [TestRedisConfig::class])
-class SignalRmsDaoConfig {
+@Import(value = [TestCassandraConfig::class, TestRedisConfig::class])
+class TestSignalRmsDaoConfig {
 
     @Profile("test") @Bean fun audioSignalRmsDao(): AudioSignalRmsDao = AudioSignalRmsDaoImpl()
 

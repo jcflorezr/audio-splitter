@@ -263,9 +263,9 @@ private static PolynomialUtils.RationalFraction computeTransferFunction (PolesAn
 *    the relative upper cutoff frequency for bandpass. Ignored for other filter pass types.
 * @return
 *    For lowpass: The gain at DC.
-*    For highpass: The gain at samplingRate/2.
+*    For highpass: The gain at sampleRate/2.
 *    For bandpass: The gain at the center frequency.
-*    For bandstop: sqrt( [gain at DC] * [gain at samplingRate/2] )
+*    For bandstop: sqrt( [gain at DC] * [gain at sampleRate/2] )
 */
 private static double computeGain (PolynomialUtils.RationalFraction tf, FilterPassType filterPassType, double fcf1, double fcf2) {
    switch (filterPassType) {

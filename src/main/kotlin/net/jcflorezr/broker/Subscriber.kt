@@ -84,15 +84,12 @@ final class SignalRmsSubscriber : Subscriber<AudioSignalsRmsInfo> {
     private lateinit var soundZonesDetectorActor: SoundZonesDetectorActor
     @Autowired
     private lateinit var audioSignalRmsDao: AudioSignalRmsDao
-    @Autowired
-    private lateinit var audioClipTopic: Topic<AudioClipInfo>
 
     @PostConstruct
     fun init() = audioSignalRmsTopic.register(this)
 
     override suspend fun update(message: AudioSignalsRmsInfo) = coroutineScope {
         audioSignalRmsDao.storeAudioSignalsRms(message.audioSignals)
-        // TODO: persist the audio signal rms to cassandra
         soundZonesDetectorActor.getActorForDetectingSoundZones()
             .send(AudioSignalRmsArrived(audioSignalRms = message.audioSignals.first()))
     }

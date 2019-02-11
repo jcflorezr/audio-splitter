@@ -1,7 +1,9 @@
 package net.jcflorezr.model
 
+import biz.source_code.dsp.model.AudioSignalKt
 import com.fasterxml.jackson.annotation.JsonIgnore
 import net.jcflorezr.broker.Message
+import net.jcflorezr.util.AudioUtilsKt
 import org.springframework.data.cassandra.core.cql.PrimaryKeyType
 import org.springframework.data.cassandra.core.mapping.Column
 import org.springframework.data.cassandra.core.mapping.PrimaryKeyColumn
@@ -18,7 +20,7 @@ data class AudioSignalRmsInfoKt(
     val audioFileName: String,
     val index: Double,
     val rms: Double,
-    val samplingRate: Int,
+    val sampleRate: Int,
     val audioLength: Int,
     val initialPosition: Int,
     val initialPositionInSeconds: Float,
@@ -27,11 +29,40 @@ data class AudioSignalRmsInfoKt(
     val silence: Boolean,
     val active: Boolean
 ) {
-
-    @JsonIgnore fun isFirstSegment() = initialPosition == 0
-
     @JsonIgnore fun isLastSegment() = initialPosition + segmentSize == audioLength ||
         audioLength - (initialPosition + segmentSize) < segmentSize
+}
+
+@Table(value = "audio_signal_rms")
+data class AudioSignalRmsEntity(
+    @PrimaryKeyColumn(name = "audio_file_name", ordinal = 0, type = PrimaryKeyType.PARTITIONED)
+    val audioFileName: String,
+    @PrimaryKeyColumn(name = "ind", ordinal = 1, type = PrimaryKeyType.CLUSTERED)
+    val index: Float,
+    @Column("rms") val rms: Double,
+    @Column("sample_size") val sampleSize: Int,
+    @Column("audio_length") val audioLength: Int,
+    @Column("initial_position") val initialPosition: Int,
+    @Column("initial_position_in_seconds") val initialPositionInSeconds: Float,
+    @Column("segment_size") val segmentSize: Int,
+    @Column("sample_size_in_seconds") val segmentSizeInSeconds: Float,
+    @Column("silence") val silence: Boolean,
+    @Column("active") val active: Boolean
+) {
+    constructor(audioSignalRms: AudioSignalRmsInfoKt) :
+        this(
+            audioFileName = audioSignalRms.audioFileName,
+            index = AudioUtilsKt.tenthsSecondsFormat(audioSignalRms.index).toFloat(),
+            rms = audioSignalRms.rms,
+            sampleSize = audioSignalRms.sampleRate,
+            audioLength = audioSignalRms.audioLength,
+            initialPosition = audioSignalRms.initialPosition,
+            initialPositionInSeconds = audioSignalRms.initialPositionInSeconds,
+            segmentSize = audioSignalRms.segmentSize,
+            segmentSizeInSeconds = audioSignalRms.segmentSizeInSeconds,
+            silence = audioSignalRms.silence,
+            active = audioSignalRms.active
+        )
 }
 
 @Table(value = "audio_part")
@@ -49,6 +80,20 @@ data class AudioPartEntity(
     @Column("encoding") val encoding: String,
     @Column("content") val content: ByteBuffer
 ) {
+    constructor(audioSignal: AudioSignalKt) :
+        this (
+            audioFileName = audioSignal.audioFileName,
+            index = audioSignal.index,
+            channels = audioSignal.audioSourceInfo.channels,
+            sampleRate = audioSignal.audioSourceInfo.sampleRate,
+            sampleSizeInBits = audioSignal.audioSourceInfo.sampleSizeBits,
+            sampleSize = audioSignal.audioSourceInfo.sampleSize,
+            frameSize = audioSignal.audioSourceInfo.frameSize,
+            bigEndian = audioSignal.audioSourceInfo.bigEndian,
+            encoding = audioSignal.audioSourceInfo.encoding.name,
+            content = ByteBuffer.wrap(audioSignal.dataInBytes)
+        )
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

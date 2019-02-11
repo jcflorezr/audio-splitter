@@ -17,8 +17,10 @@ import net.jcflorezr.model.InitialConfiguration
 import net.jcflorezr.signal.RmsCalculator
 import net.jcflorezr.signal.RmsCalculatorImpl
 import net.jcflorezr.signal.SoundZonesDetector
+import org.springframework.beans.factory.config.ConfigurableBeanFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Scope
 
 @Configuration
 class RootConfig {
@@ -33,7 +35,13 @@ class RootConfig {
 
     @Bean fun rmsCalculator(): RmsCalculator = RmsCalculatorImpl()
 
-    @Bean fun soundZonesDetector(): SoundZonesDetector = SoundZonesDetector()
+    // SoundZonesDetector is a prototype bean
+
+    @Bean fun soundZonesDetectorFactory(): () -> SoundZonesDetector = { soundZonesDetector() }
+
+    @Bean
+    @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+    fun soundZonesDetector(): SoundZonesDetector = SoundZonesDetector()
 
 
     /*

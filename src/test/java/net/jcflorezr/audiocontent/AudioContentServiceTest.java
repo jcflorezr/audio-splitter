@@ -105,8 +105,8 @@ public class AudioContentServiceTest {
 //        return audioFileCompleteInfo;
 //    }
 //
-//    private AudioSignal createDummyAudioSignal(int samplingRate, float[][] signalData) {
-//        return new AudioSignal(samplingRate, signalData);
+//    private AudioSignal createDummyAudioSignal(int sampleRate, float[][] signalData) {
+//        return new AudioSignal(sampleRate, signalData);
 //    }
 
 }

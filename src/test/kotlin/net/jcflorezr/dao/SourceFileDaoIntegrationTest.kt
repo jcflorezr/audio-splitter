@@ -3,7 +3,7 @@ package net.jcflorezr.dao
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
-import net.jcflorezr.config.SourceFileDaoConfig
+import net.jcflorezr.config.TestSourceFileDaoConfig
 import net.jcflorezr.model.AudioFileMetadataEntity
 import net.jcflorezr.model.InitialConfiguration
 import org.hamcrest.CoreMatchers.equalTo
@@ -20,7 +20,7 @@ import org.hamcrest.CoreMatchers.`is` as Is
 
 @ActiveProfiles("test")
 @RunWith(SpringJUnit4ClassRunner::class)
-@ContextConfiguration(classes = [SourceFileDaoConfig::class])
+@ContextConfiguration(classes = [TestSourceFileDaoConfig::class])
 class SourceFileDaoIntegrationTest {
 
     @Autowired

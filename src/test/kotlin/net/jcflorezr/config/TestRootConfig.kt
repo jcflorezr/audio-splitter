@@ -16,14 +16,11 @@ import net.jcflorezr.model.AudioSignalsRmsInfo
 import net.jcflorezr.model.InitialConfiguration
 import net.jcflorezr.signal.RmsCalculator
 import net.jcflorezr.signal.RmsCalculatorImpl
-import net.jcflorezr.signal.SoundZonesDetector
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.EnableAspectJAutoProxy
 import org.springframework.context.annotation.Profile
 
 @Configuration
-@EnableAspectJAutoProxy
 class TestRootConfig {
 
     /*
@@ -35,8 +32,6 @@ class TestRootConfig {
     @Profile("test") @Bean fun audioIoTest(): AudioIo = AudioIoImpl()
 
     @Profile("test") @Bean fun rmsCalculatorTest(): RmsCalculator = RmsCalculatorImpl()
-
-    @Profile("test") @Bean fun soundZonesDetectorTest(): SoundZonesDetector = SoundZonesDetector()
 
     /*
     Topics

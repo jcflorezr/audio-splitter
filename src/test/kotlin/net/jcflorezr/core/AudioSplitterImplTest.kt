@@ -30,7 +30,7 @@ class AudioSplitterImplTest {
     }
 
     @Test
-    fun generateAudioClips() = runBlocking {
+    fun generateAudioClips() = runBlocking<Unit> {
         val audioFileLocation = testResourcesPath
         val audioFileName = "test-audio-mono-22050.mp3"
         /* TODO: this test is going to fail due to the fixed audioFileLocation

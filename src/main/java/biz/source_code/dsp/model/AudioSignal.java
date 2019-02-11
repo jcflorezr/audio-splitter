@@ -81,7 +81,7 @@ public class AudioSignal {
     @Override
     public String toString() {
         return "AudioSignal{" +
-                "samplingRate=" + samplingRate +
+                "sampleRate=" + samplingRate +
                 ", data=" + Arrays.asList(data) +
                 '}';
     }

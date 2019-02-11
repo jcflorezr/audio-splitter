@@ -16,7 +16,10 @@ import javax.annotation.PostConstruct
 
 sealed class Action
 data class AudioSignalRmsArrived(val audioSignalRms: AudioSignalRmsInfoKt) : Action()
-data class DetectSoundZones(val audioSignalRms: AudioSignalRmsInfoKt) : Action()
+data class DetectSoundZones(
+    val audioSignalRms: AudioSignalRmsInfoKt,
+    val soundZonesDetector: SoundZonesDetector
+) : Action()
 
 interface SoundZonesDetectorActor {
     fun getActorForDetectingSoundZones() : SendChannel<Action>
@@ -26,12 +29,12 @@ interface SoundZonesDetectorActor {
 class SoundZonesDetectorActorImpl : SoundZonesDetectorActor {
 
     @Autowired
-    private lateinit var soundZonesDetector: SoundZonesDetector
+    private lateinit var soundZonesDetectorFactory: () -> SoundZonesDetector
     @Autowired
     private lateinit var audioSignalRmsDao: AudioSignalRmsDao
 
     private lateinit var mainActor: SendChannel<Action>
-    private lateinit var actorsForAudioFiles: HashMap<String, SendChannel<Action>>
+    private lateinit var actorsForAudioFiles: HashMap<String, Pair<SendChannel<Action>, SoundZonesDetector>>
 
     @PostConstruct
     fun init() {
@@ -52,17 +55,19 @@ class SoundZonesDetectorActorImpl : SoundZonesDetectorActor {
     private fun createActorForAudioFile() = CoroutineScope(Dispatchers.Default).actor<Action> {
         consumeEach { message ->
             when (message) {
-                is DetectSoundZones -> detectSoundZones(sampleAudioRmsInfo = message.audioSignalRms)
+                is DetectSoundZones -> detectSoundZones(message.audioSignalRms, message.soundZonesDetector)
             }
         }
     }
 
     private suspend fun assignActorForAudioFile(sampleAudioRmsInfo: AudioSignalRmsInfoKt) {
-        val actorForCurrentAudioFile = actorsForAudioFiles.computeIfAbsent(sampleAudioRmsInfo.audioFileName) { createActorForAudioFile() }
-        actorForCurrentAudioFile.send(DetectSoundZones(sampleAudioRmsInfo))
+        val actorConfigForCurrentAudioFile = actorsForAudioFiles.computeIfAbsent(sampleAudioRmsInfo.audioFileName) {
+            Pair(createActorForAudioFile(), soundZonesDetectorFactory())
+        }
+        actorConfigForCurrentAudioFile.first.send(DetectSoundZones(sampleAudioRmsInfo, actorConfigForCurrentAudioFile.second))
     }
 
-    private suspend fun detectSoundZones(sampleAudioRmsInfo: AudioSignalRmsInfoKt) {
+    private suspend fun detectSoundZones(sampleAudioRmsInfo: AudioSignalRmsInfoKt, soundZonesDetector: SoundZonesDetector) {
         audioSignalRmsDao.retrieveAllAudioSignalsRms(
             key = "${sampleAudioRmsInfo.entityName}_${sampleAudioRmsInfo.audioFileName}"
         ).takeIf {
@@ -74,7 +79,7 @@ class SoundZonesDetectorActorImpl : SoundZonesDetectorActor {
 
 }
 
-@Service
+
 class SoundZonesDetector {
 
     @Autowired
@@ -82,6 +87,7 @@ class SoundZonesDetector {
     @Autowired
     private lateinit var audioSignalRmsDao: AudioSignalRmsDao
 
+    private val detectorVariables = DetectorVariables()
     private var silenceCounter = 0
     private var activeCounter = 0
     private var inactiveCounter = 0
@@ -96,6 +102,10 @@ class SoundZonesDetector {
     }
 
     suspend fun detectSoundZones(audioRmsInfoList: List<AudioSignalRmsInfoKt>) {
+
+        println("STARTING ----- ${audioRmsInfoList.first().audioFileName} silCnt: $silenceCounter - silConFrom: $silenceContinueFrom - " +
+                "startAct: $startActiveZonePosition - inacCnt: $inactiveCounter - actConFrom: $activeContinueFrom - whToSt: $whereToStart")
+
         if (activeContinueFrom != 0.0) {
             getSoundZonesByActiveSegments(audioRmsInfoList)
         }
@@ -112,20 +122,37 @@ class SoundZonesDetector {
                     if (activeCounter > 2) {
                         if (activeCounter >= MAX_ACTIVE_COUNTER) {
                             silenceCounter = 0
-                            val from = audioRmsInfoList.binarySearchBy(startActiveZonePosition) {it.initialPosition}.takeIf { it > 0 } ?: 0// startActiveZonePosition / rmsInfo.segmentSize
-                            val to = audioRmsInfoList.binarySearchBy(rmsInfo.initialPosition) {it.initialPosition}.takeIf { it > from } ?: audioRmsInfoList.size // rmsInfo.initialPosition / rmsInfo.segmentSize
+                            val from = audioRmsInfoList.binarySearchBy(startActiveZonePosition) {it.initialPosition}.takeIf { it > 0 } ?: 0
+                            val to = audioRmsInfoList.binarySearchBy(rmsInfo.initialPosition) {it.initialPosition}.takeIf { it > from } ?: audioRmsInfoList.size
                             getSoundZonesByActiveSegments(audioRmsInfoList.subList(from, to))
                         } else {
+
+
+
                             startActiveZonePosition = Math.max(startActiveZonePosition - rmsInfo.segmentSize * 2, 0)
                             endActiveZonePosition = rmsInfo.initialPosition
+
+
+                            println("SILENCE ----- ${audioRmsInfoList.first().audioFileName} silCnt: $silenceCounter - silConFrom: $silenceContinueFrom - " +
+                                    "startAct: $startActiveZonePosition - endAct: $endActiveZonePosition - actCnt: $activeCounter - inacCnt: $inactiveCounter - actConFrom: $activeContinueFrom")
+
+
                             val audioClipInfo = generateAudioClipInfo(startActiveZonePosition, endActiveZonePosition, rmsInfo)
                             audioClipTopic.postMessage(message = audioClipInfo)
                             audioSignalRmsDao.removeAudioSignalsRmsFromRange(
                                 key = "${rmsInfo.entityName}_${rmsInfo.audioFileName}",
-                                min = AudioUtilsKt.tenthsSecondsFormat(AudioUtilsKt.tenthsSecondsFormat(whereToStart.toDouble()) / rmsInfo.samplingRate.toDouble()),
+                                min = AudioUtilsKt.tenthsSecondsFormat(AudioUtilsKt.tenthsSecondsFormat(whereToStart.toDouble()) / rmsInfo.sampleRate.toDouble()),
                                 max = AudioUtilsKt.tenthsSecondsFormat(audioClipInfo.endPositionInSeconds.toDouble())
                             )
                             whereToStart = audioClipInfo.endPosition + rmsInfo.segmentSize
+
+                            detectorVariables.startActiveZonePosition = startActiveZonePosition
+                            detectorVariables.endActiveZonePosition = endActiveZonePosition
+                            detectorVariables.silenceCounter = silenceCounter
+                            detectorVariables.silenceContinueFrom = silenceContinueFrom
+                            detectorVariables.activeCounter = 0
+                            detectorVariables.inactiveCounter = inactiveCounter
+
                             silenceContinueFrom = 0.0
                         }
                     } else {
@@ -142,11 +169,13 @@ class SoundZonesDetector {
                 silenceCounter = 0
             }
             if (!rmsSignalIterator.hasNext()) {
-                silenceCounter = 0
-                activeCounter = 0
-                inactiveCounter = 0
-                startActiveZonePosition = 0
-                endActiveZonePosition = 0
+                println("RAN OUT of RMS ----- ${audioRmsInfoList.first().audioFileName} ${rmsInfo.index} silCnt: $silenceCounter - silConFrom: $silenceContinueFrom - " +
+                        "startAct: $startActiveZonePosition - endAct: $endActiveZonePosition - actCnt: $activeCounter - inacCnt: $inactiveCounter - actConFrom: $activeContinueFrom")
+                silenceCounter = detectorVariables.silenceCounter
+                activeCounter = detectorVariables.activeCounter
+                inactiveCounter = detectorVariables.inactiveCounter
+                startActiveZonePosition = detectorVariables.startActiveZonePosition
+                endActiveZonePosition = detectorVariables.endActiveZonePosition
                 silenceContinueFrom = 0.0
             }
         }
@@ -178,22 +207,44 @@ class SoundZonesDetector {
                 inactiveCounter = 0
             } else if (++inactiveCounter == 3 || isLastSegment) {
                 if (activeCounter >= 3) {
+
+
                     endActiveZonePosition = rmsInfo.initialPosition
+
+                    println("ACTIVE ----- ${audioRmsInfoList.first().audioFileName} silCnt: $silenceCounter - silConFrom: $silenceContinueFrom - " +
+                            "startAct: $startActiveZonePosition - endAct: $endActiveZonePosition - actCnt: $activeCounter - inacCnt: $inactiveCounter - actConFrom: $activeContinueFrom")
+
+
                     val audioClipInfo = generateAudioClipInfo(startActiveZonePosition, endActiveZonePosition, rmsInfo)
                     audioClipTopic.postMessage(message = audioClipInfo)
                     audioSignalRmsDao.removeAudioSignalsRmsFromRange(
                         key = "${rmsInfo.entityName}_${rmsInfo.audioFileName}",
-                        min = AudioUtilsKt.tenthsSecondsFormat(whereToStart.toDouble() / rmsInfo.samplingRate.toDouble()),
+                        min = AudioUtilsKt.tenthsSecondsFormat(whereToStart.toDouble() / rmsInfo.sampleRate.toDouble()),
                         max = AudioUtilsKt.tenthsSecondsFormat(audioClipInfo.endPositionInSeconds.toDouble())
                     )
-                    activeContinueFrom = 0.0
                     whereToStart = audioClipInfo.endPosition + rmsInfo.segmentSize
+
+                    detectorVariables.startActiveZonePosition = startActiveZonePosition
+                    detectorVariables.endActiveZonePosition = endActiveZonePosition
+                    detectorVariables.silenceCounter = silenceCounter
+                    detectorVariables.silenceContinueFrom = silenceContinueFrom
+                    detectorVariables.activeCounter = 0
+                    detectorVariables.inactiveCounter = inactiveCounter
+                    activeContinueFrom = 0.0
+
+
+
                 }
                 activeCounter = 0
             }
         }
         if (!rmsSignalIterator.hasNext()) {
             activeContinueFrom = 0.0
+            silenceCounter = detectorVariables.silenceCounter
+            activeCounter = detectorVariables.activeCounter
+            inactiveCounter = detectorVariables.inactiveCounter
+            startActiveZonePosition = detectorVariables.startActiveZonePosition
+            endActiveZonePosition = detectorVariables.endActiveZonePosition
         }
     }
 
@@ -223,14 +274,14 @@ class SoundZonesDetector {
     }
 
     private fun generateAudioClipInfo(startPosition: Int, endPosition: Int, rmsInfo: AudioSignalRmsInfoKt): AudioClipInfo {
-        val samplingRate = rmsInfo.samplingRate
+        val samplingRate = rmsInfo.sampleRate
         val startPositionInSeconds = AudioUtilsKt.millisecondsFormat(startPosition.toFloat() / samplingRate)
         val endPositionInSeconds = AudioUtilsKt.millisecondsFormat(endPosition.toFloat() / samplingRate)
         val startPositionInSecondsInt = startPositionInSeconds.toInt()
         val suggestedAudioClipName = getSuggestedAudioClipName(
             startPositionInSeconds = startPositionInSeconds,
             audioLength = rmsInfo.audioLength,
-            samplingRate = rmsInfo.samplingRate
+            samplingRate = rmsInfo.sampleRate
         )
         return AudioClipInfo(
             audioFileName = rmsInfo.audioFileName,
@@ -261,6 +312,18 @@ class SoundZonesDetector {
     ) = "%0" + Math.round(audioLength.toFloat() / samplingRate).toString().length + "d"
 
     fun whereToStart() = whereToStart
+
+
+    private data class DetectorVariables(
+        var silenceCounter: Int = 0,
+        var activeCounter: Int = 0,
+        var inactiveCounter: Int = 0,
+        var startActiveZonePosition: Int = 0,
+        var endActiveZonePosition: Int = 0,
+        var silenceContinueFrom: Double = 0.0,
+        var activeContinueFrom: Double = 0.0,
+        var whereToStart: Int = 0
+    )
 
 }
 

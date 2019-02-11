@@ -51,7 +51,7 @@ class RmsCalculatorImpl : RmsCalculator {
                 index = AudioUtilsKt.tenthsSecondsFormat(initialPosInSeconds.toDouble()),
                 rms = currentRms,
                 audioLength = audioSignal.totalFrames,
-                samplingRate = samplingRate,
+                sampleRate = samplingRate,
                 initialPosition = it.pos + audioSignal.initialPosition,
                 initialPositionInSeconds = initialPosInSeconds,
                 segmentSize = segmentSize,
@@ -62,7 +62,7 @@ class RmsCalculatorImpl : RmsCalculator {
             rmsSignalsInfo.add(rmsSignalInfo)
             RmsValues(pos = endPos, index = it.index + 1, rms = currentRms, diff = currentDiff)
         }.takeWhile { it.pos < signal.size }
-        //.toList()
+        .toList()
         // TODO: should return a result
 
         launch {

@@ -2,23 +2,22 @@ package net.jcflorezr.signal
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
-import net.jcflorezr.config.TestRootConfig
-import net.jcflorezr.model.AudioClipInfo
+import kotlinx.coroutines.runBlocking
+import net.jcflorezr.config.TestSoundZonesDetectorConfig
 import net.jcflorezr.model.AudioSignalRmsInfoKt
-import org.hamcrest.CoreMatchers.equalTo
-import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner
 import java.io.File
-import org.hamcrest.CoreMatchers.`is` as Is
 
 @ActiveProfiles("test")
 @RunWith(SpringJUnit4ClassRunner::class)
-@ContextConfiguration(classes = [TestRootConfig::class])
+@ContextConfiguration(classes = [TestSoundZonesDetectorConfig::class])
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class SoundZonesDetectorImplTest {
 
     @Autowired
@@ -38,52 +37,29 @@ class SoundZonesDetectorImplTest {
     }
 
     @Test
-    fun generateAudioClipsInfoForFileWithBackgroundNoiseAndLowVoiceVolume() {
+    fun generateAudioClipsInfoForFileWithBackgroundNoiseAndLowVoiceVolume() = runBlocking {
         detectSoundZones(
-            path = signalResourcesPath + "background-noise-low-volume/background-noise-low-volume.json",
-            folderName = "background-noise-low-volume"
+            path = signalResourcesPath + "background-noise-low-volume/background-noise-low-volume.json"
         )
     }
-
-//    @Test
-//    fun generateIncompleteAudioClipsInfoForFileWithBackgroundNoiseAndLowVoiceVolume() {
-//        detectSoundZones(
-//            path = signalResourcesPath + "background-noise-low-volume/background-noise-low-volume-incomplete.json",
-//            folderName = "background-noise-low-volume"
-//        )
-//    }
 
     @Test
-    fun generateAudioClipsInfoForFileWithApplause() {
+    fun generateAudioClipsInfoForFileWithApplause() = runBlocking {
         detectSoundZones(
-            path = signalResourcesPath + "with-applause/with-applause.json",
-            folderName = "with-applause"
+            path = signalResourcesPath + "with-applause/with-applause.json"
         )
     }
-
-//    @Test
-//    fun generateIncompleteAudioClipsInfoForFileWithApplause() {
-//        detectSoundZones(
-//            path = signalResourcesPath + "with-applause/with-applause-incomplete.json",
-//            folderName = "with-applause"
-//        )
-//    }
 
     @Test
-    fun generateAudioClipsInfoForFileWithStrongBackgroundNoise() {
+    fun generateAudioClipsInfoForFileWithStrongBackgroundNoise() = runBlocking {
         detectSoundZones(
-            path = signalResourcesPath + "strong-background-noise/strong-background-noise.json",
-            folderName = "strong-background-noise"
+            path = signalResourcesPath + "strong-background-noise/strong-background-noise.json"
         )
     }
 
-    private fun detectSoundZones(path: String, folderName: String) {
-//        val signalRmsListType = MAPPER.typeFactory.constructCollectionType(List::class.java, AudioSignalRmsInfoKt::class.java)
-//        val audioSignalRmsList: List<AudioSignalRmsInfoKt> = MAPPER.readValue(File(path), signalRmsListType)
-//        val actualAudioClipsInfoList = soundZonesDetector.generateSoundZones(audioRmsInfoList = audioSignalRmsList)
-//        val audioClipListType = MAPPER.typeFactory.constructCollectionType(List::class.java, AudioClipInfo::class.java)
-//        val expectedAudioClipsInfoList: List<AudioClipInfo> =
-//            MAPPER.readValue(File("$clipsResourcesPath/$folderName/$folderName.json"), audioClipListType)
-//        assertThat(actualAudioClipsInfoList, Is(equalTo(expectedAudioClipsInfoList)))
+    private suspend fun detectSoundZones(path: String) {
+        val signalRmsListType = MAPPER.typeFactory.constructCollectionType(List::class.java, AudioSignalRmsInfoKt::class.java)
+        val audioSignalRmsList: List<AudioSignalRmsInfoKt> = MAPPER.readValue(File(path), signalRmsListType)
+        soundZonesDetector.detectSoundZones(audioRmsInfoList = audioSignalRmsList)
     }
 }

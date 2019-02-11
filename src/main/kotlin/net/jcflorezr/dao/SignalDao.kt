@@ -2,7 +2,10 @@ package net.jcflorezr.dao
 
 import biz.source_code.dsp.model.AudioSignalKt
 import com.datastax.driver.core.querybuilder.QueryBuilder
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import net.jcflorezr.model.AudioPartEntity
+import net.jcflorezr.model.AudioSignalRmsEntity
 import net.jcflorezr.model.AudioSignalRmsInfoKt
 import net.jcflorezr.util.AudioUtilsKt.tenthsSecondsFormat
 import org.springframework.beans.factory.annotation.Autowired
@@ -10,7 +13,6 @@ import org.springframework.data.cassandra.core.CassandraOperations
 import org.springframework.data.cassandra.core.selectOne
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Repository
-import java.nio.ByteBuffer
 
 interface AudioSignalDao {
     fun storeAudioSignal(audioSignal: AudioSignalKt) : Boolean
@@ -35,20 +37,7 @@ class AudioSignalDaoImpl : AudioSignalDao {
 
     override fun storeAudioSignalPart(
         audioSignal: AudioSignalKt
-    ) = cassandraTemplate.insert(
-            AudioPartEntity(
-                audioFileName = audioSignal.audioFileName,
-                index = audioSignal.index,
-                channels = audioSignal.audioSourceInfo.channels,
-                sampleRate = audioSignal.audioSourceInfo.sampleRate,
-                sampleSizeInBits = audioSignal.audioSourceInfo.sampleSizeBits,
-                sampleSize = audioSignal.audioSourceInfo.sampleSize,
-                frameSize = audioSignal.audioSourceInfo.frameSize,
-                bigEndian = audioSignal.audioSourceInfo.bigEndian,
-                encoding = audioSignal.audioSourceInfo.encoding.name,
-                content = ByteBuffer.wrap(audioSignal.dataInBytes)
-            )
-        )
+    ) = cassandraTemplate.insert(AudioPartEntity(audioSignal = audioSignal))
 
     override fun retrieveAudioSignalPart(audioFileName: String, index: Int): AudioPartEntity? {
         val query = QueryBuilder
@@ -63,19 +52,19 @@ class AudioSignalDaoImpl : AudioSignalDao {
         key: String,
         min: Double,
         max: Double
-    ): List<AudioSignalKt>? =
-        audioSignalTemplate
+    ) = audioSignalTemplate
             .boundZSetOps(key)
             .rangeByScore(min, max)?.toList()
 
 }
 
 interface AudioSignalRmsDao {
-    fun storeAudioSignalRms(audioSignalRms: AudioSignalRmsInfoKt) : Boolean
-    fun storeAudioSignalsRms(audioSignalsRms: List<AudioSignalRmsInfoKt>)
+    suspend fun storeAudioSignalsRms(audioSignalsRms: List<AudioSignalRmsInfoKt>)
     fun retrieveAllAudioSignalsRms(key: String): List<AudioSignalRmsInfoKt>
     fun retrieveAudioSignalsRmsFromRange(key: String, min: Double, max: Double): List<AudioSignalRmsInfoKt>
     fun removeAudioSignalsRmsFromRange(key: String, min: Double, max: Double): Long
+    fun retrieveAllAudioSignalsRmsPersisted(audioFileName: String): List<AudioSignalRmsEntity>
+    fun persistAudioSignalsRms(audioSignalsRms: List<AudioSignalRmsInfoKt>)
 }
 
 @Repository
@@ -83,41 +72,61 @@ class AudioSignalRmsDaoImpl : AudioSignalRmsDao {
 
     @Autowired
     private lateinit var audioSignalRmsTemplate: RedisTemplate<String, AudioSignalRmsInfoKt>
+    @Autowired
+    private lateinit var cassandraTemplate: CassandraOperations
 
-    override fun storeAudioSignalsRms(
+    override suspend fun storeAudioSignalsRms(
         audioSignalsRms: List<AudioSignalRmsInfoKt>
-    ): Unit = audioSignalsRms.forEach { storeAudioSignalRms(audioSignalRms = it) }
+    ) = coroutineScope {
+        launch { persistAudioSignalsRms(audioSignalsRms) }
+        audioSignalsRms.forEach { storeAudioSignalRms(audioSignalRms = it) }
+    }
 
-    override fun storeAudioSignalRms(
+    private suspend fun storeAudioSignalRms(
         audioSignalRms: AudioSignalRmsInfoKt
-    ): Boolean =
-        audioSignalRmsTemplate
-            .boundZSetOps("${audioSignalRms.entityName}_${audioSignalRms.audioFileName}")
-            .add(audioSignalRms, audioSignalRms.index)!!
+    ) = audioSignalRmsTemplate
+        .boundZSetOps("${audioSignalRms.entityName}_${audioSignalRms.audioFileName}")
+        .add(audioSignalRms, audioSignalRms.index)!!
+
+    override fun persistAudioSignalsRms(
+        audioSignalsRms: List<AudioSignalRmsInfoKt>
+    ) = audioSignalsRms.forEach { persistAudioSignalRms(audioSignalRms = it) }
+
+    private fun persistAudioSignalRms(audioSignalRms: AudioSignalRmsInfoKt) {
+        cassandraTemplate.insert(AudioSignalRmsEntity(audioSignalRms = audioSignalRms))
+    }
 
     override fun retrieveAllAudioSignalsRms(
         key: String
     ) = audioSignalRmsTemplate
-            .boundZSetOps(key)
-            .range(0, -1)?.toList() ?: ArrayList()
+        .boundZSetOps(key)
+        .range(0, -1)?.toList() ?: ArrayList()
 
     override fun retrieveAudioSignalsRmsFromRange(
         key: String,
         min: Double,
         max: Double
     ) = audioSignalRmsTemplate
-            .boundZSetOps(key)
-            .rangeByScore(tenthsSecondsFormat(min), tenthsSecondsFormat(max))
-            ?.toList() ?: ArrayList()
+        .boundZSetOps(key)
+        .rangeByScore(tenthsSecondsFormat(min), tenthsSecondsFormat(max))
+        ?.toList() ?: ArrayList()
+
+    override fun retrieveAllAudioSignalsRmsPersisted(
+        audioFileName: String
+    ): List<AudioSignalRmsEntity> {
+        val query = QueryBuilder
+            .select()
+            .from("audio_signal_rms")
+            .where(QueryBuilder.eq("audio_file_name", audioFileName))
+        return cassandraTemplate.select(query, AudioSignalRmsEntity::class.java)
+    }
 
     override fun removeAudioSignalsRmsFromRange(
         key: String,
         min: Double,
         max: Double
-    ) : Long {
-        return audioSignalRmsTemplate
-            .boundZSetOps(key)
-            .removeRangeByScore(tenthsSecondsFormat(min), tenthsSecondsFormat(max)) ?: 0L
-    }
+    ) = audioSignalRmsTemplate
+        .boundZSetOps(key)
+        .removeRangeByScore(tenthsSecondsFormat(min), tenthsSecondsFormat(max)) ?: 0L
 
 }

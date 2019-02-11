@@ -5,15 +5,17 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import kotlinx.coroutines.runBlocking
+import net.jcflorezr.dao.AudioSignalRmsDao
 import net.jcflorezr.model.AudioClipInfo
+import net.jcflorezr.model.AudioSignalRmsEntity
 import net.jcflorezr.model.AudioSignalRmsInfoKt
 import net.jcflorezr.model.AudioSignalsRmsInfo
 import net.jcflorezr.model.InitialConfiguration
 import org.apache.commons.io.FilenameUtils
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
-import org.junit.Assert
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertTrue
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.io.File
@@ -100,7 +102,7 @@ final class SignalRmsSubscriberMock : Subscriber<AudioSignalsRmsInfo> {
 
     private lateinit var testResourcesPath: String
     private lateinit var thisClass: Class<SignalRmsSubscriberMock>
-    private var audioSignalRmsList: MutableList<AudioSignalRmsInfoKt>? = null
+    private var audioSignalRmsList: ArrayList<AudioSignalRmsInfoKt> = ArrayList()
 
     @PostConstruct
     fun init() {
@@ -111,10 +113,9 @@ final class SignalRmsSubscriberMock : Subscriber<AudioSignalsRmsInfo> {
 
     override suspend fun update(message: AudioSignalsRmsInfo) {
         val folderName = FilenameUtils.getBaseName(message.audioSignals.first().audioFileName)
-        if (audioSignalRmsList == null) {
+        if (audioSignalRmsList.isEmpty()) {
             val signalRmsListType = MAPPER.typeFactory.constructCollectionType(List::class.java, AudioSignalRmsInfoKt::class.java)
-            audioSignalRmsList =
-                MAPPER.readValue(File("$testResourcesPath/$folderName/$folderName.json"), signalRmsListType)
+            audioSignalRmsList = MAPPER.readValue(File("$testResourcesPath/$folderName/$folderName.json"), signalRmsListType)
         }
         // TODO: implement a logger
         message.audioSignals.forEach {
@@ -123,14 +124,14 @@ final class SignalRmsSubscriberMock : Subscriber<AudioSignalsRmsInfo> {
                 "index: ${it.index}, " +
                 "initialPositionInSeconds: ${it.initialPositionInSeconds}, " +
                 "segmentSize: ${it.segmentSize}}")
-            Assert.assertTrue("signalRms ----> $it  was not found", audioSignalRmsList?.contains(it) ?: false)
-            audioSignalRmsList?.remove(it)
+            assertTrue("signalRms ----> $it  was not found", audioSignalRmsList.contains(it))
+            audioSignalRmsList.remove(it)
         }
     }
 
     fun validateCompleteness() {
-        Assert.assertTrue("There were ${audioSignalRmsList?.size} signals rms that were not tested -----> $audioSignalRmsList",
-            audioSignalRmsList?.isEmpty() ?: false)
+        assertTrue("There were ${audioSignalRmsList.size} signals rms that were not tested -----> $audioSignalRmsList",
+            audioSignalRmsList.isEmpty())
     }
 
 }
@@ -147,7 +148,8 @@ final class AudioClipSubscriberMock : Subscriber<AudioClipInfo> {
 
     private lateinit var testResourcesPath: String
     private lateinit var thisClass: Class<AudioClipSubscriberMock>
-    private var audioClipList: MutableList<AudioClipInfo>? = null
+    private var audioClipList: ArrayList<AudioClipInfo> = ArrayList()
+    private val foldersProcessed: HashSet<String> = HashSet()
 
     @PostConstruct
     fun init() {
@@ -156,27 +158,25 @@ final class AudioClipSubscriberMock : Subscriber<AudioClipInfo> {
         testResourcesPath = thisClass.getResource("/clip").path
     }
 
-    override suspend fun update(message: AudioClipInfo) {
+    override suspend fun update(message: AudioClipInfo) = runBlocking<Unit> {
         val folderName = FilenameUtils.getBaseName(message.audioFileName)
-        runBlocking {
-            if (audioClipList == null) {
-                val audioClipListType = MAPPER.typeFactory.constructCollectionType(List::class.java, AudioClipInfo::class.java)
-                audioClipList =
-                    MAPPER.readValue(File("$testResourcesPath/$folderName/$folderName.json"), audioClipListType)
-            }
+        if (audioClipList.isEmpty() || !foldersProcessed.contains(folderName)) {
+            val audioClipListType = MAPPER.typeFactory.constructCollectionType(List::class.java, AudioClipInfo::class.java)
+            audioClipList.addAll(MAPPER.readValue(File("$testResourcesPath/$folderName/$folderName.json"), audioClipListType))
+            foldersProcessed.add(folderName)
         }
         // TODO: implement a logger
         println("testing audio clip ----> " +
             "{audioFileName: ${message.audioFileName}, " +
             "initialPositionInSeconds: ${message.initialPositionInSeconds}, " +
             "endPositionInSeconds: ${message.endPositionInSeconds}}")
-        Assert.assertTrue("audio clip ----> $message was not found", audioClipList?.contains(message) ?: false)
-        audioClipList?.remove(message)
+        assertTrue("audio clip ----> $message was not found", audioClipList.contains(message))
+        audioClipList.remove(message)
     }
 
     fun validateCompleteness() {
-        Assert.assertTrue("There were ${audioClipList?.size} audio clips that were not tested ----> $audioClipList",
-            audioClipList?.isEmpty() ?: false)
+        assertTrue("There were ${audioClipList.size} audio clips that were not tested ----> $audioClipList",
+            audioClipList.isEmpty())
     }
 
 }
