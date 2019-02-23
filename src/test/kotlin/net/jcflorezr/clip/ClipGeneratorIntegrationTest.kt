@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import kotlinx.coroutines.runBlocking
 import net.jcflorezr.broker.AudioClipSignalSubscriberMock
-import net.jcflorezr.broker.SignalRmsSubscriberMock
 import net.jcflorezr.config.TestClipsGeneratorConfig
 import net.jcflorezr.dao.AudioSignalDao
 import net.jcflorezr.dao.RedisInitializer
@@ -75,6 +74,16 @@ class ClipGeneratorIntegrationTest {
         generateAudioClips(
             signalsFolderPath = signalResourcesPath + "strong-background-noise/",
             clipsPath = clipsResourcesPath + "strong-background-noise/strong-background-noise.json"
+        )
+        val signalRmsSubscriber = applicationCtx.getBean("audioClipSignalSubscriberTest") as AudioClipSignalSubscriberMock
+        signalRmsSubscriber.validateCompleteness()
+    }
+
+    @Test
+    fun generateIncompleteAudioClipsForFileWithBackgroundNoiseAndLowVoiceVolume() = runBlocking {
+        generateAudioClips(
+            signalsFolderPath = signalResourcesPath + "background-noise-low-volume-incomplete/",
+            clipsPath = clipsResourcesPath + "background-noise-low-volume-incomplete/background-noise-low-volume-incomplete.json"
         )
         val signalRmsSubscriber = applicationCtx.getBean("audioClipSignalSubscriberTest") as AudioClipSignalSubscriberMock
         signalRmsSubscriber.validateCompleteness()

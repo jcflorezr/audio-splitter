@@ -112,10 +112,8 @@ class ClipGenerator {
         val audioClipInfoIterator = audioClipsInfo.listIterator()
         while (audioClipInfoIterator.hasNext()) {
             val currentAudioClipInfo = audioClipInfoIterator.next()
-
             println("prev: ${previousAudioClipInfo?.consecutive} - curr: ${currentAudioClipInfo.consecutive}" +
-                    " - groupedClipSecs: $groupedClipSecondsAmount")
-
+                " - groupedClipSecs: $groupedClipSecondsAmount")
             lastConsecutiveClipProcessed = currentAudioClipInfo.consecutive
             if (!checkIfCurrentIsConsecutive(previousAudioClipInfo, currentAudioClipInfo)) {
                 lastConsecutiveClipProcessed = previousAudioClipInfo!!.consecutive + 1
@@ -125,11 +123,8 @@ class ClipGenerator {
                 AudioUtilsKt.tenthsSecondsFormat(currentAudioClipInfo.endPositionInSeconds - currentAudioClipInfo.initialPositionInSeconds).toFloat()
             val currentIsNotNear = checkIfCurrentIsNotNear(previousAudioClipInfo, currentAudioClipInfo)
             if (currentAudioClipInfo.lastClip || groupedClipSecondsAmount + currentClipSecondsLength > maxActiveSecondsAmount) {
-
                 println("New grouped clip ----> groupedSecsLength: $groupedClipSecondsAmount - currClipSecsLength: $currentClipSecondsLength" +
                     " - lastClip: ${currentAudioClipInfo.lastClip} - currIsNear: ${!currentIsNotNear}")
-
-
                 launch {
                     audioClipDao.persistGroupedAudioClipInfo(
                         groupNumber = groupNumber++,
@@ -142,16 +137,19 @@ class ClipGenerator {
                 } else {
                     audioClipInfoIterator.previous()
                 }
-                if (!currentIsNotNear) {
-                    generateClips(groupedAudioClipsInfo)
-                } else {
-                    groupedClipSecondsAmount += currentClipSecondsLength
-                }
+                generateClips(groupedAudioClipsInfo)
                 groupedClipSecondsAmount = 0.0f
                 groupedAudioClipsInfo = ArrayList()
                 previousAudioClipInfo = null
-
             } else {
+                if (currentIsNotNear && groupedAudioClipsInfo.isNotEmpty()) {
+                    println("New grouped clip ----> groupedSecsLength: $groupedClipSecondsAmount - currClipSecsLength: $currentClipSecondsLength" +
+                        " - lastClip: ${currentAudioClipInfo.lastClip} - currIsNear: ${!currentIsNotNear}")
+                    generateClips(groupedAudioClipsInfo)
+                    groupedClipSecondsAmount = 0.0f
+                    groupedAudioClipsInfo = ArrayList()
+                    previousAudioClipInfo = null
+                }
                 groupedAudioClipsInfo.add(currentAudioClipInfo)
                 groupedClipSecondsAmount += currentClipSecondsLength
                 previousAudioClipInfo = currentAudioClipInfo
@@ -162,17 +160,9 @@ class ClipGenerator {
     private suspend fun generateClips(audioClipsInfo: ArrayList<AudioClipInfo>) = coroutineScope {
         val firstClip = audioClipsInfo.first()
         val lastClip = audioClipsInfo.last()
-
-
-        println("how many clips are part of this grouped clip? ${audioClipsInfo.size}")
-
-
         audioClipsInfo.map { clipInfo ->
             val minIndex = getNearestIndex(clipInfo.initialPositionInSeconds)
             val maxIndex = getNearestIndex(clipInfo.endPositionInSeconds)
-
-            println("retrieving signals from $minIndex to $maxIndex")
-
             audioSignalDao.retrieveAudioSignalsFromRange(key = "audioSignal_${clipInfo.audioFileName}", min = minIndex, max = maxIndex)
             .takeIf { it.isNotEmpty() }
             ?.map { getSignalDataForAudioClipPart(audioSignal = it, clipInfo = clipInfo) }
@@ -181,7 +171,6 @@ class ClipGenerator {
             // TODO: implement custom exception
         }.reduce { signal1, signal2 -> signal1 + signal2 }
         .let {
-            println("sending signal .... ")
             launch {
                 audioClipSignalTopicSignal.postMessage(
                     AudioClipSignal(
