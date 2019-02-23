@@ -13,7 +13,6 @@ import net.jcflorezr.model.AudioSignalRmsEntity
 import net.jcflorezr.model.AudioSignalRmsInfoKt
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
-import org.junit.After
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.ClassRule
@@ -27,6 +26,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner
 import java.io.File
 import org.hamcrest.CoreMatchers.`is` as Is
 
+// TODO: trigger the rebuild project command to check the remaining warnings
+
 @ActiveProfiles("test")
 @RunWith(SpringJUnit4ClassRunner::class)
 @ContextConfiguration(classes = [TestSignalDaoConfig::class])
@@ -36,7 +37,7 @@ class AudioSignalDaoIntegrationTest {
     private lateinit var audioSignalDao: AudioSignalDao
 
     private val thisClass: Class<AudioSignalDaoIntegrationTest> = this.javaClass
-    private val testSignalResourcesPath: String = thisClass.getResource("/sound").path
+    private val testSignalResourcesPath: String = thisClass.getResource("/signal").path
 
     companion object {
         @JvmField
@@ -70,7 +71,7 @@ class AudioSignalDaoIntegrationTest {
             .filter { it.extension == "json" }
             .map { signalJsonFile -> MAPPER.readValue<AudioSignalKt>(signalJsonFile) }
         audioSignalList.forEach {
-            val storedPart = audioSignalDao.storeAudioSignalPart(audioSignal = it)
+            val storedPart = audioSignalDao.persistAudioSignalPart(audioSignal = it)
             val actualPart = audioSignalDao.retrieveAudioSignalPart(audioFileName = storedPart.audioFileName, index = storedPart.index)
             assertNotNull(actualPart)
             val actualBytes = ByteArray(actualPart?.content?.remaining() ?: 0)
@@ -102,15 +103,15 @@ class AudioSignalDaoIntegrationTest {
         audioSignalList.forEach {
             assertTrue(audioSignalDao.storeAudioSignal(audioSignal = it))
         }
-        val actualAudioSignalSet = audioSignalDao.retrieveAudioSignalFromRange(
+        val actualAudioSignalSet = audioSignalDao.retrieveAudioSignalsFromRange(
             key = audioSignalList[0].entityName + "_" + audioSignalList[0].audioFileName,
-            min = 1.0,
+            min = 0.0,
             max = audioSignalList.size.toDouble()
         )
-        assertTrue(actualAudioSignalSet?.isNotEmpty() ?: false)
-        assertThat(actualAudioSignalSet?.size, Is(equalTo(audioSignalList.size)))
+        assertTrue(actualAudioSignalSet.isNotEmpty())
+        assertThat(actualAudioSignalSet.size, Is(equalTo(audioSignalList.size)))
         audioSignalList.forEach {
-            assertTrue(actualAudioSignalSet?.contains(it) ?: false)
+            assertTrue(actualAudioSignalSet.contains(it))
         }
     }
 
@@ -126,7 +127,7 @@ class AudioSignalRmsDaoIntegrationTest {
     private lateinit var audioSignalRmsDao: AudioSignalRmsDao
 
     private val thisClass: Class<AudioSignalRmsDaoIntegrationTest> = this.javaClass
-    private val testSignalRmsResourcesPath: String = thisClass.getResource("/signal").path
+    private val testSignalRmsResourcesPath: String = thisClass.getResource("/rms").path
     private val signalRmsListType: CollectionType
 
     companion object {

@@ -1,6 +1,7 @@
 package net.jcflorezr.audioclips;
 
 import biz.source_code.dsp.model.AudioSignal;
+import biz.source_code.dsp.signal.AudioIo2;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.jcflorezr.model.audioclips.AudioFileClipEntity;
@@ -66,6 +67,29 @@ public class GroupAudioClipSignalGeneratorTest {
 
         assertThat(actualAudioClipSignal, is(expectedAudioClipSignal));
     }
+
+
+
+    @Test
+    public void test1() throws Exception {
+//        List<AudioFileClipEntity> groupAudioClipsInfo = MAPPER.readValue(thisClass.getResourceAsStream(AUDIO_CLIPS_INFO), new TypeReference<List<AudioFileClipEntity>>(){});
+//        boolean asMono = true;
+//        boolean withSeparator = true;
+//        OutputAudioClipsConfig outputAudioClipsConfig = createDummyOutputAudioClipsConfig(asMono, withSeparator);
+//
+//        AudioSignal actualAudioClipSignal = groupAudioClipSignalGenerator.generateAudioClip(groupAudioClipsInfo, outputAudioClipsConfig);
+
+
+        AudioSignal expectedAudioClipSignal = MAPPER.readValue(thisClass.getResourceAsStream(MONO_SIGNAL_WITH_SEPARATOR), AudioSignal.class);
+
+        new AudioIo2().saveAudioFile("/home/florez/Desktop/audio-file", ".wav", expectedAudioClipSignal);
+
+
+//        assertThat(actualAudioClipSignal, is(expectedAudioClipSignal));
+    }
+
+
+
 
     @Test
     public void generateAudioStereoSignalWithoutSeparator() throws Exception {

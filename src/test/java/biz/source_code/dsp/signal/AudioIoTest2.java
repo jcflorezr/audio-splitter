@@ -1,4 +1,4 @@
-package biz.source_code.dsp.sound;
+package biz.source_code.dsp.signal;
 
 import biz.source_code.dsp.model.AudioSignal;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,7 +11,6 @@ import java.io.IOException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.*;
 
 // TODO: remove it
 public class AudioIoTest2 {
@@ -46,13 +45,13 @@ public class AudioIoTest2 {
     @Test
     public void saveAudioFile() throws IOException, UnsupportedAudioFileException {
 
-        String audioFileName = testResourcesPath + "strong-background-noise";
+        String audioFileName = "/home/florez/Desktop/audio/signal/24_3";
 
         AudioIo2 audioIo = new AudioIo2();
-        AudioSignal audioSignal = MAPPER.readValue(new File(testResourcesPath + "strong-background-noise-signal.json"), AudioSignal.class);
-        audioIo.saveAudioFile(audioFileName, ".wav", audioSignal);
+        AudioSignal audioSignal = MAPPER.readValue(new File("/home/florez/Desktop/audio/signal/" + "24_3.json"), AudioSignal.class);
+        audioIo.saveAudioFile(audioFileName, ".flac", audioSignal);
 
-//        new ObjectMapper().writeValue(new File(testResourcesPath + "mysignal3.json"), audioSignal.getData());
+//        new ObjectMapper().writeValue(new File(testResourcesPath + "mysignal3.json"), audioSignal.getSignal());
 
 //        AudioSignal expectedAudioClipSignal = MAPPER.readValue(thisClass.getResourceAsStream("/audiocontent/mysignal2.json"), AudioSignal.class);
 

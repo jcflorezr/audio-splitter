@@ -2,7 +2,7 @@ package net.jcflorezr.audioclips;
 
 import biz.source_code.dsp.model.AudioFileWritingResult;
 import biz.source_code.dsp.model.AudioSignal;
-import biz.source_code.dsp.sound.AudioIo;
+import biz.source_code.dsp.signal.AudioIo;
 import net.jcflorezr.api.audioclips.AudioClipsGenerator;
 import net.jcflorezr.model.audioclips.AudioFileClipEntity;
 import net.jcflorezr.model.audioclips.AudioFileClipResultEntity;
@@ -65,7 +65,7 @@ public class AudioClipsGeneratorImpl
         String audioFileNameAndPath = outputAudioClipsConfig.getOutputAudioClipsDirectoryPath() + suggestedAudioClipName;
         int startPosition = audioFileClipEntity.getStartPosition();
         int audioClipLength = audioFileClipEntity.getEndPosition() - startPosition;
-        AudioFileWritingResult audioFileWritingResult = audioIo.saveAudioFile(audioFileNameAndPath, outputAudioClipsConfig.getAudioFormatExtension(), audioClipSignal, startPosition, audioClipLength);
+        AudioFileWritingResult audioFileWritingResult = null; //audioIo.saveAudioFile(audioFileNameAndPath, outputAudioClipsConfig.getAudioFormatExtension(), audioClipSignal, startPosition, audioClipLength);
         return new AudioFileClipResultEntity(audioFileName, audioFileClipEntity, audioFileWritingResult, suggestedAudioClipName);
     }
 

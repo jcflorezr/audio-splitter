@@ -48,7 +48,7 @@ data class AudioSourceInfo constructor(
         fun getAudioInfo(format: AudioFormat, buffer: Array<FloatArray?>? = null): AudioSourceInfo {
 
             // TODO: can be done with one channel?
-            val channels = 1 //format.channels
+            val channels = format.channels
             val sampleRate = Math.round(format.sampleRate)
             val bigEndian = format.isBigEndian
             val sampleBits = format.sampleSizeInBits

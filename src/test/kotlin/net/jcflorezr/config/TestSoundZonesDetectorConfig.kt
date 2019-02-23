@@ -1,13 +1,13 @@
 package net.jcflorezr.config
 
-import net.jcflorezr.broker.AudioClipSubscriberMock
+import net.jcflorezr.broker.AudioClipInfoSubscriberMock
 import net.jcflorezr.broker.SignalRmsSubscriberMock
 import net.jcflorezr.broker.Subscriber
 import net.jcflorezr.broker.Topic
 import net.jcflorezr.dao.AudioSignalRmsDao
 import net.jcflorezr.model.AudioClipInfo
 import net.jcflorezr.model.AudioSignalsRmsInfo
-import net.jcflorezr.signal.SoundZonesDetector
+import net.jcflorezr.rms.SoundZonesDetector
 import org.mockito.Mockito.mock
 import org.springframework.beans.factory.config.ConfigurableBeanFactory
 import org.springframework.context.annotation.Bean
@@ -34,6 +34,6 @@ class TestSoundZonesDetectorConfig {
 
     @Profile("test") @Bean fun audioClipTopicTest() = Topic<AudioClipInfo>()
 
-    @Profile("test") @Bean fun audioClipSubscriberMockTest(): Subscriber<AudioClipInfo> = AudioClipSubscriberMock()
+    @Profile("test") @Bean fun audioClipSubscriberMockTest(): Subscriber<AudioClipInfo> = AudioClipInfoSubscriberMock()
 
 }

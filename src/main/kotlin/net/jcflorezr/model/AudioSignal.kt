@@ -70,7 +70,7 @@ data class AudioPartEntity(
     @PrimaryKeyColumn(name = "audio_file_name", ordinal = 0, type = PrimaryKeyType.PARTITIONED)
     val audioFileName: String,
     @PrimaryKeyColumn(name = "ind", ordinal = 1, type = PrimaryKeyType.CLUSTERED)
-    val index: Int,
+    val index: Float,
     @Column("channels") val channels: Int,
     @Column("sample_rate") val sampleRate: Int,
     @Column("sample_size_in_bits") val sampleSizeInBits: Int,
@@ -121,7 +121,7 @@ data class AudioPartEntity(
 
     override fun hashCode(): Int {
         var result = audioFileName.hashCode()
-        result = 31 * result + index
+        result = 31 * result + index.hashCode()
         result = 31 * result + channels
         result = 31 * result + sampleRate
         result = 31 * result + sampleSizeInBits

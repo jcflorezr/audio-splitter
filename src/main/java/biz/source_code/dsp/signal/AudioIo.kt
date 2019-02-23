@@ -1,6 +1,5 @@
-package biz.source_code.dsp.sound
+package biz.source_code.dsp.signal
 
-import biz.source_code.dsp.model.AudioFileWritingResult
 import biz.source_code.dsp.model.AudioSignalKt
 import biz.source_code.dsp.util.AudioFormatsSupported
 import kotlinx.coroutines.coroutineScope
@@ -12,14 +11,13 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.io.File
 import java.io.IOException
-import javax.sound.sampled.AudioFileFormat
 import javax.sound.sampled.AudioFormat
 import javax.sound.sampled.AudioInputStream
 import javax.sound.sampled.AudioSystem
 
 interface AudioIo {
+    fun saveAudioFile(fileName: String, extension: String, signal: Array<FloatArray?>, sampleRate: Int)
     suspend fun generateAudioSignalFromAudioFile(configuration: InitialConfiguration)
-    fun saveAudioFile(fileName: String, extension: String, signal: Array<FloatArray?>, sampleRate: Int): AudioFileWritingResult
 }
 
 @Service
@@ -28,10 +26,10 @@ final class AudioIoImpl : AudioIo {
     @Autowired
     private lateinit var audioSignalTopic: Topic<AudioSignalKt>
 
-    override fun saveAudioFile(fileName: String, extension: String, signal: Array<FloatArray?>, sampleRate: Int): AudioFileWritingResult {
-        val audioInputStream = getAudioInputStreamForPacking(signal, 0, signal.size, sampleRate)
+    override fun saveAudioFile(fileName: String, extension: String, signal: Array<FloatArray?>, sampleRate: Int) {
+        val audioInputStream = getAudioInputStreamForPacking(signal, 0, signal[0]!!.size, sampleRate)
         val fileType = AudioFormatsSupported.getFileType(extension)
-        return writeAudioFile(audioInputStream, fileType, fileName + extension)
+        AudioSystem.write(audioInputStream, fileType, File(fileName + extension))
     }
 
     override suspend fun generateAudioSignalFromAudioFile(configuration: InitialConfiguration) = coroutineScope<Unit> {
@@ -52,7 +50,7 @@ final class AudioIoImpl : AudioIo {
                     bytesRead <= 0 ->
                         throw IOException("Unexpected EOF while reading WAV file. totalFrames=" + requiredFrames + " pos=" + it + " frameSize=" + audioInfo.frameSize + ".")
                     bytesRead % audioInfo.frameSize != 0 ->
-                        throw IOException("Length of transmitted data is not a multiple of frame size. requiredFrames=" + requiredFrames + " trBytes=" + bytesRead + " frameSize=" + audioInfo.frameSize + ".")
+                        throw IOException("Length of transmitted signal is not a multiple of frame size. requiredFrames=" + requiredFrames + " trBytes=" + bytesRead + " frameSize=" + audioInfo.frameSize + ".")
                 }
                 val framesToRead = bytesRead / audioInfo.frameSize
                 val audioSignal = AudioSignalKt(
@@ -82,15 +80,6 @@ final class AudioIoImpl : AudioIo {
         val format = AudioFormat(sampleRate.toFloat(), 16, 1, true, false)
         val audioBytesPacker = AudioBytesPacker(format, signal, pos, len)
         return AudioInputStream(audioBytesPacker, format, len.toLong())
-    }
-
-    private fun writeAudioFile(audioInputStream: AudioInputStream, fileType: AudioFileFormat.Type, fileName: String): AudioFileWritingResult {
-        return try {
-            AudioSystem.write(audioInputStream, fileType, File(fileName))
-            AudioFileWritingResult.successful()
-        } catch (e: Exception) {
-            AudioFileWritingResult.unsuccessful(e)
-        }
     }
 
 }

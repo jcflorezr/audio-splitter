@@ -1,4 +1,4 @@
-package net.jcflorezr.signal
+package net.jcflorezr.rms
 
 import biz.source_code.dsp.model.AudioSignalKt
 import kotlinx.coroutines.coroutineScope

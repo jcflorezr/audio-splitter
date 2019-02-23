@@ -1,4 +1,4 @@
-package net.jcflorezr.core
+package net.jcflorezr.facade
 
 import javazoom.jl.decoder.JavaLayerException
 import net.jcflorezr.broker.Topic

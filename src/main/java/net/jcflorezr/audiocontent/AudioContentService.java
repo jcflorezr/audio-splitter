@@ -1,31 +1,6 @@
 package net.jcflorezr.audiocontent;
 
-import biz.source_code.dsp.model.AudioSignal;
-import biz.source_code.dsp.sound.AudioIo;
-import net.jcflorezr.model.audiocontent.AudioContent;
-import net.jcflorezr.model.audiocontent.AudioFileCompleteInfo;
-import net.jcflorezr.model.audiocontent.AudioFileMetadataEntity;
-import net.jcflorezr.model.persistence.AudioFileNamePrimaryKey;
-import net.jcflorezr.util.JsonUtils;
-import org.apache.tika.exception.TikaException;
-import org.apache.tika.metadata.Metadata;
-import org.apache.tika.parser.AutoDetectParser;
-import org.apache.tika.parser.ParseContext;
-import org.apache.tika.sax.BodyContentHandler;
 import org.springframework.stereotype.Service;
-import org.xml.sax.SAXException;
-
-import javax.sound.sampled.UnsupportedAudioFileException;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toMap;
 import static org.apache.commons.lang3.StringUtils.split;

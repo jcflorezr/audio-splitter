@@ -1,13 +1,15 @@
 package net.jcflorezr.broker
 
+import biz.source_code.dsp.model.AudioClipSignal
 import biz.source_code.dsp.model.AudioSignalKt
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import kotlinx.coroutines.runBlocking
+import net.jcflorezr.dao.AudioClipDao
+import net.jcflorezr.dao.AudioSignalDao
 import net.jcflorezr.dao.AudioSignalRmsDao
 import net.jcflorezr.model.AudioClipInfo
-import net.jcflorezr.model.AudioSignalRmsEntity
 import net.jcflorezr.model.AudioSignalRmsInfoKt
 import net.jcflorezr.model.AudioSignalsRmsInfo
 import net.jcflorezr.model.InitialConfiguration
@@ -68,22 +70,23 @@ final class SignalSubscriberMock : Subscriber<AudioSignalKt> {
     fun init() {
         signalTopic.register(this)
         thisClass = this.javaClass
-        testResourcesPath = thisClass.getResource("/sound").path
+        testResourcesPath = thisClass.getResource("/signal").path
     }
 
     override suspend fun update(message: AudioSignalKt) {
         val folderName = FilenameUtils.getBaseName(message.audioFileName)
-        val signalPartFilePath = "$testResourcesPath/$folderName/${message.index}-$folderName.json"
+        val fileNamePrefix = (message.index).toString().replace(".", "_")
+        val signalPartFilePath = "$testResourcesPath/$folderName/$fileNamePrefix-$folderName.json"
         val signalPart = File(signalPartFilePath)
             .takeIf { it.exists() }
             ?.let { signalJsonFile -> MAPPER.readValue<AudioSignalKt>(signalJsonFile) }
         // TODO: implement a logger
-        println("testing audio signal -----> " +
+        println("testing audio rms -----> " +
             "{audioFileName: ${message.audioFileName}, " +
             "index: ${message.index}, " +
             "initialPositionInSeconds: ${message.initialPositionInSeconds}}")
-        assertNotNull("No signal part was found for ----> $message", signalPart)
-        assertThat("Current and expected signal parts are not equal \n " +
+        assertNotNull("No rms part was found for ----> $message", signalPart)
+        assertThat("Current and expected rms parts are not equal \n " +
             "Current: $message \n Expected: $signalPart", message, Is(equalTo(signalPart)))
     }
 
@@ -108,7 +111,7 @@ final class SignalRmsSubscriberMock : Subscriber<AudioSignalsRmsInfo> {
     fun init() {
         audioSignalRmsTopic.register(this)
         thisClass = this.javaClass
-        testResourcesPath = thisClass.getResource("/signal").path
+        testResourcesPath = thisClass.getResource("/rms").path
     }
 
     override suspend fun update(message: AudioSignalsRmsInfo) {
@@ -119,7 +122,7 @@ final class SignalRmsSubscriberMock : Subscriber<AudioSignalsRmsInfo> {
         }
         // TODO: implement a logger
         message.audioSignals.forEach {
-            println("testing audio signal rms ---> " +
+            println("testing audio rms ---> " +
                 "{audioFileName: ${it.audioFileName}, " +
                 "index: ${it.index}, " +
                 "initialPositionInSeconds: ${it.initialPositionInSeconds}, " +
@@ -137,7 +140,7 @@ final class SignalRmsSubscriberMock : Subscriber<AudioSignalsRmsInfo> {
 }
 
 @Service
-final class AudioClipSubscriberMock : Subscriber<AudioClipInfo> {
+final class AudioClipInfoSubscriberMock : Subscriber<AudioClipInfo> {
 
     @Autowired
     private lateinit var audioClipTopic: Topic<AudioClipInfo>
@@ -147,7 +150,8 @@ final class AudioClipSubscriberMock : Subscriber<AudioClipInfo> {
     }
 
     private lateinit var testResourcesPath: String
-    private lateinit var thisClass: Class<AudioClipSubscriberMock>
+    private lateinit var thisClass: Class<AudioClipInfoSubscriberMock>
+    private lateinit var audioFileName: String
     private var audioClipList: ArrayList<AudioClipInfo> = ArrayList()
     private val foldersProcessed: HashSet<String> = HashSet()
 
@@ -164,6 +168,7 @@ final class AudioClipSubscriberMock : Subscriber<AudioClipInfo> {
             val audioClipListType = MAPPER.typeFactory.constructCollectionType(List::class.java, AudioClipInfo::class.java)
             audioClipList.addAll(MAPPER.readValue(File("$testResourcesPath/$folderName/$folderName.json"), audioClipListType))
             foldersProcessed.add(folderName)
+            audioFileName = message.audioFileName
         }
         // TODO: implement a logger
         println("testing audio clip ----> " +
@@ -177,6 +182,60 @@ final class AudioClipSubscriberMock : Subscriber<AudioClipInfo> {
     fun validateCompleteness() {
         assertTrue("There were ${audioClipList.size} audio clips that were not tested ----> $audioClipList",
             audioClipList.isEmpty())
+    }
+
+}
+
+@Service
+final class AudioClipSignalSubscriberMock : Subscriber<AudioClipSignal> {
+
+    @Autowired
+    private lateinit var audioClipSignalTopic: Topic<AudioClipSignal>
+    @Autowired
+    private lateinit var audioSignalDao: AudioSignalDao
+    @Autowired
+    private lateinit var audioClipDao: AudioClipDao
+
+    companion object {
+        private val MAPPER = ObjectMapper().registerKotlinModule()
+    }
+
+    private lateinit var thisClass: Class<AudioClipSignalSubscriberMock>
+    private lateinit var testResourcesPath: String
+    private lateinit var audioFileName: String
+    private var audioClipSignalList = ArrayList<AudioClipSignal>()
+    private val foldersProcessed: HashSet<String> = HashSet()
+
+    @PostConstruct
+    fun init() {
+        audioClipSignalTopic.register(this)
+        thisClass = this.javaClass
+        testResourcesPath = thisClass.getResource("/clip").path
+    }
+
+    override suspend fun update(message: AudioClipSignal) {
+        val folderName = FilenameUtils.getBaseName(message.audioFileName)
+        if (audioClipSignalList.isEmpty() || !foldersProcessed.contains(folderName)) {
+            audioClipSignalList.addAll(File("$testResourcesPath/$folderName/signal/").listFiles()
+                .map { MAPPER.readValue(it, AudioClipSignal::class.java) } as ArrayList<AudioClipSignal>)
+            foldersProcessed.add(folderName)
+            audioFileName = message.audioFileName
+        }
+        // TODO: implement a logger
+        println("testing audio clip signal ----> {audioFileName: ${message.audioFileName}, audioClipName: ${message.audioClipName}}")
+        assertTrue("audio clip signal ----> $message was not found", audioClipSignalList.contains(message))
+        audioClipSignalList.remove(message)
+    }
+
+    fun validateCompleteness() {
+        assertTrue("There were ${audioClipSignalList.size} audio signal clips that were not tested ----> $audioClipSignalList",
+            audioClipSignalList.isEmpty())
+        val signalsList = audioSignalDao.retrieveAllAudioSignals(key = "audioSignal_$audioFileName")
+        assertTrue("There were ${signalsList.size} audio signals that were not removed from database ----> $signalsList",
+            signalsList.isEmpty())
+        val audioClipInfoList = audioClipDao.retrieveAllAudioClipsInfo(key = "audioClipInfo_$audioFileName")
+        assertTrue("There were ${audioClipInfoList.size} audio clips info that were not removed from database ----> $audioClipInfoList",
+            audioClipInfoList.isEmpty())
     }
 
 }

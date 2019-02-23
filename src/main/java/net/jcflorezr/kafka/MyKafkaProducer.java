@@ -21,7 +21,7 @@ public class MyKafkaProducer {
 //        props.put("serializer.class", "kafka.serializer.StringEncoder");
 //
 //        // 1 means the producer	receives an	acknowledgment once the lead replica
-//        // has received	the	data. This option provides better durability as	the
+//        // has received	the	signal. This option provides better durability as	the
 //        // client waits	until the server acknowledges the request as successful.
 //        props.put("request.required.acks", "1");
 //
@@ -51,9 +51,9 @@ public class MyKafkaProducer {
 //            String msg = "Message Publishing Time - " + runtime;
 //            System.out.println(msg);
 //            // Creates a KeyedMessage instance
-//            KeyedMessage<String, String> data = new KeyedMessage<>(topic, msg);
+//            KeyedMessage<String, String> signal = new KeyedMessage<>(topic, msg);
 //            // Publish the message
-//            producer.send(data);
+//            producer.send(signal);
 //        }
 //        // Close producer connection with broker.
 //        producer.close();

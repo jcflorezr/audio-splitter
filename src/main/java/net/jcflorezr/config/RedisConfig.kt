@@ -3,11 +3,14 @@ package net.jcflorezr.config
 import biz.source_code.dsp.model.AudioSignalKt
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import net.jcflorezr.dao.AudioClipDao
+import net.jcflorezr.dao.AudioClipDaoImpl
 import net.jcflorezr.model.AudioSignalRmsInfoKt
 import net.jcflorezr.dao.AudioSignalDao
 import net.jcflorezr.dao.AudioSignalDaoImpl
 import net.jcflorezr.dao.AudioSignalRmsDao
 import net.jcflorezr.dao.AudioSignalRmsDaoImpl
+import net.jcflorezr.model.AudioClipInfo
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -50,6 +53,14 @@ class RedisConfig {
         return template
     }
 
+    @Bean
+    fun audioClipDaoTemplateTest(): RedisTemplate<String, AudioClipInfo> {
+        val template = RedisTemplate<String, AudioClipInfo>()
+        template.setConnectionFactory(jedisConnectionFactory())
+        template.valueSerializer = Jackson2JsonRedisSerializerKotlin(AudioClipInfo::class.java)
+        return template
+    }
+
     /*
     DAOs
      */
@@ -57,6 +68,8 @@ class RedisConfig {
     @Bean fun audioSignalDao(): AudioSignalDao = AudioSignalDaoImpl()
 
     @Bean fun audioSignalRmsDao(): AudioSignalRmsDao = AudioSignalRmsDaoImpl()
+
+    @Bean fun audioClipDao(): AudioClipDao = AudioClipDaoImpl()
 
 }
 

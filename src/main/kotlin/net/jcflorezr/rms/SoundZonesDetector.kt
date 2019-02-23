@@ -1,4 +1,4 @@
-package net.jcflorezr.signal
+package net.jcflorezr.rms
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -12,6 +12,8 @@ import net.jcflorezr.model.AudioSignalRmsInfoKt
 import net.jcflorezr.util.AudioUtilsKt
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import java.lang.RuntimeException
+import java.util.*
 import javax.annotation.PostConstruct
 
 sealed class SoundDetectorAction
@@ -97,6 +99,7 @@ class SoundZonesDetector {
     private var activeContinueFrom = 0.0
     private var whereToStart = 0
     private var consecutiveNumber = 0
+    private val lastClipProcessed = ArrayDeque<AudioClipInfo>()
 
     companion object {
         private const val MAX_ACTIVE_COUNTER = 80
@@ -104,7 +107,7 @@ class SoundZonesDetector {
 
     suspend fun detectSoundZones(audioRmsInfoList: List<AudioSignalRmsInfoKt>) {
 
-        // TODO: seek a proper way to debug the sound detector process
+        // TODO: seek a proper way to debug the signal detector process
         println("STARTING ----- ${audioRmsInfoList.first().audioFileName} silCnt: $silenceCounter - silConFrom: $silenceContinueFrom - " +
                 "startAct: $startActiveZonePosition - inacCnt: $inactiveCounter - actConFrom: $activeContinueFrom - whToSt: $whereToStart")
 
@@ -131,27 +134,27 @@ class SoundZonesDetector {
                             startActiveZonePosition = Math.max(startActiveZonePosition - rmsInfo.segmentSize * 2, 0)
                             endActiveZonePosition = rmsInfo.initialPosition
 
-                            // TODO: seek a proper way to debug the sound detector process
+                            // TODO: seek a proper way to debug the signal detector process
                             println("SILENCE ----- ${audioRmsInfoList.first().audioFileName} silCnt: $silenceCounter - silConFrom: $silenceContinueFrom - " +
-                                    "startAct: $startActiveZonePosition - endAct: $endActiveZonePosition - actCnt: $activeCounter - inacCnt: $inactiveCounter - actConFrom: $activeContinueFrom")
-
+                                "startAct: $startActiveZonePosition - endAct: $endActiveZonePosition - actCnt: $activeCounter - inacCnt: $inactiveCounter - actConFrom: $activeContinueFrom")
 
                             val audioClipInfo = generateAudioClipInfo(startActiveZonePosition, endActiveZonePosition, rmsInfo)
-                            audioClipTopic.postMessage(message = audioClipInfo)
+                            if (lastClipProcessed.isNotEmpty()) {
+                                audioClipTopic.postMessage(message = lastClipProcessed.poll())
+                            }
+                            lastClipProcessed.offer(audioClipInfo)
                             audioSignalRmsDao.removeAudioSignalsRmsFromRange(
                                 key = "${rmsInfo.entityName}_${rmsInfo.audioFileName}",
                                 min = AudioUtilsKt.tenthsSecondsFormat(AudioUtilsKt.tenthsSecondsFormat(whereToStart.toDouble()) / rmsInfo.sampleRate.toDouble()),
                                 max = AudioUtilsKt.tenthsSecondsFormat(audioClipInfo.endPositionInSeconds.toDouble())
                             )
                             whereToStart = audioClipInfo.endPosition + rmsInfo.segmentSize
-
                             detectorVariables.startActiveZonePosition = startActiveZonePosition
                             detectorVariables.endActiveZonePosition = endActiveZonePosition
                             detectorVariables.silenceCounter = silenceCounter
                             detectorVariables.silenceContinueFrom = silenceContinueFrom
                             detectorVariables.activeCounter = 0
                             detectorVariables.inactiveCounter = inactiveCounter
-
                             silenceContinueFrom = 0.0
                         }
                     } else {
@@ -168,7 +171,7 @@ class SoundZonesDetector {
                 silenceCounter = 0
             }
             if (!rmsSignalIterator.hasNext()) {
-                // TODO: seek a proper way to debug the sound detector process
+                // TODO: seek a proper way to debug the signal detector process
                 println("RAN OUT of RMS ----- ${audioRmsInfoList.first().audioFileName} ${rmsInfo.index} silCnt: $silenceCounter - silConFrom: $silenceContinueFrom - " +
                         "startAct: $startActiveZonePosition - endAct: $endActiveZonePosition - actCnt: $activeCounter - inacCnt: $inactiveCounter - actConFrom: $activeContinueFrom")
                 silenceCounter = detectorVariables.silenceCounter
@@ -177,7 +180,26 @@ class SoundZonesDetector {
                 startActiveZonePosition = detectorVariables.startActiveZonePosition
                 endActiveZonePosition = detectorVariables.endActiveZonePosition
                 silenceContinueFrom = 0.0
+                if (isLastSegment) {
+                    if (lastClipProcessed.isEmpty() || lastClipProcessed.size > 1) {
+                        throw RuntimeException("there are ${lastClipProcessed.size} last clips") // TODO: implement custom exception
+                    }
+                    val lastClip = lastClipProcessed.poll()
+                    lastClip.lastClip = true
+                    audioClipTopic.postMessage(message = lastClip)
+                    val remainingAudioRms = audioSignalRmsDao.retrieveAllAudioSignalsRms("${rmsInfo.entityName}_${rmsInfo.audioFileName}")
+                    if (remainingAudioRms.isNotEmpty()) {
+                        println("I AM DONE! NOW REMOVING REMAINING RMS ROWS ----- ${remainingAudioRms.first().audioFileName} firstRem: ${remainingAudioRms.first().index} " +
+                            "lastRem: ${remainingAudioRms.last().index} - currentRms: ${rmsInfo.index}")
+                        audioSignalRmsDao.removeAudioSignalsRmsFromRange(
+                            key = "${rmsInfo.entityName}_${rmsInfo.audioFileName}",
+                            min = AudioUtilsKt.tenthsSecondsFormat(remainingAudioRms.first().index),
+                            max = AudioUtilsKt.tenthsSecondsFormat(rmsInfo.index)
+                        )
+                    }
+                }
             }
+
         }
     }
 
@@ -207,24 +229,21 @@ class SoundZonesDetector {
                 inactiveCounter = 0
             } else if (++inactiveCounter == 3 || isLastSegment) {
                 if (activeCounter >= 3) {
-
-
                     endActiveZonePosition = rmsInfo.initialPosition
-
-                    // TODO: seek a proper way to debug the sound detector process
+                    // TODO: seek a proper way to debug the signal detector process
                     println("ACTIVE ----- ${audioRmsInfoList.first().audioFileName} silCnt: $silenceCounter - silConFrom: $silenceContinueFrom - " +
-                            "startAct: $startActiveZonePosition - endAct: $endActiveZonePosition - actCnt: $activeCounter - inacCnt: $inactiveCounter - actConFrom: $activeContinueFrom")
-
-
+                        "startAct: $startActiveZonePosition - endAct: $endActiveZonePosition - actCnt: $activeCounter - inacCnt: $inactiveCounter - actConFrom: $activeContinueFrom")
                     val audioClipInfo = generateAudioClipInfo(startActiveZonePosition, endActiveZonePosition, rmsInfo)
-                    audioClipTopic.postMessage(message = audioClipInfo)
+                    if (lastClipProcessed.isNotEmpty()) {
+                        audioClipTopic.postMessage(message = lastClipProcessed.poll())
+                    }
+                    lastClipProcessed.offer(audioClipInfo)
                     audioSignalRmsDao.removeAudioSignalsRmsFromRange(
                         key = "${rmsInfo.entityName}_${rmsInfo.audioFileName}",
-                        min = AudioUtilsKt.tenthsSecondsFormat(whereToStart.toDouble() / rmsInfo.sampleRate.toDouble()),
-                        max = AudioUtilsKt.tenthsSecondsFormat(audioClipInfo.endPositionInSeconds.toDouble())
+                        min = AudioUtilsKt.tenthsSecondsFormat(whereToStart.toDouble() / rmsInfo.sampleRate),
+                        max = AudioUtilsKt.tenthsSecondsFormat(audioClipInfo.endPositionInSeconds)
                     )
                     whereToStart = audioClipInfo.endPosition + rmsInfo.segmentSize
-
                     detectorVariables.startActiveZonePosition = startActiveZonePosition
                     detectorVariables.endActiveZonePosition = endActiveZonePosition
                     detectorVariables.silenceCounter = silenceCounter
@@ -232,9 +251,6 @@ class SoundZonesDetector {
                     detectorVariables.activeCounter = 0
                     detectorVariables.inactiveCounter = inactiveCounter
                     activeContinueFrom = 0.0
-
-
-
                 }
                 activeCounter = 0
             }

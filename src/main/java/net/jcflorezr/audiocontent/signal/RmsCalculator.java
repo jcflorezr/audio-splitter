@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The signal is divided into segments and for each segment the
+ * The rms is divided into segments and for each segment the
  * <a href="http://en.wikipedia.org/wiki/Root_mean_square">RMS</a> value is computed.
  * For speech audio, a segment size of 100 ms might be reasonable.
  */

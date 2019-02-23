@@ -16,7 +16,7 @@ package biz.source_code.dsp.util;
 * A dynamic array of integers.
 *
 * This class is similar to <code>ArrayList&lt;Integer&gt;</code> and <code>Vector&lt;Integer&gt;</code>,
-* but instead of <code>Integer</code> it uses the primitive data type <code>int</code>
+* but instead of <code>Integer</code> it uses the primitive signal type <code>int</code>
 * to store the integer values.
 */
 public final class IntArray {                    // ("final" is used to allow optimization of method calls)

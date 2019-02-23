@@ -8,6 +8,7 @@ import net.jcflorezr.dao.AudioSignalDao
 import net.jcflorezr.dao.AudioSignalDaoImpl
 import net.jcflorezr.dao.AudioSignalRmsDao
 import net.jcflorezr.dao.AudioSignalRmsDaoImpl
+import net.jcflorezr.model.AudioClipInfo
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.beans.factory.config.ConfigurableBeanFactory
 import org.springframework.context.annotation.Bean
@@ -82,6 +83,15 @@ class TestRedisConfig {
         val template = RedisTemplate<String, AudioSignalRmsInfoKt>()
         template.setConnectionFactory(jedisConnectionFactory())
         template.valueSerializer = Jackson2JsonRedisSerializerKotlin(AudioSignalRmsInfoKt::class.java)
+        return template
+    }
+
+    @Profile("test")
+    @Bean
+    fun audioClipDaoTemplateTest(): RedisTemplate<String, AudioClipInfo> {
+        val template = RedisTemplate<String, AudioClipInfo>()
+        template.setConnectionFactory(jedisConnectionFactory())
+        template.valueSerializer = Jackson2JsonRedisSerializerKotlin(AudioClipInfo::class.java)
         return template
     }
 

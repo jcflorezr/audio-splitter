@@ -13,12 +13,12 @@
 package biz.source_code.dsp.filter;
 
 /**
-* General interface for a filter that processes a stream of signal sample values.
+* General interface for a filter that processes a stream of rms sample values.
 */
 public interface SignalFilter {
 
 /**
-* Processes an input signal value and returns the next output signal value.
+* Processes an input rms value and returns the next output rms value.
 */
 public double step (double inputValue);
 

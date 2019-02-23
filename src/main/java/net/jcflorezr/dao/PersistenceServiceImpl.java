@@ -90,7 +90,7 @@ public class PersistenceServiceImpl implements PersistenceService {
 
     private void storeAudioFileClips(List<AudioFileClipEntity> audioFileClipEntities) {
         //TODO there is a manner to insert several rows as batch mode in a newer version
-        // of spring data (1.5.6.RELEASE), this newer version introduces a new method
+        // of spring signal (1.5.6.RELEASE), this newer version introduces a new method
         // called CassandraOperations.batchOpt(), but unfortunately, this version seems
         // to be not compatible with the version 4 of the spring core.
         // WE ARE USING THE FOLLOWING LOOP WHILE THE INCOMPATIBILITY IS NOT FIXED
@@ -99,7 +99,7 @@ public class PersistenceServiceImpl implements PersistenceService {
 
     private void storeAudioClipsResults(List<AudioFileClipResultEntity> audioFileClipsResults) {
         //TODO there is a manner to insert several rows as batch mode in a newer version
-        // of spring data (1.5.6.RELEASE), this newer version introduces a new method
+        // of spring signal (1.5.6.RELEASE), this newer version introduces a new method
         // called CassandraOperations.batchOpt(), but unfortunately, this version seems
         // to be not compatible with the version 4 of the spring core.
         // WE ARE USING THE FOLLOWING LOOP WHILE THE INCOMPATIBILITY IS NOT FIXED

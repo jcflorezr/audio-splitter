@@ -1,4 +1,4 @@
-package net.jcflorezr.core
+package net.jcflorezr.facade
 
 import kotlinx.coroutines.runBlocking
 import net.jcflorezr.config.TestRootConfig

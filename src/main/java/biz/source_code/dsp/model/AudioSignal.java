@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Arrays;
 
 /**
- * A class for storing an audio signal in memory.
+ * A class for storing an audio rms in memory.
  */
 public class AudioSignal {
 
@@ -15,7 +15,7 @@ public class AudioSignal {
     private int samplingRate;
 
     /**
-     * The audio signal sample values, per channel separately.
+     * The audio rms sample values, per channel separately.
      * The normal value range is -1 .. 1.
      */
     private float[][] data;
@@ -45,7 +45,7 @@ public class AudioSignal {
     }
 
     /**
-     * Returns the signal length in samples.
+     * Returns the rms length in samples.
      */
     @JsonIgnore
     public int getLength() {
@@ -82,7 +82,7 @@ public class AudioSignal {
     public String toString() {
         return "AudioSignal{" +
                 "sampleRate=" + samplingRate +
-                ", data=" + Arrays.asList(data) +
+                ", signal=" + Arrays.asList(data) +
                 '}';
     }
 }

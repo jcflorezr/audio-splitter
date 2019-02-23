@@ -1,4 +1,4 @@
-package biz.source_code.dsp.sound
+package biz.source_code.dsp.signal
 
 import net.jcflorezr.model.AudioFormatEncodings
 import net.jcflorezr.model.AudioSourceInfo
@@ -17,25 +17,25 @@ internal object AudioBytesUnpacker {
 //                // Workaround for JDK bug JDK-8038139 / JI-9011075.
 //                // http://bugs.java.com/bugdatabase/view_bug.do?bug_id=8038139
 //                // https://bugs.openjdk.java.net/browse/JDK-8038139
-//                truncateSignal(signal, pos)
+//                truncateSignal(rms, pos)
 //                break
 //            }
 //            throw IOException("Unexpected EOF while reading WAV file. totalFrames=" + totalFrames + " pos=" + pos + " frameSize=" + audioInfo.frameSize + ".")
 //        }
 //        if (trBytes % audioInfo.frameSize != 0) {
-//            throw IOException("Length of transmitted data is not a multiple of frame size. reqFrames=" + reqFrames + " trBytes=" + trBytes + " frameSize=" + audioInfo.frameSize + ".")
+//            throw IOException("Length of transmitted signal is not a multiple of frame size. reqFrames=" + reqFrames + " trBytes=" + trBytes + " frameSize=" + audioInfo.frameSize + ".")
 //        }
         return unpackAudioStreamBytes(audioInfo, bytesBuffer, framesToRead)
     }
 
-//    private fun truncateSignal(signal: AudioSignal, length: Int) {
-//        for (channel in 0 until signal.channels) {
-//            signal.data[channel] = Arrays.copyOf(signal.data[channel], length)
+//    private fun truncateSignal(rms: AudioSignal, length: Int) {
+//        for (channel in 0 until rms.channels) {
+//            rms.signal[channel] = Arrays.copyOf(rms.signal[channel], length)
 //        }
 //    }
 
     /**
-     * A utility routine to unpack the data of a Java Sound audio stream.
+     * A utility routine to unpack the signal of a Java Sound audio stream.
      */
     private fun unpackAudioStreamBytes(
             audioInfo: AudioSourceInfo,

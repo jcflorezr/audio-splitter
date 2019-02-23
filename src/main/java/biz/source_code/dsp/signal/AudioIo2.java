@@ -10,7 +10,7 @@
 // Please contact the author if you need another license.
 // This module is provided "as is", without warranties of any kind.
 
-package biz.source_code.dsp.sound;
+package biz.source_code.dsp.signal;
 
 import biz.source_code.dsp.model.AudioFileWritingResult;
 import biz.source_code.dsp.model.AudioSignal;
@@ -46,11 +46,11 @@ public class AudioIo2 {
     }
 
     /**
-     * Writes an audio signal into a WAV or FLAC file.
+     * Writes an audio rms into a WAV or FLAC file.
      *
      * @param fileName The entityName of the audio file.
      * @param extension Type of the audio file.
-     * @param signal   The audio signal to be written into the WAV or FLAC file.
+     * @param signal   The audio rms to be written into the WAV or FLAC file.
      * @param pos      Position of the first sample (frame) to be written.
      * @param len      Number of samples (frames) to be written.
      */
@@ -144,7 +144,7 @@ public class AudioIo2 {
                 throw new IOException("Unexpected EOF while reading WAV file. totalFrames=" + totalFrames + " pos=" + pos + " frameSize=" + frameSize + ".");
             }
             if (trBytes % frameSize != 0) {
-                throw new IOException("Length of transmitted data is not a multiple of frame size. reqFrames=" + reqFrames + " trBytes=" + trBytes + " frameSize=" + frameSize + ".");
+                throw new IOException("Length of transmitted signal is not a multiple of frame size. reqFrames=" + reqFrames + " trBytes=" + trBytes + " frameSize=" + frameSize + ".");
             }
             int trFrames = trBytes / frameSize;
             unpackAudioStreamBytes(format, blockBuf, 0, signal.getData(), pos, trFrames);
@@ -160,7 +160,7 @@ public class AudioIo2 {
     }
 
     /**
-     * A utility routine to unpack the data of a Java Sound audio stream.
+     * A utility routine to unpack the signal of a Java Sound audio stream.
      */
     private static void unpackAudioStreamBytes(AudioFormat format, byte[] inBuf, int inPos, float[][] outBufs, int outPos, int frames) {
         Encoding encoding = format.getEncoding();
@@ -224,7 +224,7 @@ public class AudioIo2 {
     }
 
     /**
-     * A utility routine to pack the data for a Java Sound audio stream.
+     * A utility routine to pack the signal for a Java Sound audio stream.
      */
     private static void packAudioStreamBytes(AudioFormat format, float[][] inBufs, int inPos, byte[] outBuf, int outPos, int frames) {
         Encoding encoding = format.getEncoding();

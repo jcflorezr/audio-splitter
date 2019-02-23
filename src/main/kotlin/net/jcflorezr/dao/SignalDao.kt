@@ -7,6 +7,7 @@ import kotlinx.coroutines.launch
 import net.jcflorezr.model.AudioPartEntity
 import net.jcflorezr.model.AudioSignalRmsEntity
 import net.jcflorezr.model.AudioSignalRmsInfoKt
+import net.jcflorezr.util.AudioUtilsKt
 import net.jcflorezr.util.AudioUtilsKt.tenthsSecondsFormat
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.cassandra.core.CassandraOperations
@@ -16,9 +17,11 @@ import org.springframework.stereotype.Repository
 
 interface AudioSignalDao {
     fun storeAudioSignal(audioSignal: AudioSignalKt) : Boolean
-    fun storeAudioSignalPart(audioSignal: AudioSignalKt) : AudioPartEntity
-    fun retrieveAudioSignalPart(audioFileName: String, index: Int) : AudioPartEntity?
-    fun retrieveAudioSignalFromRange(key: String, min: Double, max: Double): List<AudioSignalKt>?
+    fun persistAudioSignalPart(audioSignal: AudioSignalKt) : AudioPartEntity
+    fun retrieveAudioSignalPart(audioFileName: String, index: Float) : AudioPartEntity?
+    fun retrieveAudioSignalsFromRange(key: String, min: Double, max: Double) : List<AudioSignalKt>
+    fun retrieveAllAudioSignals(key: String) : List<AudioSignalKt>
+    fun removeAudioSignalsFromRange(key: String, min: Double, max: Double) : Long
 }
 
 @Repository
@@ -32,14 +35,14 @@ class AudioSignalDaoImpl : AudioSignalDao {
     override fun storeAudioSignal(
         audioSignal: AudioSignalKt
     ) = audioSignalTemplate
-            .boundZSetOps(audioSignal.entityName + "_" + audioSignal.audioFileName)
-            .add(audioSignal, audioSignal.index.toDouble())!!
+        .boundZSetOps("${audioSignal.entityName}_${audioSignal.audioFileName}")
+        .add(audioSignal, audioSignal.index.toDouble())!!
 
-    override fun storeAudioSignalPart(
+    override fun persistAudioSignalPart(
         audioSignal: AudioSignalKt
     ) = cassandraTemplate.insert(AudioPartEntity(audioSignal = audioSignal))
 
-    override fun retrieveAudioSignalPart(audioFileName: String, index: Int): AudioPartEntity? {
+    override fun retrieveAudioSignalPart(audioFileName: String, index: Float): AudioPartEntity? {
         val query = QueryBuilder
             .select()
             .from("audio_part")
@@ -48,13 +51,27 @@ class AudioSignalDaoImpl : AudioSignalDao {
         return cassandraTemplate.selectOne(query, AudioPartEntity::class)
     }
 
-    override fun retrieveAudioSignalFromRange(
+    override fun retrieveAudioSignalsFromRange(
         key: String,
         min: Double,
         max: Double
     ) = audioSignalTemplate
-            .boundZSetOps(key)
-            .rangeByScore(min, max)?.toList()
+        .boundZSetOps(key)
+        .rangeByScore(min, max)?.toList() ?: ArrayList()
+
+    override fun retrieveAllAudioSignals(
+        key: String
+    ) = audioSignalTemplate
+        .boundZSetOps(key)
+        .range(0, -1)?.toList() ?: ArrayList()
+
+    override fun removeAudioSignalsFromRange(
+        key: String,
+        min: Double,
+        max: Double
+    ) = audioSignalTemplate
+        .boundZSetOps(key)
+        .removeRangeByScore(tenthsSecondsFormat(min), tenthsSecondsFormat(max)) ?: 0L
 
 }
 

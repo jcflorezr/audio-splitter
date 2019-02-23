@@ -1,9 +1,18 @@
-package biz.source_code.dsp.sound
+package biz.source_code.dsp.signal
 
+import biz.source_code.dsp.model.AudioClipSignal
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import junit.framework.Assert.assertTrue
 import kotlinx.coroutines.runBlocking
 import net.jcflorezr.config.TestRootConfig
 import net.jcflorezr.model.AudioFileMetadata
 import net.jcflorezr.model.InitialConfiguration
+import net.jcflorezr.util.AudioFormats
+import org.apache.commons.io.IOUtils
+import org.hamcrest.CoreMatchers.`is` as Is
+import org.hamcrest.CoreMatchers.equalTo
+import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -11,12 +20,8 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner
 import java.io.File
+import java.io.FileInputStream
 
-/**
- * These tests have been marked as Integration Tests because they take
- * too long to validate the big amount of audio signals and they also
- * re-construct an audio file from several parts of audio signals
- */
 // TODO: create net.jcflorezr package in test resource folder and put all the existing folders in there
 @ActiveProfiles("test")
 @RunWith(SpringJUnit4ClassRunner::class)
@@ -26,57 +31,50 @@ class AudioIoImplIntegrationTest {
     @Autowired
     private lateinit var audioIo: AudioIo
 
-//    companion object {
-//        private val MAPPER = ObjectMapper().registerKotlinModule()
-//    }
+    companion object {
+        private val MAPPER = ObjectMapper().registerKotlinModule()
+    }
 
-    private val testResourcesPath: String
+    private val signalResourcesPath: String
+    private val clipResourcesPath: String
     private val thisClass: Class<AudioIoImplIntegrationTest> = this.javaClass
 
     init {
-        testResourcesPath = thisClass.getResource("/sound/").path
+        signalResourcesPath = thisClass.getResource("/signal/").path
+        clipResourcesPath = thisClass.getResource("/clip/").path
     }
 
     @Test
     fun retrieveSignalFromFileWithBackgroundNoiseAndLowVoiceVolume() {
-        val audioFileLocation =
-            testResourcesPath + "background-noise-low-volume/background-noise-low-volume.wav"
+        val audioFileLocation = signalResourcesPath + "background-noise-low-volume/background-noise-low-volume.wav"
         retrieveSignalFromAudioFile(audioFileLocation, File(audioFileLocation).name)
     }
 
     @Test
     fun retrieveSignalFromFileWithApplause() {
-        val audioFileLocation = testResourcesPath + "with-applause/with-applause.wav"
+        val audioFileLocation = signalResourcesPath + "with-applause/with-applause.wav"
         retrieveSignalFromAudioFile(audioFileLocation, File(audioFileLocation).name)
     }
 
     @Test
     fun retrieveSignalFromFileWithStrongBackgroundNoise() {
-        val audioFileLocation = testResourcesPath + "strong-background-noise/strong-background-noise.wav"
+        val audioFileLocation = signalResourcesPath + "strong-background-noise/strong-background-noise.wav"
         retrieveSignalFromAudioFile(audioFileLocation, File(audioFileLocation).name)
     }
 
     @Test
-    fun saveAudioFile() {
+    fun createAudioClipsForAudioFileWithBackgroundNoiseAndLowVoiceVolume() {
+        createAudioClips("background-noise-low-volume")
+    }
 
-//        File(testResourcesPath).listFiles().map {
-//                signalJsonFile ->
-//            audioIo.saveAudioFile(testResourcesPath + signalJsonFile.name, ".wav", MAPPER.readValue<AudioSignalKt>(signalJsonFile))
-//        }
-        //audioIo.saveAudioFile(testResourcesPath + "any-name", ".wav", MAPPER.readValue(File(testResourcesPath + "signalcita.json"), AudioSignalKt::class.java))
+    @Test
+    fun createAudioClipsForAudioFileWithApplause() {
+        createAudioClips("with-applause")
+    }
 
-
-//        val audioFileName = testResourcesPath + "test-audio-mono-22050.wav"
-//
-//        val audioIo = AudioIo2()
-//        val audioSignal = audioIo.retrieveAudioSignalFromWavFile(audioFileName)
-//
-//        audioIo.saveAudioFile(audioFileName, ".wav", audioSignal)
-//
-//        val expectedAudioClipSignal = MAPPER.readValue(thisClass!!.getResourceAsStream("/audiocontent/mysignal2.json"), AudioSignal::class.java)
-//
-//        assertThat(audioSignal, `is`(expectedAudioClipSignal))
-
+    @Test
+    fun createAudioClipsForAudioFileWithStrongBackgroundNoise() {
+        createAudioClips("strong-background-noise")
     }
 
     private fun retrieveSignalFromAudioFile(audioFileLocation: String, audioFileName: String) = runBlocking {
@@ -87,6 +85,29 @@ class AudioIoImplIntegrationTest {
                 audioFileMetadata = AudioFileMetadata(audioFileName = audioFileName)
             )
         )
+    }
+
+    private fun createAudioClips(folderName: String) = runBlocking {
+        val audioClipsSignalFolder = "$clipResourcesPath/$folderName/signal"
+        val audioClipsFilesFolder = "$clipResourcesPath/$folderName/audio-file"
+        val testAudioClipsFilesFolder = "$audioClipsFilesFolder/test"
+        File(audioClipsSignalFolder).listFiles()
+        .forEach { clipSignalFile ->
+            val baseFileName = clipSignalFile.nameWithoutExtension
+            File(testAudioClipsFilesFolder).takeIf { !it.exists() }?.mkdirs()
+            val expectedAudioClipSignal = MAPPER.readValue(clipSignalFile, AudioClipSignal::class.java)
+            audioIo.saveAudioFile(
+                fileName = "$testAudioClipsFilesFolder/$baseFileName",
+                extension = AudioFormats.FLAC.extension,
+                signal = expectedAudioClipSignal.signal,
+                sampleRate = expectedAudioClipSignal.sampleRate
+            )
+            val actualAudioClipFile = File("$testAudioClipsFilesFolder/$baseFileName${AudioFormats.FLAC.extension}")
+            val expectedAudioClipFile = File("$audioClipsFilesFolder/$baseFileName${AudioFormats.FLAC.extension}")
+            assertThat(actualAudioClipFile.name, Is(equalTo(expectedAudioClipFile.name)))
+            assertTrue(IOUtils.contentEquals(FileInputStream(actualAudioClipFile), FileInputStream(expectedAudioClipFile)))
+            actualAudioClipFile.delete()
+        }
     }
 
 }

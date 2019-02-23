@@ -1,28 +1,12 @@
 package net.jcflorezr.audiocontent;
 
-import biz.source_code.dsp.model.AudioSignal;
-import biz.source_code.dsp.sound.AudioIo;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import net.jcflorezr.model.audiocontent.AudioContent;
-import net.jcflorezr.model.audiocontent.AudioFileCompleteInfo;
-import net.jcflorezr.model.audiocontent.AudioFileMetadataEntity;
-import net.jcflorezr.model.endpoint.AudioFileBasicInfoEntity;
-import org.junit.Before;
-import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.io.File;
-
 import static junit.framework.TestCase.assertTrue;
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AudioContentServiceTest {

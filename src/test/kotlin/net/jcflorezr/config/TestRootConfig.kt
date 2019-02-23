@@ -1,21 +1,21 @@
 package net.jcflorezr.config
 
 import biz.source_code.dsp.model.AudioSignalKt
-import biz.source_code.dsp.sound.AudioIo
-import biz.source_code.dsp.sound.AudioIoImpl
-import net.jcflorezr.broker.AudioClipSubscriberMock
+import biz.source_code.dsp.signal.AudioIo
+import biz.source_code.dsp.signal.AudioIoImpl
+import net.jcflorezr.broker.AudioClipInfoSubscriberMock
 import net.jcflorezr.broker.SignalRmsSubscriberMock
 import net.jcflorezr.broker.SignalSubscriberMock
 import net.jcflorezr.broker.SourceFileSubscriberMock
 import net.jcflorezr.broker.Subscriber
 import net.jcflorezr.broker.Topic
-import net.jcflorezr.core.AudioSplitter
-import net.jcflorezr.core.AudioSplitterImpl
+import net.jcflorezr.facade.AudioSplitter
+import net.jcflorezr.facade.AudioSplitterImpl
 import net.jcflorezr.model.AudioClipInfo
 import net.jcflorezr.model.AudioSignalsRmsInfo
 import net.jcflorezr.model.InitialConfiguration
-import net.jcflorezr.signal.RmsCalculator
-import net.jcflorezr.signal.RmsCalculatorImpl
+import net.jcflorezr.rms.RmsCalculator
+import net.jcflorezr.rms.RmsCalculatorImpl
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
@@ -55,6 +55,6 @@ class TestRootConfig {
 
     @Profile("test") @Bean fun signalRmsSubscriberTest(): Subscriber<AudioSignalsRmsInfo> = SignalRmsSubscriberMock()
 
-    @Profile("test") @Bean fun audioClipSubscriberTest(): Subscriber<AudioClipInfo> = AudioClipSubscriberMock()
+    @Profile("test") @Bean fun audioClipSubscriberTest(): Subscriber<AudioClipInfo> = AudioClipInfoSubscriberMock()
 
 }

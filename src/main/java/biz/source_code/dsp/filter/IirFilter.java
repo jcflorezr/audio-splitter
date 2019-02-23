@@ -33,8 +33,8 @@ private int                  n2;                           // size of output del
 private double[]             a;                            // A coefficients, applied to output values (negative)
 private double[]             b;                            // B coefficients, applied to input values
 
-private double[]             buf1;                         // input signal delay line (ring buffer)
-private double[]             buf2;                         // output signal delay line (ring buffer)
+private double[]             buf1;                         // input rms delay line (ring buffer)
+private double[]             buf2;                         // output rms delay line (ring buffer)
 private int                  pos1;                         // current ring buffer position in buf1
 private int                  pos2;                         // current ring buffer position in buf2
 

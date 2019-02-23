@@ -1,4 +1,4 @@
-package net.jcflorezr.signal
+package net.jcflorezr.rms
 
 import biz.source_code.dsp.model.AudioSignalKt
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -37,7 +37,7 @@ class RmsCalculatorImplTest {
     private val thisClass: Class<RmsCalculatorImplTest> = this.javaClass
 
     init {
-        testResourcesPath = thisClass.getResource("/sound/").path
+        testResourcesPath = thisClass.getResource("/signal/").path
     }
 
     @Test

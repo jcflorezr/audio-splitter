@@ -1,4 +1,4 @@
-package biz.source_code.dsp.sound
+package biz.source_code.dsp.signal
 
 import net.jcflorezr.model.AudioFormatEncodings
 import net.jcflorezr.model.AudioSourceInfo
@@ -20,12 +20,12 @@ internal class AudioBytesPacker(
     private val bigEndian: Boolean
     private val encoding: AudioFormatEncodings
 
-    private val bytesSignedInt16: List<(Int) -> Byte>
-    private val bytesSignedInt24: List<(Int) -> Byte>
-    private val bytesUnsignedInt: List<(Int) -> Byte>
-    private val bytesSignedInt16Reversed: List<(Int) -> Byte>
-    private val bytesSignedInt24Reversed: List<(Int) -> Byte>
-    private val bytesUnsignedIntReversed: List<(Int) -> Byte>
+    private val bytesSignedInt16: List<(index: Int) -> Byte>
+    private val bytesSignedInt24: List<(index: Int) -> Byte>
+    private val bytesUnsignedInt: List<(index: Int) -> Byte>
+    private val bytesSignedInt16Reversed: List<(index: Int) -> Byte>
+    private val bytesSignedInt24Reversed: List<(index: Int) -> Byte>
+    private val bytesUnsignedIntReversed: List<(index: Int) -> Byte>
 
     init {
         val audioInfo = AudioSourceInfo.getAudioInfo(format, signal)
@@ -37,9 +37,9 @@ internal class AudioBytesPacker(
         encoding = audioInfo.encoding
         bytesSignedInt16 = listOf(
             {i -> (i and 0xFF).toByte()},
-            {i -> (i.ushr(8) and 0xFF).toByte()})
-        bytesSignedInt24 = bytesSignedInt16 + listOf({i -> (i.ushr(16) and 0xFF).toByte()})
-        bytesUnsignedInt = bytesSignedInt24 + listOf({i -> (i.ushr(24) and 0xFF).toByte()})
+            {i -> ((i.ushr(8)) and 0xFF).toByte()})
+        bytesSignedInt24 = bytesSignedInt16 + listOf({i -> ((i.ushr(16)) and 0xFF).toByte()})
+        bytesUnsignedInt = bytesSignedInt24 + listOf({i -> ((i.ushr(24)) and 0xFF).toByte()})
         bytesSignedInt16Reversed = bytesSignedInt16.reversed()
         bytesSignedInt24Reversed = bytesSignedInt24.reversed()
         bytesUnsignedIntReversed = bytesUnsignedInt.reversed()
@@ -62,7 +62,7 @@ internal class AudioBytesPacker(
     }
 
     /**
-     * A utility routine to pack the data for a Java Sound audio stream.
+     * A utility routine to pack the signal for a Java Sound audio stream.
      */
     private fun packAudioStreamBytes(inBufs: Array<FloatArray?>, inPos: Int, outBuf: ByteArray, outPos: Int, frames: Int) {
         val maxValue = (1 shl sampleSizeBits - 1) - 1
@@ -86,12 +86,12 @@ internal class AudioBytesPacker(
     private fun packSignedInt(i: Int, buf: ByteArray, pos: Int, bits: Int, bigEndian: Boolean) {
         when (bits) {
             16 -> when (bigEndian) {
-                true -> bytesSignedInt16Reversed.forEachIndexed { index, func -> buf[pos + index] = func.invoke(i) }
-                false -> bytesSignedInt16.forEachIndexed { index, func -> buf[pos + index] = func.invoke(i) }
+                true -> bytesSignedInt16Reversed.forEachIndexed { index, func -> buf[pos + index] = func(i) }
+                false -> bytesSignedInt16.forEachIndexed { index, func -> buf[pos + index] = func(i) }
             }
             24 -> when (bigEndian) {
-                true -> bytesSignedInt24Reversed.forEachIndexed { index, func -> buf[pos + index] = func.invoke(i) }
-                false -> bytesSignedInt24.forEachIndexed { index, func -> buf[pos + index] = func.invoke(i) }
+                true -> bytesSignedInt24Reversed.forEachIndexed { index, func -> buf[pos + index] = func(i) }
+                false -> bytesSignedInt24.forEachIndexed { index, func -> buf[pos + index] = func(i) }
             }
             32 -> packUnsignedInt(i, buf, pos, bigEndian)
             else -> throw AssertionError()
@@ -100,8 +100,8 @@ internal class AudioBytesPacker(
 
     private fun packUnsignedInt(i: Int, buf: ByteArray, pos: Int, bigEndian: Boolean) {
         when (bigEndian) {
-            true -> bytesUnsignedIntReversed.forEachIndexed { index, func -> buf[pos + index] = func.invoke(i) }
-            false -> bytesUnsignedInt.forEachIndexed { index, func -> buf[pos + index] = func.invoke(i) }
+            true -> bytesUnsignedIntReversed.forEachIndexed { index, func -> buf[pos + index] = func(i) }
+            false -> bytesUnsignedInt.forEachIndexed { index, func -> buf[pos + index] = func(i) }
         }
     }
 

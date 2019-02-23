@@ -1,17 +1,22 @@
 package net.jcflorezr.broker
 
+import biz.source_code.dsp.model.AudioClipSignal
 import biz.source_code.dsp.model.AudioSignalKt
-import biz.source_code.dsp.sound.AudioIo
+import biz.source_code.dsp.signal.AudioIo
 import kotlinx.coroutines.coroutineScope
+import net.jcflorezr.clip.AudioClipInfoArrived
+import net.jcflorezr.clip.ClipGeneratorActor
+import net.jcflorezr.dao.AudioClipDao
 import net.jcflorezr.dao.AudioSignalDao
 import net.jcflorezr.dao.AudioSignalRmsDao
 import net.jcflorezr.dao.SourceFileDao
 import net.jcflorezr.model.AudioClipInfo
 import net.jcflorezr.model.AudioSignalsRmsInfo
 import net.jcflorezr.model.InitialConfiguration
-import net.jcflorezr.signal.AudioSignalRmsArrived
-import net.jcflorezr.signal.RmsCalculator
-import net.jcflorezr.signal.SoundZonesDetectorActor
+import net.jcflorezr.rms.AudioSignalRmsArrived
+import net.jcflorezr.rms.RmsCalculator
+import net.jcflorezr.rms.SoundZonesDetectorActor
+import net.jcflorezr.util.AudioFormats
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.nio.ByteBuffer
@@ -59,7 +64,7 @@ final class SignalSubscriber : Subscriber<AudioSignalKt> {
     fun init() = signalTopic.register(this)
 
     override suspend fun update(message: AudioSignalKt) {
-        audioSignalDao.storeAudioSignalPart(audioSignal = message)
+        audioSignalDao.persistAudioSignalPart(audioSignal = message)
         .takeIf {
             it.audioFileName == message.audioFileName &&
             it.index == message.index &&
@@ -97,18 +102,51 @@ final class SignalRmsSubscriber : Subscriber<AudioSignalsRmsInfo> {
 }
 
 @Service
-final class AudioClipSubscriber : Subscriber<AudioClipInfo> {
+final class AudioClipInfoSubscriber : Subscriber<AudioClipInfo> {
 
     @Autowired
     private lateinit var audioClipTopic: Topic<AudioClipInfo>
+    @Autowired
+    private lateinit var audioClipDao: AudioClipDao
+    @Autowired
+    private lateinit var clipGeneratorActor: ClipGeneratorActor
 
     @PostConstruct
     fun init() = audioClipTopic.register(this)
 
     override suspend fun update(message: AudioClipInfo) {
-//        1. store the last audio clip received
-//            (audio clip generator should retrieve the sound
-//            zones from database and determine if they are enough to build a grouped audio clip)
+        audioClipDao.storeAudioClipInfo(audioClipInfo = message)
+        clipGeneratorActor.getActorForGeneratingClips()
+            .send(AudioClipInfoArrived(audioClipInfo = message))
+    }
+
+}
+
+@Service
+final class AudioClipSignalSubscriber : Subscriber<AudioClipSignal> {
+
+    @Autowired
+    private lateinit var audioClipSignalTopic: Topic<AudioClipSignal>
+    @Autowired
+    private lateinit var audioIo: AudioIo
+
+    companion object {
+        private val flacAudioFormat = AudioFormats.FLAC
+    }
+
+    @PostConstruct
+    fun init() = audioClipSignalTopic.register(this)
+
+    override suspend fun update(message: AudioClipSignal) {
+        // TODO: get the filename from properties file?
+        audioIo.saveAudioFile(
+            fileName = message.audioClipName,
+            extension = flacAudioFormat.extension,
+            signal = message.signal,
+            sampleRate = message.sampleRate
+        )
+
+        // TODO: call transcriber through queue?
     }
 
 }
