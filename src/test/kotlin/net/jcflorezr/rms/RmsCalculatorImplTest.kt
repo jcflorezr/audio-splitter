@@ -1,12 +1,12 @@
 package net.jcflorezr.rms
 
-import biz.source_code.dsp.model.AudioSignalKt
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import kotlinx.coroutines.runBlocking
 import net.jcflorezr.broker.SignalRmsSubscriberMock
 import net.jcflorezr.config.TestRootConfig
+import net.jcflorezr.model.AudioSignalKt
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired

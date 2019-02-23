@@ -1,6 +1,5 @@
 package net.jcflorezr.config
 
-import biz.source_code.dsp.model.AudioClipSignal
 import net.jcflorezr.broker.AudioClipInfoSubscriber
 import net.jcflorezr.broker.AudioClipInfoSubscriberMock
 import net.jcflorezr.broker.AudioClipSignalSubscriberMock
@@ -17,6 +16,7 @@ import net.jcflorezr.dao.AudioSignalDaoImpl
 import net.jcflorezr.dao.AudioSignalRmsDao
 import net.jcflorezr.dao.AudioSignalRmsDaoImpl
 import net.jcflorezr.model.AudioClipInfo
+import net.jcflorezr.model.AudioClipSignal
 import net.jcflorezr.model.AudioSignalsRmsInfo
 import net.jcflorezr.rms.SoundZonesDetector
 import net.jcflorezr.rms.SoundZonesDetectorActor

@@ -1,7 +1,5 @@
 package net.jcflorezr.clip
 
-import biz.source_code.dsp.model.AudioClipSignal
-import biz.source_code.dsp.model.AudioSignalKt
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.SendChannel
@@ -13,6 +11,8 @@ import net.jcflorezr.broker.Topic
 import net.jcflorezr.dao.AudioClipDao
 import net.jcflorezr.dao.AudioSignalDao
 import net.jcflorezr.model.AudioClipInfo
+import net.jcflorezr.model.AudioClipSignal
+import net.jcflorezr.model.AudioSignalKt
 import net.jcflorezr.util.AudioUtilsKt
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service

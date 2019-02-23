@@ -27,7 +27,7 @@ class SourceFileDaoIntegrationTest {
     private lateinit var sourceFileDao: SourceFileDao
 
     private val thisClass: Class<SourceFileDaoIntegrationTest> = this.javaClass
-    private val testResourcesPath: String = thisClass.getResource("/source/").path
+    private val testResourcesPath: String = thisClass.getResource("/entrypoint/").path
 
     companion object {
         @JvmField

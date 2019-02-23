@@ -1,8 +1,6 @@
 package net.jcflorezr.broker
 
-import biz.source_code.dsp.model.AudioClipSignal
-import biz.source_code.dsp.model.AudioSignalKt
-import biz.source_code.dsp.signal.AudioIo
+import net.jcflorezr.signal.AudioIo
 import kotlinx.coroutines.coroutineScope
 import net.jcflorezr.clip.AudioClipInfoArrived
 import net.jcflorezr.clip.ClipGeneratorActor
@@ -11,6 +9,8 @@ import net.jcflorezr.dao.AudioSignalDao
 import net.jcflorezr.dao.AudioSignalRmsDao
 import net.jcflorezr.dao.SourceFileDao
 import net.jcflorezr.model.AudioClipInfo
+import net.jcflorezr.model.AudioClipSignal
+import net.jcflorezr.model.AudioSignalKt
 import net.jcflorezr.model.AudioSignalsRmsInfo
 import net.jcflorezr.model.InitialConfiguration
 import net.jcflorezr.rms.AudioSignalRmsArrived

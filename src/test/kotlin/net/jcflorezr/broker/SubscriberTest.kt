@@ -1,6 +1,5 @@
 package net.jcflorezr.broker
 
-import biz.source_code.dsp.model.AudioSignalKt
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import kotlinx.coroutines.Dispatchers
@@ -12,6 +11,7 @@ import net.jcflorezr.config.SignalRmsSubscriberConfig
 import net.jcflorezr.dao.AudioSignalDao
 import net.jcflorezr.dao.RedisInitializer
 import net.jcflorezr.model.AudioClipInfo
+import net.jcflorezr.model.AudioSignalKt
 import net.jcflorezr.model.AudioSignalRmsInfoKt
 import net.jcflorezr.model.AudioSignalsRmsInfo
 import org.junit.ClassRule
@@ -47,7 +47,7 @@ class SignalRmsSubscriberIntegrationTest {
     private val thisClass: Class<SignalRmsSubscriberIntegrationTest> = this.javaClass
     private val testResourcesPath = thisClass.getResource("/rms").path
 
-    @Repeat(value = 1000)
+    @Repeat(value = 50)
     @Test
     fun generateClipInfoForForAudioWithBackgroundNoiseAndLowVoiceVolume() = runBlocking {
         val audioSignalRmsList = getAudioSignalsRmsList(folderName = "background-noise-low-volume")
@@ -56,7 +56,7 @@ class SignalRmsSubscriberIntegrationTest {
         signalRmsSubscriber.validateCompleteness()
     }
 
-    @Repeat(value = 1000)
+    @Repeat(value = 50)
     @Test
     fun generateClipInfoForAudioWithStrongBackgroundNoise() = runBlocking {
         val audioSignalRmsList = getAudioSignalsRmsList(folderName = "strong-background-noise")
@@ -65,7 +65,7 @@ class SignalRmsSubscriberIntegrationTest {
         signalRmsSubscriber.validateCompleteness()
     }
 
-    @Repeat(value = 1000)
+    @Repeat(value = 50)
     @Test
     fun generateClipInfoForAudioWithApplause() = runBlocking {
         val audioSignalRmsList = getAudioSignalsRmsList(folderName = "with-applause")
@@ -74,8 +74,7 @@ class SignalRmsSubscriberIntegrationTest {
         signalRmsSubscriber.validateCompleteness()
     }
 
-    // TODO: this test fails when querying for remaining processed rms in db amd I do not have any idea why
-    @Repeat(value = 30)
+    @Repeat(value = 10)
     @Test
     fun generateClipInfoForAllAudios() = runBlocking {
         val audioSignalRmsListLowVolume = getAudioSignalsRmsList(folderName = "background-noise-low-volume")

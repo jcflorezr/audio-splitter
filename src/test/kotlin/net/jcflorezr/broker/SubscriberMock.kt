@@ -1,15 +1,14 @@
 package net.jcflorezr.broker
 
-import biz.source_code.dsp.model.AudioClipSignal
-import biz.source_code.dsp.model.AudioSignalKt
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import kotlinx.coroutines.runBlocking
 import net.jcflorezr.dao.AudioClipDao
 import net.jcflorezr.dao.AudioSignalDao
-import net.jcflorezr.dao.AudioSignalRmsDao
 import net.jcflorezr.model.AudioClipInfo
+import net.jcflorezr.model.AudioClipSignal
+import net.jcflorezr.model.AudioSignalKt
 import net.jcflorezr.model.AudioSignalRmsInfoKt
 import net.jcflorezr.model.AudioSignalsRmsInfo
 import net.jcflorezr.model.InitialConfiguration
@@ -41,14 +40,18 @@ final class SourceFileSubscriberMock : Subscriber<InitialConfiguration> {
     fun init() {
         sourceFileTopic.register(this)
         thisClass = this.javaClass
-        testResourcesPath = thisClass.getResource("/source").path
+        testResourcesPath = thisClass.getResource("/entrypoint").path
     }
 
     override suspend fun update(message: InitialConfiguration) {
         val expectedConfiguration = MAPPER.readValue<InitialConfiguration>(File("$testResourcesPath/initial-configuration.json"))
         // TODO: implement a logger
         println("testing initial configuration ----> $message")
-        assertThat(message.toString(), Is(equalTo(expectedConfiguration.toString())))
+        assertTrue(File(message.audioFileLocation).exists())
+        assertThat(message.convertedAudioFileLocation, Is(equalTo(expectedConfiguration.convertedAudioFileLocation)))
+        assertThat(message.audioClipsAsStereo, Is(equalTo(expectedConfiguration.audioClipsAsStereo)))
+        assertThat(message.audioClipsByGroup, Is(equalTo(expectedConfiguration.audioClipsByGroup)))
+        assertThat(message.audioFileMetadata.toString(), Is(equalTo(expectedConfiguration.audioFileMetadata.toString())))
     }
 
 }

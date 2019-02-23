@@ -1,9 +1,9 @@
 package net.jcflorezr.rms
 
-import biz.source_code.dsp.model.AudioSignalKt
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import net.jcflorezr.broker.Topic
+import net.jcflorezr.model.AudioSignalKt
 import net.jcflorezr.model.AudioSignalRmsInfoKt
 import net.jcflorezr.model.AudioSignalsRmsInfo
 import net.jcflorezr.util.AudioUtilsKt

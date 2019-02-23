@@ -1,9 +1,6 @@
 package net.jcflorezr.config
 
-import biz.source_code.dsp.model.AudioClipSignal
-import biz.source_code.dsp.model.AudioSignalKt
-import biz.source_code.dsp.signal.AudioIo
-import biz.source_code.dsp.signal.AudioIoImpl
+import net.jcflorezr.signal.AudioIoImpl
 import net.jcflorezr.broker.AudioClipSignalSubscriberMock
 import net.jcflorezr.broker.Subscriber
 import net.jcflorezr.broker.Topic
@@ -12,6 +9,8 @@ import net.jcflorezr.dao.AudioClipDao
 import net.jcflorezr.dao.AudioClipDaoImpl
 import net.jcflorezr.dao.AudioSignalDao
 import net.jcflorezr.dao.AudioSignalDaoImpl
+import net.jcflorezr.model.AudioClipSignal
+import net.jcflorezr.model.AudioSignalKt
 import org.mockito.Mockito.mock
 import org.springframework.beans.factory.config.ConfigurableBeanFactory
 import org.springframework.context.annotation.Bean

@@ -1,6 +1,5 @@
 package net.jcflorezr.dao
 
-import biz.source_code.dsp.model.AudioSignalKt
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.type.CollectionType
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -9,6 +8,7 @@ import kotlinx.coroutines.runBlocking
 import net.jcflorezr.config.TestSignalDaoConfig
 import net.jcflorezr.config.TestSignalRmsDaoConfig
 import net.jcflorezr.model.AudioPartEntity
+import net.jcflorezr.model.AudioSignalKt
 import net.jcflorezr.model.AudioSignalRmsEntity
 import net.jcflorezr.model.AudioSignalRmsInfoKt
 import org.hamcrest.CoreMatchers.equalTo

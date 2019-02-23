@@ -1,13 +1,12 @@
 package net.jcflorezr.dao
 
-import biz.source_code.dsp.model.AudioSignalKt
 import com.datastax.driver.core.querybuilder.QueryBuilder
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import net.jcflorezr.model.AudioPartEntity
+import net.jcflorezr.model.AudioSignalKt
 import net.jcflorezr.model.AudioSignalRmsEntity
 import net.jcflorezr.model.AudioSignalRmsInfoKt
-import net.jcflorezr.util.AudioUtilsKt
 import net.jcflorezr.util.AudioUtilsKt.tenthsSecondsFormat
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.cassandra.core.CassandraOperations
