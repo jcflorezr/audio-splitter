@@ -5,7 +5,7 @@ import kotlinx.coroutines.launch
 import net.jcflorezr.model.AudioClipInfoEntity
 import net.jcflorezr.model.AudioClipInfo
 import net.jcflorezr.model.GroupedAudioClipInfoEntity
-import net.jcflorezr.util.AudioUtilsKt.tenthsSecondsFormat
+import net.jcflorezr.util.AudioUtils.tenthsSecondsFormat
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.cassandra.core.CassandraOperations
 import org.springframework.data.redis.core.RedisTemplate

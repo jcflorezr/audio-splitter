@@ -8,8 +8,8 @@ import kotlinx.coroutines.channels.consumeEach
 import net.jcflorezr.broker.Topic
 import net.jcflorezr.dao.AudioSignalRmsDao
 import net.jcflorezr.model.AudioClipInfo
-import net.jcflorezr.model.AudioSignalRmsInfoKt
-import net.jcflorezr.util.AudioUtilsKt
+import net.jcflorezr.model.AudioSignalRmsInfo
+import net.jcflorezr.util.AudioUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.lang.RuntimeException
@@ -17,10 +17,10 @@ import java.util.*
 import javax.annotation.PostConstruct
 
 sealed class SoundDetectorAction
-data class AudioSignalRmsArrived(val audioSignalRms: AudioSignalRmsInfoKt) : SoundDetectorAction()
+data class AudioSignalRmsArrived(val audioSignalRms: AudioSignalRmsInfo) : SoundDetectorAction()
 data class DetectSoundZones(
-    val audioSignalRms: AudioSignalRmsInfoKt,
-    val soundZonesDetector: SoundZonesDetector
+        val audioSignalRms: AudioSignalRmsInfo,
+        val soundZonesDetector: SoundZonesDetector
 ) : SoundDetectorAction()
 
 interface SoundZonesDetectorActor {
@@ -62,14 +62,14 @@ class SoundZonesDetectorActorImpl : SoundZonesDetectorActor {
         }
     }
 
-    private suspend fun assignActorForAudioFile(sampleAudioRmsInfo: AudioSignalRmsInfoKt) {
+    private suspend fun assignActorForAudioFile(sampleAudioRmsInfo: AudioSignalRmsInfo) {
         val actorConfigForCurrentAudioFile = actorsForAudioFiles.computeIfAbsent(sampleAudioRmsInfo.audioFileName) {
             Pair(createActorForAudioFile(), soundZonesDetectorFactory())
         }
         actorConfigForCurrentAudioFile.first.send(DetectSoundZones(sampleAudioRmsInfo, actorConfigForCurrentAudioFile.second))
     }
 
-    private suspend fun detectSoundZones(sampleAudioRmsInfo: AudioSignalRmsInfoKt, soundZonesDetector: SoundZonesDetector) {
+    private suspend fun detectSoundZones(sampleAudioRmsInfo: AudioSignalRmsInfo, soundZonesDetector: SoundZonesDetector) {
         audioSignalRmsDao.retrieveAllAudioSignalsRms(
             key = "${sampleAudioRmsInfo.entityName}_${sampleAudioRmsInfo.audioFileName}"
         ).takeIf {
@@ -105,7 +105,7 @@ class SoundZonesDetector {
         private const val MAX_ACTIVE_COUNTER = 80
     }
 
-    suspend fun detectSoundZones(audioRmsInfoList: List<AudioSignalRmsInfoKt>) {
+    suspend fun detectSoundZones(audioRmsInfoList: List<AudioSignalRmsInfo>) {
 
         // TODO: seek a proper way to debug the signal detector process
         println("STARTING ----- ${audioRmsInfoList.first().audioFileName} silCnt: $silenceCounter - silConFrom: $silenceContinueFrom - " +
@@ -145,8 +145,8 @@ class SoundZonesDetector {
                             lastClipProcessed.offer(audioClipInfo)
                             audioSignalRmsDao.removeAudioSignalsRmsFromRange(
                                 key = "${rmsInfo.entityName}_${rmsInfo.audioFileName}",
-                                min = AudioUtilsKt.tenthsSecondsFormat(AudioUtilsKt.tenthsSecondsFormat(whereToStart.toDouble()) / rmsInfo.sampleRate.toDouble()),
-                                max = AudioUtilsKt.tenthsSecondsFormat(audioClipInfo.endPositionInSeconds.toDouble())
+                                min = AudioUtils.tenthsSecondsFormat(AudioUtils.tenthsSecondsFormat(whereToStart.toDouble()) / rmsInfo.sampleRate.toDouble()),
+                                max = AudioUtils.tenthsSecondsFormat(audioClipInfo.endPositionInSeconds.toDouble())
                             )
                             whereToStart = audioClipInfo.endPosition + rmsInfo.segmentSize
                             detectorVariables.startActiveZonePosition = startActiveZonePosition
@@ -193,8 +193,8 @@ class SoundZonesDetector {
                             "lastRem: ${remainingAudioRms.last().index} - currentRms: ${rmsInfo.index}")
                         audioSignalRmsDao.removeAudioSignalsRmsFromRange(
                             key = "${rmsInfo.entityName}_${rmsInfo.audioFileName}",
-                            min = AudioUtilsKt.tenthsSecondsFormat(remainingAudioRms.first().index),
-                            max = AudioUtilsKt.tenthsSecondsFormat(rmsInfo.index)
+                            min = AudioUtils.tenthsSecondsFormat(remainingAudioRms.first().index),
+                            max = AudioUtils.tenthsSecondsFormat(rmsInfo.index)
                         )
                     }
                 }
@@ -203,7 +203,7 @@ class SoundZonesDetector {
         }
     }
 
-    private suspend fun getSoundZonesByActiveSegments(audioRmsInfoList: List<AudioSignalRmsInfoKt>) {
+    private suspend fun getSoundZonesByActiveSegments(audioRmsInfoList: List<AudioSignalRmsInfo>) {
         if (activeContinueFrom == 0.0) {
             activeCounter = 0
             inactiveCounter = 0
@@ -240,8 +240,8 @@ class SoundZonesDetector {
                     lastClipProcessed.offer(audioClipInfo)
                     audioSignalRmsDao.removeAudioSignalsRmsFromRange(
                         key = "${rmsInfo.entityName}_${rmsInfo.audioFileName}",
-                        min = AudioUtilsKt.tenthsSecondsFormat(whereToStart.toDouble() / rmsInfo.sampleRate),
-                        max = AudioUtilsKt.tenthsSecondsFormat(audioClipInfo.endPositionInSeconds)
+                        min = AudioUtils.tenthsSecondsFormat(whereToStart.toDouble() / rmsInfo.sampleRate),
+                        max = AudioUtils.tenthsSecondsFormat(audioClipInfo.endPositionInSeconds)
                     )
                     whereToStart = audioClipInfo.endPosition + rmsInfo.segmentSize
                     detectorVariables.startActiveZonePosition = startActiveZonePosition
@@ -266,17 +266,17 @@ class SoundZonesDetector {
     }
 
     private fun getSignalIterator(
-        audioRmsInfoList: List<AudioSignalRmsInfoKt>,
-        continueFrom: Double
-    ): ListIterator<AudioSignalRmsInfoKt> = if (continueFrom == 0.0) {
+            audioRmsInfoList: List<AudioSignalRmsInfo>,
+            continueFrom: Double
+    ): ListIterator<AudioSignalRmsInfo> = if (continueFrom == 0.0) {
         audioRmsInfoList.listIterator()
     } else {
-        val continueFromIndex = audioRmsInfoList.binarySearchBy(AudioUtilsKt.tenthsSecondsFormat(silenceContinueFrom)) { it.index }
+        val continueFromIndex = audioRmsInfoList.binarySearchBy(AudioUtils.tenthsSecondsFormat(silenceContinueFrom)) { it.index }
         audioRmsInfoList.subList(continueFromIndex, audioRmsInfoList.size).listIterator()
     }
 
-    private fun ListIterator<AudioSignalRmsInfoKt>.nextIsConsecutive(
-        current: AudioSignalRmsInfoKt
+    private fun ListIterator<AudioSignalRmsInfo>.nextIsConsecutive(
+        current: AudioSignalRmsInfo
     ): Boolean {
         if (!this.hasPrevious() || !this.hasNext()) {
             return true
@@ -290,10 +290,10 @@ class SoundZonesDetector {
         }
     }
 
-    private fun generateAudioClipInfo(startPosition: Int, endPosition: Int, rmsInfo: AudioSignalRmsInfoKt): AudioClipInfo {
+    private fun generateAudioClipInfo(startPosition: Int, endPosition: Int, rmsInfo: AudioSignalRmsInfo): AudioClipInfo {
         val sampleRate = rmsInfo.sampleRate
-        val startPositionInSeconds = AudioUtilsKt.millisecondsFormat(startPosition.toFloat() / sampleRate)
-        val endPositionInSeconds = AudioUtilsKt.millisecondsFormat(endPosition.toFloat() / sampleRate)
+        val startPositionInSeconds = AudioUtils.millisecondsFormat(startPosition.toFloat() / sampleRate)
+        val endPositionInSeconds = AudioUtils.millisecondsFormat(endPosition.toFloat() / sampleRate)
         val startPositionInSecondsInt = startPositionInSeconds.toInt()
         val suggestedAudioClipName = getSuggestedAudioClipName(
             startPositionInSeconds = startPositionInSeconds,

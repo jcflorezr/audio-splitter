@@ -8,8 +8,7 @@ import org.apache.tika.parser.ParseContext
 import org.apache.tika.sax.BodyContentHandler
 import java.io.InputStream
 
-// TODO: rename it to AudioUtils
-object AudioUtilsKt {
+object AudioUtils {
 
     val tikaAudioParser = Tika()
     private val tikaDetectParser = AutoDetectParser()

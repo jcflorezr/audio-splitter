@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import kotlinx.coroutines.runBlocking
 import net.jcflorezr.config.TestSoundZonesDetectorConfig
-import net.jcflorezr.model.AudioSignalRmsInfoKt
+import net.jcflorezr.model.AudioSignalRmsInfo
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -58,8 +58,8 @@ class SoundZonesDetectorTest {
     }
 
     private suspend fun detectSoundZones(path: String) {
-        val signalRmsListType = MAPPER.typeFactory.constructCollectionType(List::class.java, AudioSignalRmsInfoKt::class.java)
-        val audioSignalRmsList: List<AudioSignalRmsInfoKt> = MAPPER.readValue(File(path), signalRmsListType)
+        val signalRmsListType = MAPPER.typeFactory.constructCollectionType(List::class.java, AudioSignalRmsInfo::class.java)
+        val audioSignalRmsList: List<AudioSignalRmsInfo> = MAPPER.readValue(File(path), signalRmsListType)
         soundZonesDetector.detectSoundZones(audioRmsInfoList = audioSignalRmsList)
     }
 }

@@ -10,7 +10,7 @@ import net.jcflorezr.config.TestSignalRmsDaoConfig
 import net.jcflorezr.model.AudioPartEntity
 import net.jcflorezr.model.AudioSignalKt
 import net.jcflorezr.model.AudioSignalRmsEntity
-import net.jcflorezr.model.AudioSignalRmsInfoKt
+import net.jcflorezr.model.AudioSignalRmsInfo
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Assert.assertNotNull
@@ -142,7 +142,7 @@ class AudioSignalRmsDaoIntegrationTest {
     }
 
     init {
-        signalRmsListType = MAPPER.typeFactory.constructCollectionType(List::class.java, AudioSignalRmsInfoKt::class.java)
+        signalRmsListType = MAPPER.typeFactory.constructCollectionType(List::class.java, AudioSignalRmsInfo::class.java)
     }
 
     @Test
@@ -174,7 +174,7 @@ class AudioSignalRmsDaoIntegrationTest {
 
     private fun storeSignalRms(sourceFilePath: String, minIndex: Double, maxIndex: Double) {
         cassandraInitializer.createTable(AUDIO_SIGNAL_RMS_TABLE, AudioSignalRmsEntity::class.java)
-        val audioSignalRmsList: List<AudioSignalRmsInfoKt> = MAPPER.readValue(File(sourceFilePath), signalRmsListType)
+        val audioSignalRmsList: List<AudioSignalRmsInfo> = MAPPER.readValue(File(sourceFilePath), signalRmsListType)
         runBlocking {
             audioSignalRmsDao.storeAudioSignalsRms(audioSignalRmsList)
         }

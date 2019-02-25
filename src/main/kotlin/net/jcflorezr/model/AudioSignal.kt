@@ -2,7 +2,7 @@ package net.jcflorezr.model
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import net.jcflorezr.broker.Message
-import net.jcflorezr.util.AudioUtilsKt
+import net.jcflorezr.util.AudioUtils
 import org.springframework.data.cassandra.core.cql.PrimaryKeyType
 import org.springframework.data.cassandra.core.mapping.Column
 import org.springframework.data.cassandra.core.mapping.PrimaryKeyColumn
@@ -63,11 +63,10 @@ data class AudioSignalKt(
 }
 
 data class AudioSignalsRmsInfo(
-    val audioSignals: List<AudioSignalRmsInfoKt>
+    val audioSignals: List<AudioSignalRmsInfo>
 ) : Message
 
-// TODO: rename it when its java equivalent is removed
-data class AudioSignalRmsInfoKt(
+data class AudioSignalRmsInfo(
     val entityName: String = "audioSignalRms",
     val audioFileName: String,
     val index: Double,
@@ -101,10 +100,10 @@ data class AudioSignalRmsEntity(
     @Column("silence") val silence: Boolean,
     @Column("active") val active: Boolean
 ) {
-    constructor(audioSignalRms: AudioSignalRmsInfoKt) :
+    constructor(audioSignalRms: AudioSignalRmsInfo) :
         this(
             audioFileName = audioSignalRms.audioFileName,
-            index = AudioUtilsKt.tenthsSecondsFormat(audioSignalRms.index).toFloat(),
+            index = AudioUtils.tenthsSecondsFormat(audioSignalRms.index).toFloat(),
             rms = audioSignalRms.rms,
             sampleSize = audioSignalRms.sampleRate,
             audioLength = audioSignalRms.audioLength,

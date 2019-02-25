@@ -12,7 +12,7 @@ import net.jcflorezr.dao.AudioSignalDao
 import net.jcflorezr.dao.RedisInitializer
 import net.jcflorezr.model.AudioClipInfo
 import net.jcflorezr.model.AudioSignalKt
-import net.jcflorezr.model.AudioSignalRmsInfoKt
+import net.jcflorezr.model.AudioSignalRmsInfo
 import net.jcflorezr.model.AudioSignalsRmsInfo
 import org.junit.ClassRule
 import org.junit.Test
@@ -85,7 +85,7 @@ class SignalRmsSubscriberIntegrationTest {
         signalRmsSubscriber.validateCompleteness()
     }
 
-    private suspend fun generateAudioClipInfo(audioSignalRmsList: List<AudioSignalRmsInfoKt>) = coroutineScope {
+    private suspend fun generateAudioClipInfo(audioSignalRmsList: List<AudioSignalRmsInfo>) = coroutineScope {
         var start = 0
         var end = 0
         while (end < audioSignalRmsList.size) {
@@ -99,7 +99,7 @@ class SignalRmsSubscriberIntegrationTest {
     }
 
     private suspend fun generateConsolidatedAudioClipInfo(
-        audioSignalRmsLists: Triple<List<AudioSignalRmsInfoKt>, List<AudioSignalRmsInfoKt>, List<AudioSignalRmsInfoKt>>
+        audioSignalRmsLists: Triple<List<AudioSignalRmsInfo>, List<AudioSignalRmsInfo>, List<AudioSignalRmsInfo>>
     ) = coroutineScope {
         var (start1, start2, start3) = Triple(0, 0, 0)
         var (end1, end2, end3) = Triple(0, 0, 0)
@@ -121,8 +121,8 @@ class SignalRmsSubscriberIntegrationTest {
         }
     }
 
-    private fun getAudioSignalsRmsList(folderName: String): List<AudioSignalRmsInfoKt> {
-        val signalRmsListType = MAPPER.typeFactory.constructCollectionType(List::class.java, AudioSignalRmsInfoKt::class.java)
+    private fun getAudioSignalsRmsList(folderName: String): List<AudioSignalRmsInfo> {
+        val signalRmsListType = MAPPER.typeFactory.constructCollectionType(List::class.java, AudioSignalRmsInfo::class.java)
         return MAPPER.readValue(File("$testResourcesPath/$folderName/$folderName.json"), signalRmsListType)
     }
 

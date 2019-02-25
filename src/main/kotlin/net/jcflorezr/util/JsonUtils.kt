@@ -3,17 +3,12 @@ package net.jcflorezr.util
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 
-// TODO: rename it once its java equivalent is removed
-object JsonUtilsKt {
+object JsonUtils {
 
     private val MAPPER = ObjectMapper().registerKotlinModule()
 
-    fun <T> convertMapToPojo(map: Map<*, *>, pojoClass: Class<T>): T {
-        return MAPPER.convertValue(map, pojoClass)
-    }
+    fun <T> convertMapToPojo(map: Map<*, *>, pojoClass: Class<T>) = MAPPER.convertValue(map, pojoClass)!!
 
-    fun convertMapToJsonAsString(map: Map<*, *>): String {
-        return MAPPER.writeValueAsString(map)
-    }
+    fun convertMapToJsonAsString(map: Map<*, *>) = MAPPER.writeValueAsString(map)
 
 }

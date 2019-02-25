@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import net.jcflorezr.dao.AudioClipDao
 import net.jcflorezr.dao.AudioClipDaoImpl
-import net.jcflorezr.model.AudioSignalRmsInfoKt
+import net.jcflorezr.model.AudioSignalRmsInfo
 import net.jcflorezr.dao.AudioSignalDao
 import net.jcflorezr.dao.AudioSignalDaoImpl
 import net.jcflorezr.dao.AudioSignalRmsDao
@@ -46,10 +46,10 @@ class RedisConfig {
     }
 
     @Bean
-    fun audioSignalRmsDaoTemplate(): RedisTemplate<String, AudioSignalRmsInfoKt> {
-        val template = RedisTemplate<String, AudioSignalRmsInfoKt>()
+    fun audioSignalRmsDaoTemplate(): RedisTemplate<String, AudioSignalRmsInfo> {
+        val template = RedisTemplate<String, AudioSignalRmsInfo>()
         template.setConnectionFactory(jedisConnectionFactory())
-        template.valueSerializer = Jackson2JsonRedisSerializerKotlin(AudioSignalRmsInfoKt::class.java)
+        template.valueSerializer = Jackson2JsonRedisSerializerKotlin(AudioSignalRmsInfo::class.java)
         return template
     }
 

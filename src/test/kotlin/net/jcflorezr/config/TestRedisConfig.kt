@@ -2,7 +2,7 @@ package net.jcflorezr.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
-import net.jcflorezr.model.AudioSignalRmsInfoKt
+import net.jcflorezr.model.AudioSignalRmsInfo
 import net.jcflorezr.model.AudioClipInfo
 import net.jcflorezr.model.AudioSignalKt
 import org.springframework.beans.factory.annotation.Value
@@ -72,10 +72,10 @@ class TestRedisConfig {
 
     @Profile("test")
     @Bean
-    fun audioSignalRmsDaoTemplateTest(): RedisTemplate<String, AudioSignalRmsInfoKt> {
-        val template = RedisTemplate<String, AudioSignalRmsInfoKt>()
+    fun audioSignalRmsDaoTemplateTest(): RedisTemplate<String, AudioSignalRmsInfo> {
+        val template = RedisTemplate<String, AudioSignalRmsInfo>()
         template.setConnectionFactory(jedisConnectionFactory())
-        template.valueSerializer = Jackson2JsonRedisSerializerKotlin(AudioSignalRmsInfoKt::class.java)
+        template.valueSerializer = Jackson2JsonRedisSerializerKotlin(AudioSignalRmsInfo::class.java)
         return template
     }
 

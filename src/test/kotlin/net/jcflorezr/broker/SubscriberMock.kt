@@ -9,7 +9,7 @@ import net.jcflorezr.dao.AudioSignalDao
 import net.jcflorezr.model.AudioClipInfo
 import net.jcflorezr.model.AudioClipSignal
 import net.jcflorezr.model.AudioSignalKt
-import net.jcflorezr.model.AudioSignalRmsInfoKt
+import net.jcflorezr.model.AudioSignalRmsInfo
 import net.jcflorezr.model.AudioSignalsRmsInfo
 import net.jcflorezr.model.InitialConfiguration
 import org.apache.commons.io.FilenameUtils
@@ -49,8 +49,6 @@ final class SourceFileSubscriberMock : Subscriber<InitialConfiguration> {
         println("testing initial configuration ----> $message")
         assertTrue(File(message.audioFileLocation).exists())
         assertThat(message.convertedAudioFileLocation, Is(equalTo(expectedConfiguration.convertedAudioFileLocation)))
-        assertThat(message.audioClipsAsStereo, Is(equalTo(expectedConfiguration.audioClipsAsStereo)))
-        assertThat(message.audioClipsByGroup, Is(equalTo(expectedConfiguration.audioClipsByGroup)))
         assertThat(message.audioFileMetadata.toString(), Is(equalTo(expectedConfiguration.audioFileMetadata.toString())))
     }
 
@@ -108,7 +106,7 @@ final class SignalRmsSubscriberMock : Subscriber<AudioSignalsRmsInfo> {
 
     private lateinit var testResourcesPath: String
     private lateinit var thisClass: Class<SignalRmsSubscriberMock>
-    private var audioSignalRmsList: ArrayList<AudioSignalRmsInfoKt> = ArrayList()
+    private var audioSignalRmsList: ArrayList<AudioSignalRmsInfo> = ArrayList()
 
     @PostConstruct
     fun init() {
@@ -120,7 +118,7 @@ final class SignalRmsSubscriberMock : Subscriber<AudioSignalsRmsInfo> {
     override suspend fun update(message: AudioSignalsRmsInfo) {
         val folderName = FilenameUtils.getBaseName(message.audioSignals.first().audioFileName)
         if (audioSignalRmsList.isEmpty()) {
-            val signalRmsListType = MAPPER.typeFactory.constructCollectionType(List::class.java, AudioSignalRmsInfoKt::class.java)
+            val signalRmsListType = MAPPER.typeFactory.constructCollectionType(List::class.java, AudioSignalRmsInfo::class.java)
             audioSignalRmsList = MAPPER.readValue(File("$testResourcesPath/$folderName/$folderName.json"), signalRmsListType)
         }
         // TODO: implement a logger

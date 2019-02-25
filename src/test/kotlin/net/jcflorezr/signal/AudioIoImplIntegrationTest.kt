@@ -22,7 +22,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner
 import java.io.File
 import java.io.FileInputStream
 
-// TODO: create net.jcflorezr package in test resource folder and put all the existing folders in there
 @ActiveProfiles("test")
 @RunWith(SpringJUnit4ClassRunner::class)
 @ContextConfiguration(classes = [TestRootConfig::class])

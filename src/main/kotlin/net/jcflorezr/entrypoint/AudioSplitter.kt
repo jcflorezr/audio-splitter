@@ -7,10 +7,10 @@ import net.jcflorezr.exception.InternalServerErrorException
 import net.jcflorezr.model.AudioFileMetadata
 import net.jcflorezr.model.InitialConfiguration
 import net.jcflorezr.util.AudioFormats
-import net.jcflorezr.util.AudioUtilsKt
-import net.jcflorezr.util.AudioUtilsKt.javaZoomAudioConverter
-import net.jcflorezr.util.AudioUtilsKt.tikaAudioParser
-import net.jcflorezr.util.JsonUtilsKt
+import net.jcflorezr.util.AudioUtils
+import net.jcflorezr.util.AudioUtils.javaZoomAudioConverter
+import net.jcflorezr.util.AudioUtils.tikaAudioParser
+import net.jcflorezr.util.JsonUtils
 import org.apache.tika.exception.TikaException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -81,13 +81,13 @@ final class AudioSplitterImpl : AudioSplitter {
     @Throws(TikaException::class, SAXException::class, IOException::class)
     private fun File.extractAudioMetadata(): AudioFileMetadata {
         FileInputStream(this).use { inputStream ->
-            val (metadata, bodyContentHandler) = AudioUtilsKt.parse(inputStream)
+            val (metadata, bodyContentHandler) = AudioUtils.parse(inputStream)
             return metadata.names()
                 .associate { it to metadata.get(it) }.toMutableMap<String, Any>()
                 .let {
                     it["audioFileName"] = this.name
                     it["rawMetadata"] = bodyContentHandler.toString().split("\n").ifEmpty { ArrayList() }
-                    JsonUtilsKt.convertMapToPojo(map = it, pojoClass = AudioFileMetadata::class.java)
+                    JsonUtils.convertMapToPojo(map = it, pojoClass = AudioFileMetadata::class.java)
                 }
         }
     }

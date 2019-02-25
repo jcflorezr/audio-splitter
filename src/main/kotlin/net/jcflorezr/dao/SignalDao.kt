@@ -6,8 +6,8 @@ import kotlinx.coroutines.launch
 import net.jcflorezr.model.AudioPartEntity
 import net.jcflorezr.model.AudioSignalKt
 import net.jcflorezr.model.AudioSignalRmsEntity
-import net.jcflorezr.model.AudioSignalRmsInfoKt
-import net.jcflorezr.util.AudioUtilsKt.tenthsSecondsFormat
+import net.jcflorezr.model.AudioSignalRmsInfo
+import net.jcflorezr.util.AudioUtils.tenthsSecondsFormat
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.cassandra.core.CassandraOperations
 import org.springframework.data.cassandra.core.selectOne
@@ -75,40 +75,40 @@ class AudioSignalDaoImpl : AudioSignalDao {
 }
 
 interface AudioSignalRmsDao {
-    suspend fun storeAudioSignalsRms(audioSignalsRms: List<AudioSignalRmsInfoKt>)
-    fun retrieveAllAudioSignalsRms(key: String): List<AudioSignalRmsInfoKt>
-    fun retrieveAudioSignalsRmsFromRange(key: String, min: Double, max: Double): List<AudioSignalRmsInfoKt>
+    suspend fun storeAudioSignalsRms(audioSignalsRms: List<AudioSignalRmsInfo>)
+    fun retrieveAllAudioSignalsRms(key: String): List<AudioSignalRmsInfo>
+    fun retrieveAudioSignalsRmsFromRange(key: String, min: Double, max: Double): List<AudioSignalRmsInfo>
     fun removeAudioSignalsRmsFromRange(key: String, min: Double, max: Double): Long
     fun retrieveAllAudioSignalsRmsPersisted(audioFileName: String): List<AudioSignalRmsEntity>
-    fun persistAudioSignalsRms(audioSignalsRms: List<AudioSignalRmsInfoKt>)
+    fun persistAudioSignalsRms(audioSignalsRms: List<AudioSignalRmsInfo>)
 }
 
 @Repository
 class AudioSignalRmsDaoImpl : AudioSignalRmsDao {
 
     @Autowired
-    private lateinit var audioSignalRmsTemplate: RedisTemplate<String, AudioSignalRmsInfoKt>
+    private lateinit var audioSignalRmsTemplate: RedisTemplate<String, AudioSignalRmsInfo>
     @Autowired
     private lateinit var cassandraTemplate: CassandraOperations
 
     override suspend fun storeAudioSignalsRms(
-        audioSignalsRms: List<AudioSignalRmsInfoKt>
+        audioSignalsRms: List<AudioSignalRmsInfo>
     ) = coroutineScope {
         launch { persistAudioSignalsRms(audioSignalsRms) }
         audioSignalsRms.forEach { storeAudioSignalRms(audioSignalRms = it) }
     }
 
     private suspend fun storeAudioSignalRms(
-        audioSignalRms: AudioSignalRmsInfoKt
+        audioSignalRms: AudioSignalRmsInfo
     ) = audioSignalRmsTemplate
         .boundZSetOps("${audioSignalRms.entityName}_${audioSignalRms.audioFileName}")
         .add(audioSignalRms, audioSignalRms.index)!!
 
     override fun persistAudioSignalsRms(
-        audioSignalsRms: List<AudioSignalRmsInfoKt>
+        audioSignalsRms: List<AudioSignalRmsInfo>
     ) = audioSignalsRms.forEach { persistAudioSignalRms(audioSignalRms = it) }
 
-    private fun persistAudioSignalRms(audioSignalRms: AudioSignalRmsInfoKt) {
+    private fun persistAudioSignalRms(audioSignalRms: AudioSignalRmsInfo) {
         cassandraTemplate.insert(AudioSignalRmsEntity(audioSignalRms = audioSignalRms))
     }
 

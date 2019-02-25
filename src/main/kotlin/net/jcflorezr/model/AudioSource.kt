@@ -12,14 +12,8 @@ import javax.sound.sampled.AudioFormat
 data class InitialConfiguration(
     val audioFileLocation: String,
     val audioFileMetadata: AudioFileMetadata? = null,
-    val convertedAudioFileLocation: String? = null,
-    val audioClipsAsStereo: Boolean = false,
-    val audioClipsByGroup: ClipsByGroupConfiguration? = null
+    val convertedAudioFileLocation: String? = null
 ) : Message
-
-data class ClipsByGroupConfiguration(
-    val audioClipsWithSeparator: Boolean = false
-)
 
 enum class AudioFormatEncodings {
     PCM_SIGNED,
@@ -46,8 +40,6 @@ data class AudioSourceInfo constructor(
     companion object {
 
         fun getAudioInfo(format: AudioFormat, buffer: Array<FloatArray?>? = null): AudioSourceInfo {
-
-            // TODO: can be done with one channel?
             val channels = format.channels
             val sampleRate = Math.round(format.sampleRate)
             val bigEndian = format.isBigEndian

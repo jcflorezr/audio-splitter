@@ -4,9 +4,9 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import net.jcflorezr.broker.Topic
 import net.jcflorezr.model.AudioSignalKt
-import net.jcflorezr.model.AudioSignalRmsInfoKt
+import net.jcflorezr.model.AudioSignalRmsInfo
 import net.jcflorezr.model.AudioSignalsRmsInfo
-import net.jcflorezr.util.AudioUtilsKt
+import net.jcflorezr.util.AudioUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
@@ -29,11 +29,11 @@ class RmsCalculatorImpl : RmsCalculator {
         val sampleRate = audioSignal.sampleRate
         val segmentSize = sampleRate / 10 // 0.1 secs
         val signal = audioSignal.data[0]!! // always mono
-        val rmsSignalsInfo = ArrayList<AudioSignalRmsInfoKt>()
+        val rmsSignalsInfo = ArrayList<AudioSignalRmsInfo>()
         generateSequence(RmsValues(pos = 0, index = 1, rms = 0.0, diff = 0.0)) {
             // If the last segment is less than 2/3 of the segment size, we include it in the previous segment.
             val endPos = if (it.pos + segmentSize * 5 / 3 > signal.size) signal.size else it.pos + segmentSize
-            val currentRms = AudioUtilsKt.millisecondsFormat(
+            val currentRms = AudioUtils.millisecondsFormat(
                     value = computeRms(
                         signal = signal,
                         startPosition = it.pos,
@@ -41,21 +41,21 @@ class RmsCalculatorImpl : RmsCalculator {
                     )
                 )
             val positionInSeconds = it.pos.toFloat() / sampleRate
-            val currentDiff = AudioUtilsKt.millisecondsFormat(value = (it.rms - currentRms))
-            val deepDiff = AudioUtilsKt.millisecondsFormat(value = (it.diff - currentDiff))
+            val currentDiff = AudioUtils.millisecondsFormat(value = (it.rms - currentRms))
+            val deepDiff = AudioUtils.millisecondsFormat(value = (it.diff - currentDiff))
             val silence = Math.abs(currentDiff) <= SILENCE_THRESHOLD
             val active = Math.abs(deepDiff) >= ACTIVE_THRESHOLD
             val initialPosInSeconds = positionInSeconds + audioSignal.initialPositionInSeconds
-            val rmsSignalInfo = AudioSignalRmsInfoKt(
+            val rmsSignalInfo = AudioSignalRmsInfo(
                 audioFileName = audioSignal.audioFileName,
-                index = AudioUtilsKt.tenthsSecondsFormat(initialPosInSeconds.toDouble()),
+                index = AudioUtils.tenthsSecondsFormat(initialPosInSeconds.toDouble()),
                 rms = currentRms,
                 audioLength = audioSignal.totalFrames,
                 sampleRate = sampleRate,
                 initialPosition = it.pos + audioSignal.initialPosition,
                 initialPositionInSeconds = initialPosInSeconds,
                 segmentSize = segmentSize,
-                segmentSizeInSeconds = AudioUtilsKt.tenthsSecondsFormat(segmentSize / sampleRate.toDouble()).toFloat(),
+                segmentSizeInSeconds = AudioUtils.tenthsSecondsFormat(segmentSize / sampleRate.toDouble()).toFloat(),
                 silence = silence,
                 active = active
             )

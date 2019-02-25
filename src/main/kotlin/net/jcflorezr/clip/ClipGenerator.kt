@@ -13,7 +13,7 @@ import net.jcflorezr.dao.AudioSignalDao
 import net.jcflorezr.model.AudioClipInfo
 import net.jcflorezr.model.AudioClipSignal
 import net.jcflorezr.model.AudioSignalKt
-import net.jcflorezr.util.AudioUtilsKt
+import net.jcflorezr.util.AudioUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.lang.RuntimeException
@@ -120,7 +120,7 @@ class ClipGenerator {
                 break
             }
             val currentClipSecondsLength =
-                AudioUtilsKt.tenthsSecondsFormat(currentAudioClipInfo.endPositionInSeconds - currentAudioClipInfo.initialPositionInSeconds).toFloat()
+                AudioUtils.tenthsSecondsFormat(currentAudioClipInfo.endPositionInSeconds - currentAudioClipInfo.initialPositionInSeconds).toFloat()
             val currentIsNotNear = checkIfCurrentIsNotNear(previousAudioClipInfo, currentAudioClipInfo)
             if (currentAudioClipInfo.lastClip || groupedClipSecondsAmount + currentClipSecondsLength > maxActiveSecondsAmount) {
                 println("New grouped clip ----> groupedSecsLength: $groupedClipSecondsAmount - currClipSecsLength: $currentClipSecondsLength" +
@@ -196,11 +196,11 @@ class ClipGenerator {
     ) = if (previous == null) {
         false
     } else {
-        AudioUtilsKt.tenthsSecondsFormat(current.initialPositionInSeconds - previous.endPositionInSeconds) > maxDistanceBetweenClips
+        AudioUtils.tenthsSecondsFormat(current.initialPositionInSeconds - previous.endPositionInSeconds) > maxDistanceBetweenClips
     }
 
     private fun getNearestIndex(positionInSeconds: Float) =
-        AudioUtilsKt.tenthsSecondsFormat(0.5 * Math.floor(Math.abs(positionInSeconds / 0.5)))
+        AudioUtils.tenthsSecondsFormat(0.5 * Math.floor(Math.abs(positionInSeconds / 0.5)))
 
     private fun getSignalDataForAudioClipPart(audioSignal: AudioSignalKt, clipInfo: AudioClipInfo): FloatArray {
         val from = if (audioSignal.initialPosition < clipInfo.initialPosition) {
