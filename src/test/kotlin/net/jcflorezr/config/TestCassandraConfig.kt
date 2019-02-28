@@ -1,5 +1,6 @@
 package net.jcflorezr.config
 
+import net.jcflorezr.dao.CassandraInitializer
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -18,30 +19,22 @@ import org.springframework.data.cassandra.core.mapping.BasicCassandraMappingCont
 import org.springframework.data.cassandra.core.mapping.CassandraMappingContext
 import org.springframework.data.cassandra.core.mapping.SimpleUserTypeResolver
 
-
 @Configuration
 @PropertySource(value = ["classpath:config/test-cassandra.properties"])
 class TestCassandraConfig : AbstractCassandraConfiguration() {
 
-    @Value("\${cassandra.contactpoints}")
-    private lateinit var contactPoints: String
-    @Value("\${cassandra.port}")
-    private lateinit var port: Integer
     @Value("\${cassandra.keyspace}")
     private lateinit var keySpace: String
-
-    override fun getPort() = port.toInt()
-
-    override fun getContactPoints() = contactPoints
 
     override fun getKeyspaceName() = keySpace
 
     @Profile("test")
     @Bean
     override fun cluster(): CassandraClusterFactoryBean {
+        val cassandraDockerContainer = CassandraInitializer.cassandraDockerContainer
         val cluster = CassandraClusterFactoryBean()
-        cluster.setContactPoints(getContactPoints())
-        cluster.setPort(getPort())
+        cluster.setContactPoints(cassandraDockerContainer.containerIpAddress)
+        cluster.setPort(cassandraDockerContainer.getMappedPort(CassandraInitializer.cassandraPort))
         cluster.afterPropertiesSet()
         return cluster
     }
@@ -54,9 +47,7 @@ class TestCassandraConfig : AbstractCassandraConfiguration() {
         return mappingContext
     }
 
-    @Profile("test")
-    @Bean
-    fun converterTest(): CassandraConverter = MappingCassandraConverter(mappingContextTest())
+    @Profile("test") @Bean fun converterTest(): CassandraConverter = MappingCassandraConverter(mappingContextTest())
 
     @Profile("test")
     @Bean

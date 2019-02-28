@@ -80,7 +80,6 @@ class AudioIoImplIntegrationTest {
         audioIo.generateAudioSignalFromAudioFile(
             InitialConfiguration(
                 audioFileLocation = audioFileLocation,
-                convertedAudioFileLocation = audioFileLocation,
                 audioFileMetadata = AudioFileMetadata(audioFileName = audioFileName)
             )
         )

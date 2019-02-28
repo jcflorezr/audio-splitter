@@ -16,7 +16,5 @@
     "Content-Type" : "audio/mpeg",
     "rawMetadata" : [ "Presidential Candidacy Announcement", "Barack Obama", "Speeches", "track 1", "2008", "3291.4272", "��� - ", "Great president", "XXX - ", "Great president", "" ]
   },
-  "convertedAudioFileLocation" : "test-audio-mono-22050.wav",
-  "audioClipsAsStereo" : false,
-  "audioClipsByGroup" : null
+  "convertedAudioFileLocation" : "test-audio-mono-22050.wav"
 }

@@ -2,9 +2,10 @@ package net.jcflorezr.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
-import net.jcflorezr.model.AudioSignalRmsInfo
+import net.jcflorezr.dao.RedisInitializer
 import net.jcflorezr.model.AudioClipInfo
 import net.jcflorezr.model.AudioSignalKt
+import net.jcflorezr.model.AudioSignalRmsInfo
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.beans.factory.config.ConfigurableBeanFactory
 import org.springframework.context.annotation.Bean
@@ -19,12 +20,11 @@ import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer
 import org.springframework.data.redis.serializer.SerializationException
 import org.springframework.lang.Nullable
 
+
 @Configuration
 @PropertySource(value = ["classpath:config/test-redis.properties"])
 class TestRedisConfig {
 
-    @Value("\${redis.hostname}")
-    private lateinit var hostName: String
     @Value("\${redis.port}")
     private lateinit var port: Integer
 
@@ -34,7 +34,7 @@ class TestRedisConfig {
     fun jedisConnectionFactory(): JedisConnectionFactory {
 
         /*
-         TODO: currently a new connection is open for each redis transaction,
+         TODO: currently a new connection is open for each redisDockerContainer transaction,
             let us investigate how to open a single connection for all transactions
           */
 
@@ -56,8 +56,12 @@ class TestRedisConfig {
 //        factory.port = port.toInt()
 //        return factory
 
+        val redisDockerContainer = RedisInitializer.redisDockerContainer
         return JedisConnectionFactory(
-            RedisStandaloneConfiguration(hostName, port.toInt())
+            RedisStandaloneConfiguration(
+                redisDockerContainer.containerIpAddress,
+                redisDockerContainer.getMappedPort(port.toInt())
+            )
         )
     }
 
