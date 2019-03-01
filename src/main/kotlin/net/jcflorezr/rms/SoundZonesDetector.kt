@@ -50,6 +50,7 @@ class SoundZonesDetectorActorImpl : SoundZonesDetectorActor {
         consumeEach { message ->
             when (message) {
                 is AudioSignalRmsArrived -> assignActorForAudioFile(sampleAudioRmsInfo = message.audioSignalRms)
+                else -> throw RuntimeException("No operation supported by SoundZonesDetectorActor. Operation: ${message::class.java}")
             }
         }
     }
@@ -58,6 +59,7 @@ class SoundZonesDetectorActorImpl : SoundZonesDetectorActor {
         consumeEach { message ->
             when (message) {
                 is DetectSoundZones -> detectSoundZones(message.audioSignalRms, message.soundZonesDetector)
+                else -> throw RuntimeException("No operation supported by SoundZonesDetectorActor. Operation: ${message::class.java}")
             }
         }
     }

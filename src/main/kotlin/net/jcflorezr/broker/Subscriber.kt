@@ -138,7 +138,6 @@ final class AudioClipSignalSubscriber : Subscriber<AudioClipSignal> {
     fun init() = audioClipSignalTopic.register(this)
 
     override suspend fun update(message: AudioClipSignal) {
-        // TODO: get the filename from properties file?
         audioIo.saveAudioFile(
             fileName = message.audioClipName,
             extension = flacAudioFormat.extension,

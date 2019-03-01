@@ -2,7 +2,6 @@ package net.jcflorezr.signal
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
-import junit.framework.Assert.assertTrue
 import kotlinx.coroutines.runBlocking
 import net.jcflorezr.config.TestRootConfig
 import net.jcflorezr.model.AudioClipSignal
@@ -13,6 +12,7 @@ import org.apache.commons.io.IOUtils
 import org.hamcrest.CoreMatchers.`is` as Is
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired

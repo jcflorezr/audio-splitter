@@ -15,7 +15,6 @@ import org.springframework.data.cassandra.core.CassandraOperations
 import org.springframework.data.cassandra.core.CassandraTemplate
 import org.springframework.data.cassandra.core.convert.CassandraConverter
 import org.springframework.data.cassandra.core.convert.MappingCassandraConverter
-import org.springframework.data.cassandra.core.mapping.BasicCassandraMappingContext
 import org.springframework.data.cassandra.core.mapping.CassandraMappingContext
 import org.springframework.data.cassandra.core.mapping.SimpleUserTypeResolver
 
@@ -42,7 +41,7 @@ class TestCassandraConfig : AbstractCassandraConfiguration() {
     @Profile("test")
     @Bean
     fun mappingContextTest(): CassandraMappingContext {
-        val mappingContext = BasicCassandraMappingContext()
+        val mappingContext = CassandraMappingContext()
         mappingContext.setUserTypeResolver(SimpleUserTypeResolver(cluster().getObject(), keyspaceName))
         return mappingContext
     }
@@ -61,7 +60,7 @@ class TestCassandraConfig : AbstractCassandraConfiguration() {
         return session
     }
 
-    @Profile("test") @Bean override fun cassandraMapping(): CassandraMappingContext = BasicCassandraMappingContext()
+    @Profile("test") @Bean override fun cassandraMapping(): CassandraMappingContext = CassandraMappingContext()
 
     @Profile("test")
     @Bean

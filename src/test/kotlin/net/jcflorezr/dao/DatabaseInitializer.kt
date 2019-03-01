@@ -7,13 +7,13 @@ import org.junit.runners.model.Statement
 import org.springframework.data.cassandra.core.CassandraAdminTemplate
 import org.springframework.data.cassandra.core.convert.MappingCassandraConverter
 import org.springframework.data.cassandra.core.cql.CqlIdentifier
+import org.testcontainers.containers.CassandraContainer
 import org.testcontainers.containers.GenericContainer
-import org.testcontainers.containers.Network
-import org.testcontainers.containers.wait.Wait
+import org.testcontainers.containers.wait.strategy.Wait
 import java.util.HashMap
 
 class KGenericContainer(imageName: String) : GenericContainer<KGenericContainer>(imageName)
-class KCassandraContainer(imageName: String) : GenericContainer<KCassandraContainer>(imageName)
+class KCassandraContainer(imageName: String) : CassandraContainer<KCassandraContainer>(imageName)
 
 class RedisInitializer : TestRule {
 
@@ -88,11 +88,11 @@ class CassandraInitializer : TestRule {
     }
 
     fun createTable(tableName: String, aClass: Class<*>) {
-        cassandraAdminTemplate!!.createTable(true, CqlIdentifier.cqlId(tableName), aClass, HashMap())
+        cassandraAdminTemplate!!.createTable(true, CqlIdentifier.of(tableName), aClass, HashMap())
     }
 
     fun dropTable(tableName: String) {
-        cassandraAdminTemplate!!.dropTable(CqlIdentifier.cqlId(tableName))
+        cassandraAdminTemplate!!.dropTable(CqlIdentifier.of(tableName))
     }
 
 }

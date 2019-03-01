@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service
 import java.lang.RuntimeException
 import javax.annotation.PostConstruct
 
+// TODO: search for all Runtime exceptions to replace them by custom exception
 sealed class ClipAction
 data class AudioClipInfoArrived(val audioClipInfo: AudioClipInfo) : ClipAction()
 data class GenerateClips(
@@ -54,6 +55,7 @@ class ClipGeneratorActorImpl : ClipGeneratorActor {
         consumeEach { message ->
             when (message) {
                 is AudioClipInfoArrived -> assignActorForAudioFile(sampleAudioClipInfo = message.audioClipInfo)
+                else -> throw RuntimeException("No operation supported by ClipGeneratorActor. Operation: ${message::class.java}")
             }
         }
     }
@@ -62,6 +64,7 @@ class ClipGeneratorActorImpl : ClipGeneratorActor {
         consumeEach { message ->
             when (message) {
                 is GenerateClips -> generateClips(message.audioClipInfo, message.clipGenerator)
+                else -> throw RuntimeException("No operation supported by ClipGeneratorActor. Operation: ${message::class.java}")
             }
         }
     }
