@@ -5,6 +5,7 @@ import net.jcflorezr.broker.SignalRmsSubscriberMock
 import net.jcflorezr.broker.Subscriber
 import net.jcflorezr.broker.Topic
 import net.jcflorezr.dao.AudioSignalRmsDao
+import net.jcflorezr.exception.ExceptionHandler
 import net.jcflorezr.model.AudioClipInfo
 import net.jcflorezr.model.AudioSignalsRmsInfo
 import net.jcflorezr.rms.SoundZonesDetector
@@ -17,6 +18,8 @@ import org.springframework.context.annotation.Scope
 
 @Configuration
 class TestSoundZonesDetectorConfig {
+
+    @Profile("test") @Bean fun exceptionHandler(): ExceptionHandler = mock(ExceptionHandler::class.java)
 
     @Profile("test") @Bean fun signalRmsTopicTest() = Topic<AudioSignalsRmsInfo>()
 

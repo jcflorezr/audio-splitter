@@ -12,7 +12,8 @@ import javax.sound.sampled.AudioFormat
 data class InitialConfiguration(
     val audioFileLocation: String,
     val audioFileMetadata: AudioFileMetadata? = null,
-    val convertedAudioFileLocation: String? = null
+    val convertedAudioFileLocation: String? = null,
+    val outputDirectory: String
 ) : Message
 
 enum class AudioFormatEncodings {
@@ -30,7 +31,7 @@ enum class AudioFormatEncodings {
 data class AudioSourceInfo constructor(
     val channels: Int,
     val sampleRate: Int,
-    val sampleSizeBits: Int,
+    val sampleSizeInBits: Int,
     val frameSize: Int,
     val sampleSize: Int,
     val bigEndian: Boolean,

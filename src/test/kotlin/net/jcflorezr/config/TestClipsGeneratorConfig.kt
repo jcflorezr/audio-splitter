@@ -10,7 +10,7 @@ import net.jcflorezr.dao.AudioClipDaoImpl
 import net.jcflorezr.dao.AudioSignalDao
 import net.jcflorezr.dao.AudioSignalDaoImpl
 import net.jcflorezr.model.AudioClipSignal
-import net.jcflorezr.model.AudioSignalKt
+import net.jcflorezr.model.AudioSignal
 import org.mockito.Mockito.mock
 import org.springframework.beans.factory.config.ConfigurableBeanFactory
 import org.springframework.context.annotation.Bean
@@ -26,7 +26,7 @@ class TestClipsGeneratorConfig {
 
     @Profile("test") @Bean fun audioIoTest() = AudioIoImpl()
 
-    @Profile("test") @Bean fun signalTopicTest() = Topic<AudioSignalKt>()
+    @Profile("test") @Bean fun signalTopicTest() = Topic<AudioSignal>()
 
     // ClipGenerator is a prototype
 

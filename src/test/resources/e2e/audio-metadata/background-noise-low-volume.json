@@ -1,0 +1,16 @@
+{
+  "audioFileName":"background-noise-low-volume.wav",
+  "title":null,
+  "album":null,
+  "artist":null,
+  "trackNumber":null,
+  "genre":null,
+  "duration":null,
+  "sampleRate":"22050",
+  "contentType":"audio/vnd.wave",
+  "channels":"1",
+  "version":null,
+  "creator":null,
+  "comments":null,
+  "rawMetadata":[""]
+}

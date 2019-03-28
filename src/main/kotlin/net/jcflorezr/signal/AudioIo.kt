@@ -2,11 +2,14 @@ package net.jcflorezr.signal
 
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import mu.KotlinLogging
 import net.jcflorezr.broker.Topic
-import net.jcflorezr.model.AudioSignalKt
+import net.jcflorezr.model.AudioSignal
 import net.jcflorezr.model.AudioSourceInfo
 import net.jcflorezr.model.InitialConfiguration
 import net.jcflorezr.util.AudioFormats
+import net.jcflorezr.util.AudioUtils
+import net.jcflorezr.util.PropsUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.io.File
@@ -16,7 +19,7 @@ import javax.sound.sampled.AudioInputStream
 import javax.sound.sampled.AudioSystem
 
 interface AudioIo {
-    fun saveAudioFile(fileName: String, extension: String, signal: Array<FloatArray?>, sampleRate: Int)
+    suspend fun saveAudioFile(fileName: String, extension: String, signal: Array<FloatArray?>, sampleRate: Int, transactionId: String)
     suspend fun generateAudioSignalFromAudioFile(configuration: InitialConfiguration)
 }
 
@@ -24,9 +27,18 @@ interface AudioIo {
 final class AudioIoImpl : AudioIo {
 
     @Autowired
-    private lateinit var audioSignalTopic: Topic<AudioSignalKt>
+    private lateinit var audioSignalTopic: Topic<AudioSignal>
 
-    override fun saveAudioFile(fileName: String, extension: String, signal: Array<FloatArray?>, sampleRate: Int) {
+    private val logger = KotlinLogging.logger { }
+
+    override suspend fun saveAudioFile(
+        fileName: String,
+        extension: String,
+        signal: Array<FloatArray?>,
+        sampleRate: Int,
+        transactionId: String
+    ) {
+        logger.info { "[$transactionId][6][audio-clip] Creating Clip Audio File ($fileName$extension)."}
         val audioInputStream = getAudioInputStreamForPacking(signal, 0, signal[0]!!.size, sampleRate)
         val fileType = AudioFormats.getFileType(extension)
         AudioSystem.write(audioInputStream, fileType, File(fileName + extension))
@@ -34,6 +46,9 @@ final class AudioIoImpl : AudioIo {
 
     override suspend fun generateAudioSignalFromAudioFile(configuration: InitialConfiguration) = coroutineScope<Unit> {
         AudioSystem.getAudioInputStream(File(configuration.convertedAudioFileLocation ?: configuration.audioFileLocation)).use { stream ->
+            logger.info { "[${PropsUtils.getTransactionId(configuration.audioFileLocation)}][2][audio-signal] " +
+                "Starting to generate audio signal segments for ${configuration.audioFileLocation}." }
+
             val totalFrames = stream.frameLength.takeIf { it <= Integer.MAX_VALUE }?.toInt()
                 ?: throw IOException("Sound file too long.")
             val sampleRate = stream.format.sampleRate.toInt()
@@ -53,27 +68,29 @@ final class AudioIoImpl : AudioIo {
                         throw IOException("Length of transmitted signal is not a multiple of frame size. requiredFrames=" + requiredFrames + " trBytes=" + bytesRead + " frameSize=" + audioInfo.frameSize + ".")
                 }
                 val framesToRead = bytesRead / audioInfo.frameSize
-                val audioSignal = AudioSignalKt(
+                val audioSignal = AudioSignal(
                     audioFileName = configuration.audioFileMetadata!!.audioFileName,
                     index = it.first.toFloat() / sampleRate.toFloat(),
                     sampleRate = sampleRate,
                     totalFrames = totalFrames,
                     initialPosition = it.first,
-                    initialPositionInSeconds = it.first.toFloat() / sampleRate.toFloat(),
+                    initialPositionInSeconds = AudioUtils.tenthsSecondsFormat(it.first.toFloat() / sampleRate.toFloat()).toFloat(),
                     endPosition = it.first + framesToRead,
-                    endPositionInSeconds = (it.first + framesToRead).toFloat() / sampleRate.toFloat(),
+                    endPositionInSeconds = AudioUtils.tenthsSecondsFormat((it.first + framesToRead).toFloat() / sampleRate.toFloat()).toFloat(),
                     data = AudioBytesUnpacker.generateAudioSignal(audioInfo, bytesBuffer, framesToRead),
                     dataInBytes = bytesBuffer,
                     audioSourceInfo = audioInfo
                 )
                 launch {
+                    logger.info { "[${PropsUtils.getTransactionId(configuration.audioFileLocation)}][2][audio-signal] " +
+                        "Audio signal ==> start: ${audioSignal.initialPositionInSeconds} - " +
+                        "end: ${audioSignal.endPositionInSeconds}. has been generated." }
                     audioSignalTopic.postMessage(message = audioSignal)
                 }
                 Pair(it.first + framesToRead, it.second + 1)
             }.takeWhile { it.first < totalFrames }
             .count()
             configuration.convertedAudioFileLocation?.let { File(it).delete() }
-            // TODO: return an object for auditing process, perhaps an Aspect receive the consolidated result
         }
     }
 

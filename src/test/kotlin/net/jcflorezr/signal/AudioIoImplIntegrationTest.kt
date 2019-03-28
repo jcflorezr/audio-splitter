@@ -8,6 +8,7 @@ import net.jcflorezr.model.AudioClipSignal
 import net.jcflorezr.model.AudioFileMetadata
 import net.jcflorezr.model.InitialConfiguration
 import net.jcflorezr.util.AudioFormats
+import net.jcflorezr.util.PropsUtils
 import org.apache.commons.io.IOUtils
 import org.hamcrest.CoreMatchers.`is` as Is
 import org.hamcrest.CoreMatchers.equalTo
@@ -39,25 +40,28 @@ class AudioIoImplIntegrationTest {
     private val thisClass: Class<AudioIoImplIntegrationTest> = this.javaClass
 
     init {
-        signalResourcesPath = thisClass.getResource("/signal/").path
-        clipResourcesPath = thisClass.getResource("/clip/").path
+        signalResourcesPath = thisClass.getResource("/signal").path
+        clipResourcesPath = thisClass.getResource("/clip").path
     }
 
     @Test
     fun retrieveSignalFromFileWithBackgroundNoiseAndLowVoiceVolume() {
-        val audioFileLocation = signalResourcesPath + "background-noise-low-volume/background-noise-low-volume.wav"
+        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("background-noise-low-volume"))
+        val audioFileLocation = "$signalResourcesPath/background-noise-low-volume/background-noise-low-volume.wav"
         retrieveSignalFromAudioFile(audioFileLocation, File(audioFileLocation).name)
     }
 
     @Test
     fun retrieveSignalFromFileWithApplause() {
-        val audioFileLocation = signalResourcesPath + "with-applause/with-applause.wav"
+        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("with-applause"))
+        val audioFileLocation = "$signalResourcesPath/with-applause/with-applause.wav"
         retrieveSignalFromAudioFile(audioFileLocation, File(audioFileLocation).name)
     }
 
     @Test
     fun retrieveSignalFromFileWithStrongBackgroundNoise() {
-        val audioFileLocation = signalResourcesPath + "strong-background-noise/strong-background-noise.wav"
+        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("strong-background-noise"))
+        val audioFileLocation = "$signalResourcesPath/strong-background-noise/strong-background-noise.wav"
         retrieveSignalFromAudioFile(audioFileLocation, File(audioFileLocation).name)
     }
 
@@ -80,7 +84,8 @@ class AudioIoImplIntegrationTest {
         audioIo.generateAudioSignalFromAudioFile(
             InitialConfiguration(
                 audioFileLocation = audioFileLocation,
-                audioFileMetadata = AudioFileMetadata(audioFileName = audioFileName)
+                audioFileMetadata = AudioFileMetadata(audioFileName = audioFileName),
+                outputDirectory = "any-output-directory"
             )
         )
     }
@@ -98,7 +103,8 @@ class AudioIoImplIntegrationTest {
                 fileName = "$testAudioClipsFilesFolder/$baseFileName",
                 extension = AudioFormats.FLAC.extension,
                 signal = expectedAudioClipSignal.signal,
-                sampleRate = expectedAudioClipSignal.sampleRate
+                sampleRate = expectedAudioClipSignal.sampleRate,
+                transactionId = "any-transaction-id"
             )
             val actualAudioClipFile = File("$testAudioClipsFilesFolder/$baseFileName${AudioFormats.FLAC.extension}")
             val expectedAudioClipFile = File("$audioClipsFilesFolder/$baseFileName${AudioFormats.FLAC.extension}")

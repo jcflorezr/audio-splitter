@@ -1,5 +1,7 @@
 package net.jcflorezr.config
 
+import net.jcflorezr.dao.AudioClipDao
+import net.jcflorezr.dao.AudioClipDaoImpl
 import net.jcflorezr.dao.AudioSignalDao
 import net.jcflorezr.dao.AudioSignalDaoImpl
 import net.jcflorezr.dao.AudioSignalRmsDao
@@ -32,5 +34,13 @@ class TestSignalDaoConfig {
 class TestSignalRmsDaoConfig {
 
     @Profile("test") @Bean fun audioSignalRmsDao(): AudioSignalRmsDao = AudioSignalRmsDaoImpl()
+
+}
+
+@Configuration
+@Import(value = [TestCassandraConfig::class, TestRedisConfig::class])
+class TestClipDaoConfig {
+
+    @Profile("test") @Bean fun audioClipDao(): AudioClipDao = AudioClipDaoImpl()
 
 }

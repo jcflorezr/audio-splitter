@@ -15,25 +15,23 @@ import java.util.HashMap
 class KGenericContainer(imageName: String) : GenericContainer<KGenericContainer>(imageName)
 class KCassandraContainer(imageName: String) : CassandraContainer<KCassandraContainer>(imageName)
 
-class RedisInitializer : TestRule {
+class TestRedisInitializer : TestRule {
 
     companion object {
         private const val redisDockerImageName = "redis:5.0"
-        private const val redisPort = 6379
+        const val redisPort = 6379
         val redisDockerContainer: KGenericContainer = KGenericContainer(redisDockerImageName).withExposedPorts(redisPort)
     }
 
     override fun apply(statement: Statement, description: Description): Statement {
         return object: Statement() {
             override fun evaluate() {
-                println("starting embedded Redis")
                 redisDockerContainer.start()
                 // Giving some time while the database is up
                 Thread.sleep(1000L)
                 try {
                     statement.evaluate()
                 } finally {
-                    println("stopping embedded Redis")
                     redisDockerContainer.stop()
                 }
             }
@@ -42,7 +40,7 @@ class RedisInitializer : TestRule {
 
 }
 
-class CassandraInitializer : TestRule {
+class TestCassandraInitializer : TestRule {
 
     companion object {
         private const val cassandraDockerImageName = "cassandra:2.1"
@@ -58,8 +56,6 @@ class CassandraInitializer : TestRule {
     override fun apply(statement: Statement, description: Description): Statement {
         return object: Statement() {
             override fun evaluate() {
-                // TODO: implement Logger
-                println("Starting embedded Cassandra")
                 cassandraDockerContainer.start()
                 val cluster = Cluster
                     .builder()
@@ -75,12 +71,6 @@ class CassandraInitializer : TestRule {
                 try {
                     statement.evaluate()
                 } finally {
-                    // TODO: implement Logger
-                    println("Stopping embedded Cassandra")
-                    /*
-                    TODO: there is an exception thrown by cassandra driver when trying to
-                        stop the database instance: java.io.IOException: Connection reset by peer
-                     */
                     cassandraDockerContainer.stop()
                 }
             }

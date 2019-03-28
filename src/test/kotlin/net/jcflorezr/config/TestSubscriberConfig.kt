@@ -15,6 +15,7 @@ import net.jcflorezr.dao.AudioSignalDao
 import net.jcflorezr.dao.AudioSignalDaoImpl
 import net.jcflorezr.dao.AudioSignalRmsDao
 import net.jcflorezr.dao.AudioSignalRmsDaoImpl
+import net.jcflorezr.exception.ExceptionHandler
 import net.jcflorezr.model.AudioClipInfo
 import net.jcflorezr.model.AudioClipSignal
 import net.jcflorezr.model.AudioSignalsRmsInfo
@@ -33,6 +34,8 @@ import org.springframework.data.cassandra.core.CassandraOperations
 @Configuration
 @Import(value = [TestRedisConfig::class])
 class SignalRmsSubscriberConfig {
+
+    @Profile("test") @Bean fun exceptionHandler(): ExceptionHandler = Mockito.mock(ExceptionHandler::class.java)
 
     @Profile("test") @Bean fun signalRmsTopicSubscriberTest() = Topic<AudioSignalsRmsInfo>()
 
@@ -60,6 +63,8 @@ class SignalRmsSubscriberConfig {
 @Configuration
 @Import(value = [TestRedisConfig::class])
 class AudioClipSubscriberConfig {
+
+    @Profile("test") @Bean fun exceptionHandler(): ExceptionHandler = Mockito.mock(ExceptionHandler::class.java)
 
     @Profile("test") @Bean fun audioClipTopicSubscriberTest() = Topic<AudioClipInfo>()
 

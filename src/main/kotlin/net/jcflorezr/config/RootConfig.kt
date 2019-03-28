@@ -14,9 +14,11 @@ import net.jcflorezr.clip.ClipGeneratorActor
 import net.jcflorezr.clip.ClipGeneratorActorImpl
 import net.jcflorezr.entrypoint.AudioSplitter
 import net.jcflorezr.entrypoint.AudioSplitterImpl
+import net.jcflorezr.exception.ExceptionHandler
+import net.jcflorezr.exception.ExceptionHandlerImpl
 import net.jcflorezr.model.AudioClipInfo
 import net.jcflorezr.model.AudioClipSignal
-import net.jcflorezr.model.AudioSignalKt
+import net.jcflorezr.model.AudioSignal
 import net.jcflorezr.model.AudioSignalsRmsInfo
 import net.jcflorezr.model.InitialConfiguration
 import net.jcflorezr.rms.RmsCalculator
@@ -27,14 +29,18 @@ import net.jcflorezr.rms.SoundZonesDetectorActorImpl
 import org.springframework.beans.factory.config.ConfigurableBeanFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Import
 import org.springframework.context.annotation.Scope
 
 @Configuration
+@Import(value = [RedisConfig::class, CassandraConfig::class])
 class RootConfig {
 
     /*
     Services
      */
+
+    @Bean fun exceptionHandler(): ExceptionHandler = ExceptionHandlerImpl()
 
     @Bean fun audioSplitter(): AudioSplitter = AudioSplitterImpl()
 
@@ -64,7 +70,7 @@ class RootConfig {
 
     @Bean fun sourceFileTopic() = Topic<InitialConfiguration>()
 
-    @Bean fun signalTopic() = Topic<AudioSignalKt>()
+    @Bean fun signalTopic() = Topic<AudioSignal>()
 
     @Bean fun signalRmsTopic() = Topic<AudioSignalsRmsInfo>()
 
@@ -78,7 +84,7 @@ class RootConfig {
 
     @Bean fun sourceFileSubscriber(): Subscriber<InitialConfiguration> = SourceFileSubscriber()
 
-    @Bean fun signalSubscriber(): Subscriber<AudioSignalKt> = SignalSubscriber()
+    @Bean fun signalSubscriber(): Subscriber<AudioSignal> = SignalSubscriber()
 
     @Bean fun signalRmsSubscriber(): Subscriber<AudioSignalsRmsInfo> = SignalRmsSubscriber()
 

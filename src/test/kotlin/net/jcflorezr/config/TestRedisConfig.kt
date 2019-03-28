@@ -2,9 +2,9 @@ package net.jcflorezr.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
-import net.jcflorezr.dao.RedisInitializer
+import net.jcflorezr.dao.TestRedisInitializer
 import net.jcflorezr.model.AudioClipInfo
-import net.jcflorezr.model.AudioSignalKt
+import net.jcflorezr.model.AudioSignal
 import net.jcflorezr.model.AudioSignalRmsInfo
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.beans.factory.config.ConfigurableBeanFactory
@@ -56,7 +56,7 @@ class TestRedisConfig {
 //        factory.port = port.toInt()
 //        return factory
 
-        val redisDockerContainer = RedisInitializer.redisDockerContainer
+        val redisDockerContainer = TestRedisInitializer.redisDockerContainer
         return JedisConnectionFactory(
             RedisStandaloneConfiguration(
                 redisDockerContainer.containerIpAddress,
@@ -67,10 +67,10 @@ class TestRedisConfig {
 
     @Profile("test")
     @Bean
-    fun audioSignalDaoTemplateTest(): RedisTemplate<String, AudioSignalKt> {
-        val template = RedisTemplate<String, AudioSignalKt>()
+    fun audioSignalDaoTemplateTest(): RedisTemplate<String, AudioSignal> {
+        val template = RedisTemplate<String, AudioSignal>()
         template.setConnectionFactory(jedisConnectionFactory())
-        template.valueSerializer = Jackson2JsonRedisSerializerKotlin(AudioSignalKt::class.java)
+        template.valueSerializer = Jackson2JsonRedisSerializerKotlin(AudioSignal::class.java)
         return template
     }
 

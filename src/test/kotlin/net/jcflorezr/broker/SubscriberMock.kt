@@ -3,15 +3,17 @@ package net.jcflorezr.broker
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.delay
+import mu.KotlinLogging
 import net.jcflorezr.dao.AudioClipDao
 import net.jcflorezr.dao.AudioSignalDao
 import net.jcflorezr.model.AudioClipInfo
 import net.jcflorezr.model.AudioClipSignal
-import net.jcflorezr.model.AudioSignalKt
+import net.jcflorezr.model.AudioSignal
 import net.jcflorezr.model.AudioSignalRmsInfo
 import net.jcflorezr.model.AudioSignalsRmsInfo
 import net.jcflorezr.model.InitialConfiguration
+import net.jcflorezr.util.PropsUtils
 import org.apache.commons.io.FilenameUtils
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
@@ -33,6 +35,8 @@ final class SourceFileSubscriberMock : Subscriber<InitialConfiguration> {
         private val MAPPER = ObjectMapper().registerKotlinModule()
     }
 
+    private val logger = KotlinLogging.logger { }
+
     private lateinit var testResourcesPath: String
     private lateinit var thisClass: Class<SourceFileSubscriberMock>
 
@@ -44,25 +48,27 @@ final class SourceFileSubscriberMock : Subscriber<InitialConfiguration> {
     }
 
     override suspend fun update(message: InitialConfiguration) {
+        val transactionId = PropsUtils.getTransactionId(message.audioFileMetadata!!.audioFileName)
         val expectedConfiguration = MAPPER.readValue<InitialConfiguration>(File("$testResourcesPath/initial-configuration.json"))
-        // TODO: implement a logger
-        println("testing initial configuration ----> $message")
+        logger.info { "[$transactionId][TEST] testing initial configuration ==> $message" }
         assertTrue(File(message.audioFileLocation).exists())
-        assertThat(message.convertedAudioFileLocation, Is(equalTo(expectedConfiguration.convertedAudioFileLocation)))
+        assertThat(FilenameUtils.getName(message.convertedAudioFileLocation), Is(equalTo(expectedConfiguration.convertedAudioFileLocation)))
         assertThat(message.audioFileMetadata.toString(), Is(equalTo(expectedConfiguration.audioFileMetadata.toString())))
     }
 
 }
 
 @Service
-final class SignalSubscriberMock : Subscriber<AudioSignalKt> {
+final class SignalSubscriberMock : Subscriber<AudioSignal> {
 
     @Autowired
-    private lateinit var signalTopic: Topic<AudioSignalKt>
+    private lateinit var signalTopic: Topic<AudioSignal>
 
     companion object {
         private val MAPPER = ObjectMapper().registerKotlinModule()
     }
+
+    private val logger = KotlinLogging.logger { }
 
     private lateinit var testResourcesPath: String
     private lateinit var thisClass: Class<SignalSubscriberMock>
@@ -74,24 +80,20 @@ final class SignalSubscriberMock : Subscriber<AudioSignalKt> {
         testResourcesPath = thisClass.getResource("/signal").path
     }
 
-    override suspend fun update(message: AudioSignalKt) {
+    override suspend fun update(message: AudioSignal) {
+        val transactionId = PropsUtils.getTransactionId(message.audioFileName)
         val folderName = FilenameUtils.getBaseName(message.audioFileName)
         val fileNamePrefix = (message.index).toString().replace(".", "_")
         val signalPartFilePath = "$testResourcesPath/$folderName/$fileNamePrefix-$folderName.json"
         val signalPart = File(signalPartFilePath)
             .takeIf { it.exists() }
-            ?.let { signalJsonFile -> MAPPER.readValue<AudioSignalKt>(signalJsonFile) }
-        // TODO: implement a logger
-        println("testing audio rms -----> " +
-            "{audioFileName: ${message.audioFileName}, " +
-            "index: ${message.index}, " +
-            "initialPositionInSeconds: ${message.initialPositionInSeconds}}")
+            ?.let { signalJsonFile -> MAPPER.readValue<AudioSignal>(signalJsonFile) }
+        logger.info { "[$transactionId][TEST] testing audio rms ==> audioFileName: ${message.audioFileName} - " +
+            "index: ${message.index} - initialPositionInSeconds: ${message.initialPositionInSeconds}" }
         assertNotNull("No rms part was found for ----> $message", signalPart)
         assertThat("Current and expected rms parts are not equal \n " +
             "Current: $message \n Expected: $signalPart", message, Is(equalTo(signalPart)))
     }
-
-    // TODO: is it possible to implement a validateCompleteness() fun as below tests?
 
 }
 
@@ -100,9 +102,12 @@ final class SignalRmsSubscriberMock : Subscriber<AudioSignalsRmsInfo> {
 
     @Autowired
     private lateinit var audioSignalRmsTopic: Topic<AudioSignalsRmsInfo>
+
     companion object {
         private val MAPPER = ObjectMapper().registerKotlinModule()
     }
+
+    private val logger = KotlinLogging.logger { }
 
     private lateinit var testResourcesPath: String
     private lateinit var thisClass: Class<SignalRmsSubscriberMock>
@@ -116,18 +121,15 @@ final class SignalRmsSubscriberMock : Subscriber<AudioSignalsRmsInfo> {
     }
 
     override suspend fun update(message: AudioSignalsRmsInfo) {
+        val transactionId = PropsUtils.getTransactionId(message.audioSignals.first().audioFileName)
         val folderName = FilenameUtils.getBaseName(message.audioSignals.first().audioFileName)
         if (audioSignalRmsList.isEmpty()) {
             val signalRmsListType = MAPPER.typeFactory.constructCollectionType(List::class.java, AudioSignalRmsInfo::class.java)
             audioSignalRmsList = MAPPER.readValue(File("$testResourcesPath/$folderName/$folderName.json"), signalRmsListType)
         }
-        // TODO: implement a logger
         message.audioSignals.forEach {
-            println("testing audio rms ---> " +
-                "{audioFileName: ${it.audioFileName}, " +
-                "index: ${it.index}, " +
-                "initialPositionInSeconds: ${it.initialPositionInSeconds}, " +
-                "segmentSize: ${it.segmentSize}}")
+            logger.info { "[$transactionId][TEST] testing audio rms ==> audioFileName: ${it.audioFileName} - " +
+                "index: ${it.index} - initialPositionInSeconds: ${it.initialPositionInSeconds} - segmentSize: ${it.segmentSize}" }
             assertTrue("signalRms ----> $it  was not found", audioSignalRmsList.contains(it))
             audioSignalRmsList.remove(it)
         }
@@ -150,10 +152,14 @@ final class AudioClipInfoSubscriberMock : Subscriber<AudioClipInfo> {
         private val MAPPER = ObjectMapper().registerKotlinModule()
     }
 
+    private val logger = KotlinLogging.logger { }
+
     private lateinit var testResourcesPath: String
     private lateinit var thisClass: Class<AudioClipInfoSubscriberMock>
     private lateinit var audioFileName: String
-    private var audioClipList: ArrayList<AudioClipInfo> = ArrayList()
+    private val expectedClipInfoList: ArrayList<AudioClipInfo> = ArrayList()
+    private val unexpectedClipInfoList: ArrayList<AudioClipInfo> = ArrayList()
+    private val actualClipInfoList: ArrayList<AudioClipInfo> = ArrayList()
     private val foldersProcessed: HashSet<String> = HashSet()
 
     @PostConstruct
@@ -163,26 +169,45 @@ final class AudioClipInfoSubscriberMock : Subscriber<AudioClipInfo> {
         testResourcesPath = thisClass.getResource("/clip").path
     }
 
-    override suspend fun update(message: AudioClipInfo) = runBlocking<Unit> {
+    override suspend fun update(message: AudioClipInfo) {
         val folderName = FilenameUtils.getBaseName(message.audioFileName)
-        if (audioClipList.isEmpty() || !foldersProcessed.contains(folderName)) {
+        val transactionId = PropsUtils.getTransactionId(message.audioFileName)
+        if (expectedClipInfoList.isEmpty() || !foldersProcessed.contains(folderName)) {
+            val previousExpectedClipsListSize = expectedClipInfoList.size
             val audioClipListType = MAPPER.typeFactory.constructCollectionType(List::class.java, AudioClipInfo::class.java)
-            audioClipList.addAll(MAPPER.readValue(File("$testResourcesPath/$folderName/$folderName.json"), audioClipListType))
+            expectedClipInfoList.addAll(MAPPER.readValue(File("$testResourcesPath/$folderName/$folderName.json"), audioClipListType))
             foldersProcessed.add(folderName)
             audioFileName = message.audioFileName
+            logger.info { "[$transactionId][TEST] List of expected clips info was created for $folderName. " +
+                "Num of new expected clips: ${Math.abs(expectedClipInfoList.size - previousExpectedClipsListSize)}" }
         }
-        // TODO: implement a logger
-        println("testing audio clip ----> " +
-            "{audioFileName: ${message.audioFileName}, " +
-            "initialPositionInSeconds: ${message.initialPositionInSeconds}, " +
-            "endPositionInSeconds: ${message.endPositionInSeconds}}")
-        assertTrue("audio clip ----> $message was not found", audioClipList.contains(message))
-        audioClipList.remove(message)
+        logger.info { "[$transactionId][TEST] testing clip info ==> last clip: ${message.lastClip} - consecutive: ${message.consecutive} - " +
+            "clip name: ${message.audioClipName} - length: (from ${message.initialPositionInSeconds} to ${message.endPositionInSeconds})" }
+        if (!expectedClipInfoList.contains(message)) {
+            unexpectedClipInfoList.add(message)
+            logger.error { "[$transactionId][TEST] unexpected clip was generated ==> $message" }
+        } else {
+            actualClipInfoList.add(message)
+            logger.info { "[$transactionId][TEST] expected clip was generated ==> $message" }
+        }
     }
 
-    fun validateCompleteness() {
-        assertTrue("There were ${audioClipList.size} audio clips that were not tested ----> $audioClipList",
-            audioClipList.isEmpty())
+    suspend fun validateCompleteness() {
+        delay(1000L) // giving some time until lists are fully populated
+        assertTrue(getUnexpectedClipsErrorMessage(), unexpectedClipInfoList.isEmpty())
+        assertThat(getMissingExpectedClipsErrorMessage(), actualClipInfoList.size, Is(equalTo(expectedClipInfoList.size)))
+    }
+
+    private fun getUnexpectedClipsErrorMessage(): String {
+        val errorMessage = "There were ${unexpectedClipInfoList.size} unexpected clips. \n"
+        return errorMessage + unexpectedClipInfoList.map { "$it \n" }
+    }
+
+    private fun getMissingExpectedClipsErrorMessage(): String {
+        val actualNumOfClips = actualClipInfoList.size
+        val expectedNumOfClips = expectedClipInfoList.size
+        val errorMessage = "There were ${expectedNumOfClips - actualNumOfClips} num of clips that were not tested. \n"
+        return errorMessage + expectedClipInfoList.filter { !actualClipInfoList.contains(it) }.map { "$it \n" }
     }
 
 }
@@ -197,6 +222,8 @@ final class AudioClipSignalSubscriberMock : Subscriber<AudioClipSignal> {
     @Autowired
     private lateinit var audioClipDao: AudioClipDao
 
+    private val logger = KotlinLogging.logger { }
+
     companion object {
         private val MAPPER = ObjectMapper().registerKotlinModule()
     }
@@ -204,7 +231,9 @@ final class AudioClipSignalSubscriberMock : Subscriber<AudioClipSignal> {
     private lateinit var thisClass: Class<AudioClipSignalSubscriberMock>
     private lateinit var testResourcesPath: String
     private lateinit var audioFileName: String
-    private var audioClipSignalList = ArrayList<AudioClipSignal>()
+    private var expectedAudioClipSignalList: ArrayList<AudioClipSignal> = ArrayList()
+    private val unexpectedClipSignalList: ArrayList<AudioClipSignal> = ArrayList()
+    private val actualClipSignalList: ArrayList<AudioClipSignal> = ArrayList()
     private val foldersProcessed: HashSet<String> = HashSet()
 
     @PostConstruct
@@ -216,27 +245,49 @@ final class AudioClipSignalSubscriberMock : Subscriber<AudioClipSignal> {
 
     override suspend fun update(message: AudioClipSignal) {
         val folderName = FilenameUtils.getBaseName(message.audioFileName)
-        if (audioClipSignalList.isEmpty() || !foldersProcessed.contains(folderName)) {
-            audioClipSignalList.addAll(File("$testResourcesPath/$folderName/signal/").listFiles()
+        val transactionId = PropsUtils.getTransactionId(message.audioFileName)
+        if (expectedAudioClipSignalList.isEmpty() || !foldersProcessed.contains(folderName)) {
+            val previousExpectedClipsListSize = expectedAudioClipSignalList.size
+            expectedAudioClipSignalList.addAll(File("$testResourcesPath/$folderName/signal/").listFiles()
                 .map { MAPPER.readValue(it, AudioClipSignal::class.java) } as ArrayList<AudioClipSignal>)
             foldersProcessed.add(folderName)
             audioFileName = message.audioFileName
+            logger.info { "[$transactionId][TEST] List of expected clips signals was created for $folderName. " +
+                "Num of new expected clips: ${Math.abs(expectedAudioClipSignalList.size - previousExpectedClipsListSize)}" }
         }
-        // TODO: implement a logger
-        println("testing audio clip signal ----> {audioFileName: ${message.audioFileName}, audioClipName: ${message.audioClipName}}")
-        assertTrue("audio clip signal ----> $message was not found", audioClipSignalList.contains(message))
-        audioClipSignalList.remove(message)
+        logger.info { "[$transactionId][TEST] testing clip signal ==> clip name: ${message.audioClipName}" }
+        assertTrue("audio clip signal ----> $message was not found", expectedAudioClipSignalList.contains(message))
+        if (!expectedAudioClipSignalList.contains(message)) {
+            unexpectedClipSignalList.add(message)
+            logger.error { "[$transactionId][TEST] unexpected clip was generated ==> $message" }
+        } else {
+            actualClipSignalList.add(message)
+            logger.info { "[$transactionId][TEST] expected clip was generated ==> $message" }
+        }
     }
 
-    fun validateCompleteness() {
-        assertTrue("There were ${audioClipSignalList.size} audio signal clips that were not tested ----> $audioClipSignalList",
-            audioClipSignalList.isEmpty())
+    suspend fun validateCompleteness() {
+        delay(1000L) // giving some time until lists are fully populated
+        assertTrue(getUnexpectedClipsErrorMessage(), unexpectedClipSignalList.isEmpty())
+        assertThat(getMissingExpectedClipsErrorMessage(), actualClipSignalList.size, Is(equalTo(expectedAudioClipSignalList.size)))
         val signalsList = audioSignalDao.retrieveAllAudioSignals(key = "audioSignal_$audioFileName")
         assertTrue("There were ${signalsList.size} audio signals that were not removed from database ----> $signalsList",
             signalsList.isEmpty())
         val audioClipInfoList = audioClipDao.retrieveAllAudioClipsInfo(key = "audioClipInfo_$audioFileName")
         assertTrue("There were ${audioClipInfoList.size} audio clips info that were not removed from database ----> $audioClipInfoList",
             audioClipInfoList.isEmpty())
+    }
+
+    private fun getUnexpectedClipsErrorMessage(): String {
+        val errorMessage = "There were ${unexpectedClipSignalList.size} unexpected clips. \n"
+        return errorMessage + unexpectedClipSignalList.map { "$it \n" }
+    }
+
+    private fun getMissingExpectedClipsErrorMessage(): String {
+        val actualNumOfClips = actualClipSignalList.size
+        val expectedNumOfClips = expectedAudioClipSignalList.size
+        val errorMessage = "There were ${expectedNumOfClips - actualNumOfClips} num of clips that were not tested. \n"
+        return errorMessage + expectedAudioClipSignalList.filter { !actualClipSignalList.contains(it) }.map { "$it \n" }
     }
 
 }

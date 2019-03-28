@@ -9,12 +9,15 @@ import net.jcflorezr.dao.AudioSignalDao
 import net.jcflorezr.dao.AudioSignalDaoImpl
 import net.jcflorezr.dao.AudioSignalRmsDao
 import net.jcflorezr.dao.AudioSignalRmsDaoImpl
+import net.jcflorezr.dao.SourceFileDao
+import net.jcflorezr.dao.SourceFileDaoImpl
 import net.jcflorezr.model.AudioClipInfo
-import net.jcflorezr.model.AudioSignalKt
+import net.jcflorezr.model.AudioSignal
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.beans.factory.config.ConfigurableBeanFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.PropertySource
+import org.springframework.context.annotation.Scope
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory
 import org.springframework.data.redis.core.RedisTemplate
@@ -23,7 +26,6 @@ import org.springframework.data.redis.serializer.SerializationException
 import org.springframework.lang.Nullable
 
 @Configuration
-@PropertySource(value = ["classpath:config/redis.properties"])
 class RedisConfig {
 
     @Value("\${redis.hostname}")
@@ -32,16 +34,40 @@ class RedisConfig {
     private lateinit var port: Integer
 
     @Bean
+    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     fun jedisConnectionFactory(): JedisConnectionFactory {
-        return JedisConnectionFactory(
-            RedisStandaloneConfiguration(hostName, port.toInt()))
+
+        /*
+         TODO: currently a new connection is open for each redisDockerContainer transaction,
+            let us investigate how to open a single connection for all transactions
+          */
+
+//        val poolConfig = JedisPoolConfig()
+//        poolConfig.maxTotal = 128
+//        poolConfig.maxIdle = 128
+//        poolConfig.minIdle = 16
+//        poolConfig.testOnBorrow = true
+//        poolConfig.testOnReturn = true
+//        poolConfig.testWhileIdle = true
+//        poolConfig.minEvictableIdleTimeMillis = Duration.ofSeconds(60).toMillis()
+//        poolConfig.timeBetweenEvictionRunsMillis = Duration.ofSeconds(30).toMillis()
+//        poolConfig.numTestsPerEvictionRun = 3
+//        poolConfig.blockWhenExhausted = true
+//
+//        val factory = JedisConnectionFactory(poolConfig)
+//        factory.hostName = hostName
+//        factory.usePool = true
+//        factory.port = port.toInt()
+//        return factory
+
+        return JedisConnectionFactory(RedisStandaloneConfiguration(hostName, port.toInt()))
     }
 
     @Bean
-    fun audioSignalDaoTemplate(): RedisTemplate<String, AudioSignalKt> {
-        val template = RedisTemplate<String, AudioSignalKt>()
+    fun audioSignalDaoTemplate(): RedisTemplate<String, AudioSignal> {
+        val template = RedisTemplate<String, AudioSignal>()
         template.setConnectionFactory(jedisConnectionFactory())
-        template.valueSerializer = Jackson2JsonRedisSerializerKotlin(AudioSignalKt::class.java)
+        template.valueSerializer = Jackson2JsonRedisSerializerKotlin(AudioSignal::class.java)
         return template
     }
 
@@ -64,6 +90,8 @@ class RedisConfig {
     /*
     DAOs
      */
+
+    @Bean fun sourceFileDao(): SourceFileDao = SourceFileDaoImpl()
 
     @Bean fun audioSignalDao(): AudioSignalDao = AudioSignalDaoImpl()
 

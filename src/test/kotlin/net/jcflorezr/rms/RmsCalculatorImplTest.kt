@@ -6,7 +6,8 @@ import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import kotlinx.coroutines.runBlocking
 import net.jcflorezr.broker.SignalRmsSubscriberMock
 import net.jcflorezr.config.TestRootConfig
-import net.jcflorezr.model.AudioSignalKt
+import net.jcflorezr.model.AudioSignal
+import net.jcflorezr.util.PropsUtils
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -42,6 +43,7 @@ class RmsCalculatorImplTest {
 
     @Test
     fun generateRmsInfoForFileWithBackgroundNoiseAndLowVoiceVolume() = runBlocking {
+        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("background-noise-low-volume"))
         generateRmsInfo(path = testResourcesPath + "background-noise-low-volume/")
         val signalRmsSubscriber = applicationCtx.getBean("signalRmsSubscriberTest") as SignalRmsSubscriberMock
         signalRmsSubscriber.validateCompleteness()
@@ -49,6 +51,7 @@ class RmsCalculatorImplTest {
 
     @Test
     fun generateRmsInfoForFileWithApplause() = runBlocking {
+        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("with-applause"))
         generateRmsInfo(path = testResourcesPath + "with-applause/")
         val signalRmsSubscriber = applicationCtx.getBean("signalRmsSubscriberTest") as SignalRmsSubscriberMock
         signalRmsSubscriber.validateCompleteness()
@@ -56,6 +59,7 @@ class RmsCalculatorImplTest {
 
     @Test
     fun generateRmsInfoForFileWithStrongBackgroundNoise() = runBlocking {
+        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("strong-background-noise"))
         generateRmsInfo(path = testResourcesPath + "strong-background-noise/")
         val signalRmsSubscriber = applicationCtx.getBean("signalRmsSubscriberTest") as SignalRmsSubscriberMock
         signalRmsSubscriber.validateCompleteness()
@@ -64,7 +68,7 @@ class RmsCalculatorImplTest {
     private suspend fun generateRmsInfo(path: String) {
         File(path).listFiles().asSequence()
             .filter { it.extension == "json" }
-            .map { signalJsonFile -> MAPPER.readValue<AudioSignalKt>(signalJsonFile) }
+            .map { signalJsonFile -> MAPPER.readValue<AudioSignal>(signalJsonFile) }
             .forEach { rmsCalculator.generateRmsInfo(audioSignal = it) }
     }
 

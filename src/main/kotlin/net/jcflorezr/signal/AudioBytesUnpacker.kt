@@ -8,9 +8,9 @@ internal object AudioBytesUnpacker {
 
     @Throws(IOException::class)
     fun generateAudioSignal(
-            audioInfo: AudioSourceInfo,
-            bytesBuffer: ByteArray,
-            framesToRead: Int
+        audioInfo: AudioSourceInfo,
+        bytesBuffer: ByteArray,
+        framesToRead: Int
     ): Array<FloatArray?> {
 //        if (trBytes <= 0) {
 //            if (audioInfo.encoding === AudioFormat.Encoding.PCM_FLOAT && pos * audioInfo.frameSize == totalFrames) {
@@ -38,23 +38,23 @@ internal object AudioBytesUnpacker {
      * A utility routine to unpack the signal of a Java Sound audio stream.
      */
     private fun unpackAudioStreamBytes(
-            audioInfo: AudioSourceInfo,
-            bytesBuffer: ByteArray,
-            frames: Int
+        audioInfo: AudioSourceInfo,
+        bytesBuffer: ByteArray,
+        frames: Int
     ): Array<FloatArray?> {
         val signal = arrayOfNulls<FloatArray>(audioInfo.channels)
         for (channel in 0 until audioInfo.channels) {
             signal[channel] = FloatArray(frames)
         }
         val encoding = audioInfo.encoding
-        val maxValue = ((1 shl audioInfo.sampleSizeBits - 1) - 1).toFloat()
+        val maxValue = ((1 shl audioInfo.sampleSizeInBits - 1) - 1).toFloat()
         for (channel in 0 until audioInfo.channels) {
             val p0 = channel * audioInfo.sampleSize
             val outBuff = signal[channel]
             for (i in 0 until frames) {
                 when (encoding) {
                     AudioFormatEncodings.PCM_SIGNED -> {
-                        val v = unpackSignedInt(bytesBuffer, p0 + i * audioInfo.frameSize, audioInfo.sampleSizeBits, audioInfo.bigEndian)
+                        val v = unpackSignedInt(bytesBuffer, p0 + i * audioInfo.frameSize, audioInfo.sampleSizeInBits, audioInfo.bigEndian)
                         outBuff!![i] = v / maxValue
                     }
                     AudioFormatEncodings.PCM_FLOAT -> outBuff!![i] = unpackFloat(bytesBuffer, p0 + i * audioInfo.frameSize, audioInfo.bigEndian)

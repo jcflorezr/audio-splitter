@@ -10,12 +10,14 @@ import net.jcflorezr.broker.Subscriber
 import net.jcflorezr.broker.Topic
 import net.jcflorezr.entrypoint.AudioSplitter
 import net.jcflorezr.entrypoint.AudioSplitterImpl
+import net.jcflorezr.exception.ExceptionHandler
 import net.jcflorezr.model.AudioClipInfo
-import net.jcflorezr.model.AudioSignalKt
+import net.jcflorezr.model.AudioSignal
 import net.jcflorezr.model.AudioSignalsRmsInfo
 import net.jcflorezr.model.InitialConfiguration
 import net.jcflorezr.rms.RmsCalculator
 import net.jcflorezr.rms.RmsCalculatorImpl
+import org.mockito.Mockito.mock
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
@@ -26,6 +28,8 @@ class TestRootConfig {
     /*
     Services
      */
+
+    @Profile("test") @Bean fun exceptionHandler(): ExceptionHandler = mock(ExceptionHandler::class.java)
 
     @Profile("test") @Bean fun audioSplitterTest(): AudioSplitter = AudioSplitterImpl()
 
@@ -39,7 +43,7 @@ class TestRootConfig {
 
     @Profile("test") @Bean fun sourceFileTopicTest() = Topic<InitialConfiguration>()
 
-    @Profile("test") @Bean fun signalTopicTest() = Topic<AudioSignalKt>()
+    @Profile("test") @Bean fun signalTopicTest() = Topic<AudioSignal>()
 
     @Profile("test") @Bean fun signalRmsTopicTest() = Topic<AudioSignalsRmsInfo>()
 
@@ -51,7 +55,7 @@ class TestRootConfig {
 
     @Profile("test") @Bean fun sourceFileSubscriberTest(): Subscriber<InitialConfiguration> = SourceFileSubscriberMock()
 
-    @Profile("test") @Bean fun signalSubscriberTest(): Subscriber<AudioSignalKt> = SignalSubscriberMock()
+    @Profile("test") @Bean fun signalSubscriberTest(): Subscriber<AudioSignal> = SignalSubscriberMock()
 
     @Profile("test") @Bean fun signalRmsSubscriberTest(): Subscriber<AudioSignalsRmsInfo> = SignalRmsSubscriberMock()
 

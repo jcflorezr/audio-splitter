@@ -1,17 +1,20 @@
 package net.jcflorezr.rms
 
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import mu.KotlinLogging
 import net.jcflorezr.broker.Topic
-import net.jcflorezr.model.AudioSignalKt
+import net.jcflorezr.model.AudioSignal
 import net.jcflorezr.model.AudioSignalRmsInfo
 import net.jcflorezr.model.AudioSignalsRmsInfo
 import net.jcflorezr.util.AudioUtils
+import net.jcflorezr.util.PropsUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 interface RmsCalculator {
-    suspend fun generateRmsInfo(audioSignal: AudioSignalKt)
+    suspend fun generateRmsInfo(audioSignal: AudioSignal)
 }
 
 @Service
@@ -20,12 +23,18 @@ class RmsCalculatorImpl : RmsCalculator {
     @Autowired
     private lateinit var audioSignalRmsTopic: Topic<AudioSignalsRmsInfo>
 
+    private val logger = KotlinLogging.logger { }
+
     companion object {
         private const val SILENCE_THRESHOLD = 0.001
         private const val ACTIVE_THRESHOLD = 0.03
     }
 
-    override suspend fun generateRmsInfo(audioSignal: AudioSignalKt) = coroutineScope<Unit> {
+    override suspend fun generateRmsInfo(audioSignal: AudioSignal) {
+        logger.info { "[${PropsUtils.getTransactionId(audioSignal.audioFileName)}][3][RMS] " +
+            "Start to generate the Root Mean Square (RMS) of audio signal start: ${audioSignal.initialPositionInSeconds} - " +
+            "end: ${audioSignal.endPositionInSeconds}." }
+
         val sampleRate = audioSignal.sampleRate
         val segmentSize = sampleRate / 10 // 0.1 secs
         val signal = audioSignal.data[0]!! // always mono
@@ -34,11 +43,7 @@ class RmsCalculatorImpl : RmsCalculator {
             // If the last segment is less than 2/3 of the segment size, we include it in the previous segment.
             val endPos = if (it.pos + segmentSize * 5 / 3 > signal.size) signal.size else it.pos + segmentSize
             val currentRms = AudioUtils.millisecondsFormat(
-                    value = computeRms(
-                        signal = signal,
-                        startPosition = it.pos,
-                        length = endPos - it.pos
-                    )
+                    value = computeRms(signal = signal, startPosition = it.pos, length = endPos - it.pos)
                 )
             val positionInSeconds = it.pos.toFloat() / sampleRate
             val currentDiff = AudioUtils.millisecondsFormat(value = (it.rms - currentRms))
@@ -63,12 +68,10 @@ class RmsCalculatorImpl : RmsCalculator {
             RmsValues(pos = endPos, index = it.index + 1, rms = currentRms, diff = currentDiff)
         }.takeWhile { it.pos < signal.size }
         .toList()
-        // TODO: should return a result
-
-        launch {
-            audioSignalRmsTopic.postMessage(message = AudioSignalsRmsInfo(rmsSignalsInfo))
-        }
-
+        logger.info { "[${PropsUtils.getTransactionId(audioSignal.audioFileName)}][3][RMS] " +
+            "Root Mean Square (RMS) for audio signals ==> start: ${rmsSignalsInfo.first().initialPositionInSeconds} - " +
+            "end: ${rmsSignalsInfo.last().initialPositionInSeconds} were generated." }
+        audioSignalRmsTopic.postMessage(message = AudioSignalsRmsInfo(rmsSignalsInfo))
     }
 
     private fun computeRms(signal: FloatArray, startPosition: Int, length: Int): Double {

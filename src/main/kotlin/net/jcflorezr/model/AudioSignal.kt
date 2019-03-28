@@ -9,7 +9,7 @@ import org.springframework.data.cassandra.core.mapping.PrimaryKeyColumn
 import org.springframework.data.cassandra.core.mapping.Table
 import java.nio.ByteBuffer
 
-data class AudioSignalKt(
+data class AudioSignal(
     val entityName: String = "audioSignal",
     val audioFileName: String,
     val index: Float,
@@ -27,7 +27,7 @@ data class AudioSignalKt(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as AudioSignalKt
+        other as AudioSignal
 
         if (entityName != other.entityName) return false
         if (audioFileName != other.audioFileName) return false
@@ -131,13 +131,13 @@ data class AudioPartEntity(
     @Column("encoding") val encoding: String,
     @Column("content") val content: ByteBuffer
 ) {
-    constructor(audioSignal: AudioSignalKt) :
+    constructor(audioSignal: AudioSignal) :
         this (
             audioFileName = audioSignal.audioFileName,
             index = audioSignal.index,
             channels = audioSignal.audioSourceInfo.channels,
             sampleRate = audioSignal.audioSourceInfo.sampleRate,
-            sampleSizeInBits = audioSignal.audioSourceInfo.sampleSizeBits,
+            sampleSizeInBits = audioSignal.audioSourceInfo.sampleSizeInBits,
             sampleSize = audioSignal.audioSourceInfo.sampleSize,
             frameSize = audioSignal.audioSourceInfo.frameSize,
             bigEndian = audioSignal.audioSourceInfo.bigEndian,
@@ -189,8 +189,13 @@ data class AudioClipSignal(
     val sampleRate: Int,
     val signal: Array<FloatArray?>,
     val audioClipName: String,
-    val audioFileName: String
+    val audioFileName: String,
+    val hours: Int,
+    val minutes: Int,
+    val seconds: Int,
+    val tenthsOfSecond: Int
 ) : Message {
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
@@ -201,6 +206,10 @@ data class AudioClipSignal(
         if (!signal.contentDeepEquals(other.signal)) return false
         if (audioClipName != other.audioClipName) return false
         if (audioFileName != other.audioFileName) return false
+        if (hours != other.hours) return false
+        if (minutes != other.minutes) return false
+        if (seconds != other.seconds) return false
+        if (tenthsOfSecond != other.tenthsOfSecond) return false
 
         return true
     }
@@ -210,6 +219,11 @@ data class AudioClipSignal(
         result = 31 * result + signal.contentDeepHashCode()
         result = 31 * result + audioClipName.hashCode()
         result = 31 * result + audioFileName.hashCode()
+        result = 31 * result + hours
+        result = 31 * result + minutes
+        result = 31 * result + seconds
+        result = 31 * result + tenthsOfSecond
         return result
     }
+    
 }

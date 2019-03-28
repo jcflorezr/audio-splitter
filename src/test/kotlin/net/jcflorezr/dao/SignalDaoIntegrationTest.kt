@@ -8,9 +8,10 @@ import kotlinx.coroutines.runBlocking
 import net.jcflorezr.config.TestSignalDaoConfig
 import net.jcflorezr.config.TestSignalRmsDaoConfig
 import net.jcflorezr.model.AudioPartEntity
-import net.jcflorezr.model.AudioSignalKt
+import net.jcflorezr.model.AudioSignal
 import net.jcflorezr.model.AudioSignalRmsEntity
 import net.jcflorezr.model.AudioSignalRmsInfo
+import net.jcflorezr.util.PropsUtils
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Assert.assertNotNull
@@ -26,8 +27,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner
 import java.io.File
 import org.hamcrest.CoreMatchers.`is` as Is
 
-// TODO: trigger the rebuild project command to check the remaining warnings
-
 @ActiveProfiles("test")
 @RunWith(SpringJUnit4ClassRunner::class)
 @ContextConfiguration(classes = [TestSignalDaoConfig::class])
@@ -42,34 +41,38 @@ class AudioSignalDaoIntegrationTest {
     companion object {
         @JvmField
         @ClassRule
-        val redisInitializer = RedisInitializer()
+        val redisInitializer = TestRedisInitializer()
         @JvmField
         @ClassRule
-        val cassandraInitializer = CassandraInitializer()
+        val cassandraInitializer = TestCassandraInitializer()
         private val MAPPER = ObjectMapper().registerKotlinModule()
         private const val AUDIO_PART_TABLE = "AUDIO_PART"
     }
 
     @Test
-    fun storePartForAudioWithBackgroundNoiseAndLowVoiceVolume() {
-        storePart(sourceFilesFolderPath = "$testSignalResourcesPath/strong-background-noise/")
+    fun persistPartForAudioWithBackgroundNoiseAndLowVoiceVolume() {
+        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("strong-background-noise"))
+        persistPart(sourceFilesFolderPath = "$testSignalResourcesPath/strong-background-noise/")
     }
 
     @Test
-    fun storePartForAudioWithStrongBackgroundNoise() {
-        storePart(sourceFilesFolderPath = "$testSignalResourcesPath/background-noise-low-volume/")
+    fun persistPartForAudioWithStrongBackgroundNoise() {
+        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("background-noise-low-volume"))
+        persistPart(sourceFilesFolderPath = "$testSignalResourcesPath/background-noise-low-volume/")
     }
 
     @Test
-    fun storePartForAudioWithApplause() {
-        storePart(sourceFilesFolderPath = "$testSignalResourcesPath/with-applause/")
+    fun persistPartForAudioWithApplause() {
+        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("with-applause"))
+        persistPart(sourceFilesFolderPath = "$testSignalResourcesPath/with-applause/")
     }
 
-    private fun storePart(sourceFilesFolderPath: String) {
+    private fun persistPart(sourceFilesFolderPath: String) {
         cassandraInitializer.createTable(AUDIO_PART_TABLE, AudioPartEntity::class.java)
         val audioSignalList = File(sourceFilesFolderPath).listFiles()
             .filter { it.extension == "json" }
-            .map { signalJsonFile -> MAPPER.readValue<AudioSignalKt>(signalJsonFile) }
+            .map { signalJsonFile -> MAPPER.readValue<AudioSignal>(signalJsonFile) }
+        val actualAudioSignalList = ArrayList<AudioPartEntity>()
         audioSignalList.forEach {
             val storedPart = audioSignalDao.persistAudioSignalPart(audioSignal = it)
             val actualPart = audioSignalDao.retrieveAudioSignalPart(audioFileName = storedPart.audioFileName, index = storedPart.index)
@@ -77,29 +80,34 @@ class AudioSignalDaoIntegrationTest {
             val actualBytes = ByteArray(actualPart?.content?.remaining() ?: 0)
             actualPart?.content?.get(actualBytes)
             assertThat(actualBytes, Is(equalTo(it.dataInBytes)))
+            actualAudioSignalList.add(actualPart!!)
         }
+        assertThat(audioSignalList.size, Is(equalTo(actualAudioSignalList.size)))
         cassandraInitializer.dropTable(AUDIO_PART_TABLE)
     }
 
     @Test
     fun storeSignalPartsForAudioWithBackgroundNoiseAndLowVoiceVolume() {
+        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("background-noise-low-volume"))
         storeSignalParts(sourceFilesFolderPath = "$testSignalResourcesPath/background-noise-low-volume/")
     }
 
     @Test
     fun storeSignalPartsForAudioWithStrongBackgroundNoise() {
+        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("strong-background-noise"))
         storeSignalParts(sourceFilesFolderPath = "$testSignalResourcesPath/strong-background-noise/")
     }
 
     @Test
     fun storeSignalPartsForAudioWithApplause() {
+        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("with-applause"))
         storeSignalParts(sourceFilesFolderPath = "$testSignalResourcesPath/with-applause/")
     }
 
     private fun storeSignalParts(sourceFilesFolderPath: String) {
         val audioSignalList = File(sourceFilesFolderPath).listFiles()
             .filter { it.extension == "json" }
-            .map { signalJsonFile -> MAPPER.readValue<AudioSignalKt>(signalJsonFile) }
+            .map { signalJsonFile -> MAPPER.readValue<AudioSignal>(signalJsonFile) }
         audioSignalList.forEach {
             assertTrue(audioSignalDao.storeAudioSignal(audioSignal = it))
         }
@@ -133,10 +141,10 @@ class AudioSignalRmsDaoIntegrationTest {
     companion object {
         @JvmField
         @ClassRule
-        val redisInitializer = RedisInitializer()
+        val redisInitializer = TestRedisInitializer()
         @JvmField
         @ClassRule
-        val cassandraInitializer = CassandraInitializer()
+        val cassandraInitializer = TestCassandraInitializer()
         private val MAPPER = ObjectMapper().registerKotlinModule()
         private const val AUDIO_SIGNAL_RMS_TABLE = "AUDIO_SIGNAL_RMS"
     }
@@ -147,6 +155,7 @@ class AudioSignalRmsDaoIntegrationTest {
 
     @Test
     fun storeSignalRmsForAudioWithBackgroundNoiseAndLowVoiceVolume() {
+        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("background-noise-low-volume"))
         storeSignalRms(
             sourceFilePath = "$testSignalRmsResourcesPath/background-noise-low-volume/background-noise-low-volume.json",
             minIndex = 0.0,
@@ -156,6 +165,7 @@ class AudioSignalRmsDaoIntegrationTest {
 
     @Test
     fun storeSignalRmsForAudioWithStrongBackgroundNoise() {
+        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("strong-background-noise"))
         storeSignalRms(
             sourceFilePath = "$testSignalRmsResourcesPath/strong-background-noise/strong-background-noise.json",
             minIndex = 0.0,
@@ -165,6 +175,7 @@ class AudioSignalRmsDaoIntegrationTest {
 
     @Test
     fun storeSignalRmsForAudioWithApplause() {
+        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("with-applause"))
         storeSignalRms(
             sourceFilePath = "$testSignalRmsResourcesPath/with-applause/with-applause.json",
             minIndex = 0.0,

@@ -1,10 +1,9 @@
 package net.jcflorezr.entrypoint
 
-import kotlinx.coroutines.runBlocking
 import net.jcflorezr.config.TestRootConfig
+import net.jcflorezr.exception.SourceAudioFileValidationException
 import net.jcflorezr.model.InitialConfiguration
 import org.apache.commons.io.FilenameUtils
-import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -12,6 +11,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner
 import java.io.File
+
 
 @ActiveProfiles("test")
 @RunWith(SpringJUnit4ClassRunner::class)
@@ -23,7 +23,7 @@ class AudioSplitterImplTest {
     private val thisClass: Class<AudioSplitterImplTest> = this.javaClass
 
     init {
-        testResourcesPath = thisClass.getResource("/entrypoint/").path
+        testResourcesPath = thisClass.getResource("/entrypoint").path
         tempConvertedFilesPath = thisClass.getResource("/temp-converted-files").path
     }
 
@@ -31,18 +31,54 @@ class AudioSplitterImplTest {
     private lateinit var audioSplitter: AudioSplitter
 
     @Test
-    fun generateAudioClips() = runBlocking<Unit> {
+    fun generateAudioClips() {
+        val audioFileLocation = testResourcesPath
+        val audioFileName = "test-audio-mono-22050.mp3"
+        val convertedAudioFileName = FilenameUtils.getBaseName(audioFileName) + ".wav"
+        try {
+            audioSplitter.splitAudioIntoClips(
+                configuration = InitialConfiguration(
+                    audioFileLocation = "$audioFileLocation/$audioFileName",
+                    outputDirectory = audioFileLocation
+                )
+            )
+        } finally {
+            File("$tempConvertedFilesPath/$convertedAudioFileName").delete()
+        }
+    }
+
+    @Test(expected = SourceAudioFileValidationException::class)
+    fun shouldThrowMandatoryFieldsMissingException() {
+        val audioFileLocation = testResourcesPath
+            audioSplitter.splitAudioIntoClips(
+                configuration = InitialConfiguration(
+                    audioFileLocation = "",
+                    outputDirectory = audioFileLocation
+                )
+            )
+    }
+
+    @Test(expected = SourceAudioFileValidationException::class)
+    fun shouldThrowAudioFileDoesNotExistException() {
+        val audioFileLocation = testResourcesPath
+        audioSplitter.splitAudioIntoClips(
+            configuration = InitialConfiguration(
+                audioFileLocation = "$audioFileLocation/",
+                outputDirectory = audioFileLocation
+            )
+        )
+    }
+
+    @Test(expected = SourceAudioFileValidationException::class)
+    fun shouldThrowInvalidOutputDirectoryException() {
         val audioFileLocation = testResourcesPath
         val audioFileName = "test-audio-mono-22050.mp3"
         audioSplitter.splitAudioIntoClips(
             configuration = InitialConfiguration(
-                audioFileLocation = audioFileLocation + audioFileName
+                audioFileLocation = "$audioFileLocation/$audioFileName",
+                outputDirectory = "any-directory"
             )
         )
-        val convertedAudioFileName = FilenameUtils.getBaseName(audioFileName) + ".wav"
-        File("$tempConvertedFilesPath/$convertedAudioFileName").delete()
     }
-
-    // TODO: cover the failures asserting the Error Objects
 
 }

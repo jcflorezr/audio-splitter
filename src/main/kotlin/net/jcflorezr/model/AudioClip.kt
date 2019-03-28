@@ -61,21 +61,22 @@ data class AudioClipInfoEntity(
 data class GroupedAudioClipInfoEntity(
     @PrimaryKeyColumn(name = "audio_file_name", ordinal = 0, type = PrimaryKeyType.PARTITIONED)
     val audioFileName: String,
-    @PrimaryKeyColumn(name = "group_number", ordinal = 1, type = PrimaryKeyType.CLUSTERED)
-    val groupNumber: Int,
-    @Column("first_clip_hours") val firstClipHours: Int,
-    @Column("first_clip_minutes") val firstClipMinutes: Int,
-    @Column("first_clip_seconds") val firstClipSeconds: Int,
-    @Column("first_clip_tenths") val firstClipTenthsOfSecond: Int,
+    @PrimaryKeyColumn(name = "first_clip_hours", ordinal = 1, type = PrimaryKeyType.CLUSTERED)
+    val firstClipHours: Int,
+    @PrimaryKeyColumn(name = "first_clip_minutes", ordinal = 2, type = PrimaryKeyType.CLUSTERED)
+    val firstClipMinutes: Int,
+    @PrimaryKeyColumn(name = "first_clip_seconds", ordinal = 3, type = PrimaryKeyType.CLUSTERED)
+    val firstClipSeconds: Int,
+    @PrimaryKeyColumn(name = "first_clip_tenths", ordinal = 4, type = PrimaryKeyType.CLUSTERED)
+    val firstClipTenthsOfSecond: Int,
     @Column("last_clip_hours") val lastClipHours: Int,
     @Column("last_clip_minutes") val lastClipMinutes: Int,
     @Column("last_clip_seconds") val lastClipSeconds: Int,
     @Column("last_clip_tenths") val lastClipTenthsOfSecond: Int
 ) {
-    constructor(groupNumber: Int, firstAudioClipInfo: AudioClipInfo, lastAudioClipInfo: AudioClipInfo) :
+    constructor(firstAudioClipInfo: AudioClipInfo, lastAudioClipInfo: AudioClipInfo) :
         this (
             audioFileName = firstAudioClipInfo.audioFileName,
-            groupNumber = groupNumber,
             firstClipHours = firstAudioClipInfo.hours,
             firstClipMinutes = firstAudioClipInfo.minutes,
             firstClipSeconds = firstAudioClipInfo.seconds,

@@ -31,7 +31,7 @@ internal class AudioBytesPacker(
         val audioInfo = AudioSourceInfo.getAudioInfo(format, signal)
         frameSize = audioInfo.frameSize
         sampleSize = audioInfo.sampleSize
-        sampleSizeBits = audioInfo.sampleSizeBits
+        sampleSizeBits = audioInfo.sampleSizeInBits
         channels = audioInfo.channels
         bigEndian = audioInfo.bigEndian
         encoding = audioInfo.encoding

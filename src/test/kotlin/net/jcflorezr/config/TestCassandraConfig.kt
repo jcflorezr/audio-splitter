@@ -1,6 +1,6 @@
 package net.jcflorezr.config
 
-import net.jcflorezr.dao.CassandraInitializer
+import net.jcflorezr.dao.TestCassandraInitializer
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -30,10 +30,10 @@ class TestCassandraConfig : AbstractCassandraConfiguration() {
     @Profile("test")
     @Bean
     override fun cluster(): CassandraClusterFactoryBean {
-        val cassandraDockerContainer = CassandraInitializer.cassandraDockerContainer
+        val cassandraDockerContainer = TestCassandraInitializer.cassandraDockerContainer
         val cluster = CassandraClusterFactoryBean()
         cluster.setContactPoints(cassandraDockerContainer.containerIpAddress)
-        cluster.setPort(cassandraDockerContainer.getMappedPort(CassandraInitializer.cassandraPort))
+        cluster.setPort(cassandraDockerContainer.getMappedPort(TestCassandraInitializer.cassandraPort))
         cluster.afterPropertiesSet()
         return cluster
     }

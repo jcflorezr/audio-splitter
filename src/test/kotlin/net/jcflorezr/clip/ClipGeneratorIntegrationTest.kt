@@ -6,9 +6,10 @@ import kotlinx.coroutines.runBlocking
 import net.jcflorezr.broker.AudioClipSignalSubscriberMock
 import net.jcflorezr.config.TestClipsGeneratorConfig
 import net.jcflorezr.dao.AudioSignalDao
-import net.jcflorezr.dao.RedisInitializer
+import net.jcflorezr.dao.TestRedisInitializer
 import net.jcflorezr.model.AudioClipInfo
-import net.jcflorezr.model.AudioSignalKt
+import net.jcflorezr.model.AudioSignal
+import net.jcflorezr.util.PropsUtils
 import org.junit.ClassRule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -36,7 +37,7 @@ class ClipGeneratorIntegrationTest {
     companion object {
         @JvmField
         @ClassRule
-        val redisInitializer = RedisInitializer()
+        val redisInitializer = TestRedisInitializer()
         private val MAPPER = ObjectMapper().registerKotlinModule()
     }
 
@@ -51,6 +52,7 @@ class ClipGeneratorIntegrationTest {
 
     @Test
     fun generateAudioClipsForFileWithBackgroundNoiseAndLowVoiceVolume() = runBlocking {
+        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("background-noise-low-volume"))
         generateAudioClips(
             signalsFolderPath = signalResourcesPath + "background-noise-low-volume/",
             clipsPath = clipsResourcesPath + "background-noise-low-volume/background-noise-low-volume.json"
@@ -61,6 +63,7 @@ class ClipGeneratorIntegrationTest {
 
     @Test
     fun generateAudioClipsInfoForFileWithApplause() = runBlocking {
+        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("with-applause"))
         generateAudioClips(
             signalsFolderPath = signalResourcesPath + "with-applause/",
             clipsPath = clipsResourcesPath + "with-applause/with-applause.json"
@@ -71,6 +74,7 @@ class ClipGeneratorIntegrationTest {
 
     @Test
     fun generateAudioClipsInfoForFileWithStrongBackgroundNoise() = runBlocking {
+        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("strong-background-noise"))
         generateAudioClips(
             signalsFolderPath = signalResourcesPath + "strong-background-noise/",
             clipsPath = clipsResourcesPath + "strong-background-noise/strong-background-noise.json"
@@ -81,6 +85,7 @@ class ClipGeneratorIntegrationTest {
 
     @Test
     fun generateIncompleteAudioClipsForFileWithBackgroundNoiseAndLowVoiceVolume() = runBlocking {
+        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("background-noise-low-volume-incomplete"))
         generateAudioClips(
             signalsFolderPath = signalResourcesPath + "background-noise-low-volume-incomplete/",
             clipsPath = clipsResourcesPath + "background-noise-low-volume-incomplete/background-noise-low-volume-incomplete.json"
@@ -93,7 +98,7 @@ class ClipGeneratorIntegrationTest {
         File(signalsFolderPath).listFiles()
         .filter { it.extension == "json" }
         .forEach { signalFile ->
-            val audioSignal = MAPPER.readValue(signalFile, AudioSignalKt::class.java)
+            val audioSignal = MAPPER.readValue(signalFile, AudioSignal::class.java)
             audioSignalDao.storeAudioSignal(audioSignal)
         }
         val clipInfoListType = MAPPER.typeFactory.constructCollectionType(List::class.java, AudioClipInfo::class.java)

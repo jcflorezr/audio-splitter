@@ -1,45 +1,53 @@
 package net.jcflorezr.dao
 
 import com.datastax.driver.core.querybuilder.QueryBuilder
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
+import mu.KotlinLogging
 import net.jcflorezr.model.AudioPartEntity
-import net.jcflorezr.model.AudioSignalKt
+import net.jcflorezr.model.AudioSignal
 import net.jcflorezr.model.AudioSignalRmsEntity
 import net.jcflorezr.model.AudioSignalRmsInfo
 import net.jcflorezr.util.AudioUtils.tenthsSecondsFormat
+import net.jcflorezr.util.PropsUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.cassandra.core.CassandraOperations
 import org.springframework.data.cassandra.core.selectOne
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Repository
 
+@Repository
 interface AudioSignalDao {
-    fun storeAudioSignal(audioSignal: AudioSignalKt) : Boolean
-    fun persistAudioSignalPart(audioSignal: AudioSignalKt) : AudioPartEntity
+    fun storeAudioSignal(audioSignal: AudioSignal) : Boolean
+    fun persistAudioSignalPart(audioSignal: AudioSignal) : AudioPartEntity
     fun retrieveAudioSignalPart(audioFileName: String, index: Float) : AudioPartEntity?
-    fun retrieveAudioSignalsFromRange(key: String, min: Double, max: Double) : List<AudioSignalKt>
-    fun retrieveAllAudioSignals(key: String) : List<AudioSignalKt>
-    fun removeAudioSignalsFromRange(key: String, min: Double, max: Double) : Long
+    fun retrieveAudioSignalsFromRange(key: String, min: Double, max: Double) : List<AudioSignal>
+    fun retrieveAllAudioSignals(key: String) : List<AudioSignal>
+    suspend fun removeAudioSignalsFromRange(key: String, min: Double, max: Double) : Long
 }
 
-@Repository
 class AudioSignalDaoImpl : AudioSignalDao {
 
     @Autowired
-    private lateinit var audioSignalTemplate: RedisTemplate<String, AudioSignalKt>
+    private lateinit var audioSignalTemplate: RedisTemplate<String, AudioSignal>
     @Autowired
     private lateinit var cassandraTemplate: CassandraOperations
 
-    override fun storeAudioSignal(
-        audioSignal: AudioSignalKt
-    ) = audioSignalTemplate
-        .boundZSetOps("${audioSignal.entityName}_${audioSignal.audioFileName}")
-        .add(audioSignal, audioSignal.index.toDouble())!!
+    private val logger = KotlinLogging.logger { }
 
-    override fun persistAudioSignalPart(
-        audioSignal: AudioSignalKt
-    ) = cassandraTemplate.insert(AudioPartEntity(audioSignal = audioSignal))
+    override fun storeAudioSignal(
+        audioSignal: AudioSignal
+    ): Boolean {
+        logger.info { "[${PropsUtils.getTransactionId(audioSignal.audioFileName)}][2][audio-signal] " +
+            "Storing audio signal with index: ${audioSignal.index} for caching." }
+        return audioSignalTemplate
+            .boundZSetOps("${audioSignal.entityName}_${audioSignal.audioFileName}")
+            .add(audioSignal, audioSignal.index.toDouble())!!
+    }
+
+    override fun persistAudioSignalPart(audioSignal: AudioSignal): AudioPartEntity {
+        logger.info { "[${PropsUtils.getTransactionId(audioSignal.audioFileName)}][2][audio-signal] " +
+            "Persisting audio signal part with index from ${audioSignal.initialPositionInSeconds} - to: ${audioSignal.endPositionInSeconds}." }
+        return cassandraTemplate.insert(AudioPartEntity(audioSignal = audioSignal))
+    }
 
     override fun retrieveAudioSignalPart(audioFileName: String, index: Float): AudioPartEntity? {
         val query = QueryBuilder
@@ -64,13 +72,17 @@ class AudioSignalDaoImpl : AudioSignalDao {
         .boundZSetOps(key)
         .range(0, -1)?.toList() ?: ArrayList()
 
-    override fun removeAudioSignalsFromRange(
+    override suspend fun removeAudioSignalsFromRange(
         key: String,
         min: Double,
         max: Double
-    ) = audioSignalTemplate
-        .boundZSetOps(key)
-        .removeRangeByScore(tenthsSecondsFormat(min), tenthsSecondsFormat(max)) ?: 0L
+    ): Long {
+        val transactionId = PropsUtils.getTransactionId(sourceAudioFileName = key.substringAfter("_"))
+        logger.info { "[$transactionId][5][clip-info] Removing audio signals previously cached. From: $min - to: $max" }
+        return audioSignalTemplate
+            .boundZSetOps(key)
+            .removeRangeByScore(tenthsSecondsFormat(min), tenthsSecondsFormat(max)) ?: 0L
+    }
 
 }
 
@@ -80,7 +92,7 @@ interface AudioSignalRmsDao {
     fun retrieveAudioSignalsRmsFromRange(key: String, min: Double, max: Double): List<AudioSignalRmsInfo>
     fun removeAudioSignalsRmsFromRange(key: String, min: Double, max: Double): Long
     fun retrieveAllAudioSignalsRmsPersisted(audioFileName: String): List<AudioSignalRmsEntity>
-    fun persistAudioSignalsRms(audioSignalsRms: List<AudioSignalRmsInfo>)
+    suspend fun persistAudioSignalsRms(audioSignalsRms: List<AudioSignalRmsInfo>)
 }
 
 @Repository
@@ -91,11 +103,16 @@ class AudioSignalRmsDaoImpl : AudioSignalRmsDao {
     @Autowired
     private lateinit var cassandraTemplate: CassandraOperations
 
-    override suspend fun storeAudioSignalsRms(
-        audioSignalsRms: List<AudioSignalRmsInfo>
-    ) = coroutineScope {
-        launch { persistAudioSignalsRms(audioSignalsRms) }
-        audioSignalsRms.forEach { storeAudioSignalRms(audioSignalRms = it) }
+    private val logger = KotlinLogging.logger { }
+
+    override suspend fun storeAudioSignalsRms(audioSignalsRms: List<AudioSignalRmsInfo>) {
+        val transactionId = PropsUtils.getTransactionId(audioSignalsRms.first().audioFileName)
+        audioSignalsRms.forEach {
+            logger.info { "[$transactionId][3][RMS] " +
+                "Storing Root Mean Square (RMS) of audio signal with index: ${it.index} for caching." }
+            storeAudioSignalRms(audioSignalRms = it)
+        }
+        persistAudioSignalsRms(audioSignalsRms)
     }
 
     private suspend fun storeAudioSignalRms(
@@ -104,9 +121,13 @@ class AudioSignalRmsDaoImpl : AudioSignalRmsDao {
         .boundZSetOps("${audioSignalRms.entityName}_${audioSignalRms.audioFileName}")
         .add(audioSignalRms, audioSignalRms.index)!!
 
-    override fun persistAudioSignalsRms(
-        audioSignalsRms: List<AudioSignalRmsInfo>
-    ) = audioSignalsRms.forEach { persistAudioSignalRms(audioSignalRms = it) }
+    override suspend fun persistAudioSignalsRms(audioSignalsRms: List<AudioSignalRmsInfo>) {
+        val transactionId = PropsUtils.getTransactionId(audioSignalsRms.first().audioFileName)
+        audioSignalsRms.forEach {
+            logger.info { "[$transactionId][3][RMS] Persisting Root Mean Square (RMS) of audio signal with index: ${it.index}." }
+            persistAudioSignalRms(audioSignalRms = it)
+        }
+    }
 
     private fun persistAudioSignalRms(audioSignalRms: AudioSignalRmsInfo) {
         cassandraTemplate.insert(AudioSignalRmsEntity(audioSignalRms = audioSignalRms))
@@ -141,8 +162,12 @@ class AudioSignalRmsDaoImpl : AudioSignalRmsDao {
         key: String,
         min: Double,
         max: Double
-    ) = audioSignalRmsTemplate
-        .boundZSetOps(key)
-        .removeRangeByScore(tenthsSecondsFormat(min), tenthsSecondsFormat(max)) ?: 0L
+    ) : Long {
+        val transactionId = PropsUtils.getTransactionId(sourceAudioFileName = key.substringAfter("_"))
+        logger.info { "[$transactionId][4][sound-zones] Remove set of Root Mean Squares (RMS) from: $min - to: $max." }
+        return audioSignalRmsTemplate
+            .boundZSetOps(key)
+            .removeRangeByScore(tenthsSecondsFormat(min), tenthsSecondsFormat(max)) ?: 0L
+    }
 
 }
