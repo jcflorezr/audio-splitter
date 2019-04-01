@@ -27,7 +27,7 @@ data class DetectSoundZones(
 ) : SoundDetectorAction()
 
 interface SoundZonesDetectorActor {
-    fun getActorForDetectingSoundZones() : SendChannel<SoundDetectorAction>
+    fun getActorForDetectingSoundZones(): SendChannel<SoundDetectorAction>
 }
 
 @Service
@@ -97,20 +97,18 @@ class SoundZonesDetectorActorImpl : SoundZonesDetectorActor {
     }
 
     private fun List<AudioSignalRmsInfo>.whereToContinueIndex(whereToContinue: Int) =
-        takeIf { isNotEmpty() }?.let{ binarySearchBy(whereToContinue) { it.initialPosition } } ?: -1
+        takeIf { isNotEmpty() }?.let { binarySearchBy(whereToContinue) { it.initialPosition } } ?: -1
 
     private fun List<AudioSignalRmsInfo>.logActorReadiness(transactionId: String, readyToWork: Boolean, whereToContinueIndex: Int) {
         logger.info { "[$transactionId][4][sound-zones] Is Sound Zones Detector ready to start working? $readyToWork " }
         readyToWork.takeIf { !it }
         ?.let {
             val isNotEmpty = isNotEmpty()
-            val isNotLastSegment = takeIf { isNotEmpty() }?.let{ !first().isLastSegment() } ?: false
-            val whereToContinue = takeIf { isNotEmpty() }?.let{ "whereToContinue: list[$whereToContinueIndex]" } ?: ""
+            val isNotLastSegment = takeIf { isNotEmpty() }?.let { !first().isLastSegment() } ?: false
+            val whereToContinue = takeIf { isNotEmpty() }?.let { "whereToContinue: list[$whereToContinueIndex]" } ?: ""
             logger.info { "[$transactionId][4][sound-zones] isNotEmpty: $isNotEmpty - isNotLastSegment: $isNotLastSegment - whereToContinue: $whereToContinue" }
         }
-
     }
-
 }
 
 /**
@@ -277,8 +275,8 @@ class SoundZonesDetector {
     private fun soundZoneShouldBeDetectedByActiveSegments() = activeCounter >= MAX_ACTIVE_COUNTER
 
     private suspend fun AudioSignalRmsInfo.prepareToDetectSoundZoneByActiveSegments(audioRmsInfoList: List<AudioSignalRmsInfo>) {
-        val from = audioRmsInfoList.binarySearchBy(startActiveZonePosition) {it.initialPosition}.takeIf { it > 0 } ?: 0
-        val to = audioRmsInfoList.binarySearchBy(initialPosition) {it.initialPosition}.takeIf { it > from } ?: audioRmsInfoList.size
+        val from = audioRmsInfoList.binarySearchBy(startActiveZonePosition) { it.initialPosition }.takeIf { it > 0 } ?: 0
+        val to = audioRmsInfoList.binarySearchBy(initialPosition) { it.initialPosition }.takeIf { it > from } ?: audioRmsInfoList.size
         silenceCounter = 0
         activeCounter = 0
         startActiveZonePosition = 0
@@ -530,6 +528,4 @@ class SoundZonesDetector {
         rmsListInCurrentZone.isEmpty() ||
         second != detectionMethod ||
         third != rmsOperation
-
 }
-

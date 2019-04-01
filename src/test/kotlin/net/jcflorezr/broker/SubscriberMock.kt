@@ -55,7 +55,6 @@ final class SourceFileSubscriberMock : Subscriber<InitialConfiguration> {
         assertThat(FilenameUtils.getName(message.convertedAudioFileLocation), Is(equalTo(expectedConfiguration.convertedAudioFileLocation)))
         assertThat(message.audioFileMetadata.toString(), Is(equalTo(expectedConfiguration.audioFileMetadata.toString())))
     }
-
 }
 
 @Service
@@ -94,7 +93,6 @@ final class SignalSubscriberMock : Subscriber<AudioSignal> {
         assertThat("Current and expected rms parts are not equal \n " +
             "Current: $message \n Expected: $signalPart", message, Is(equalTo(signalPart)))
     }
-
 }
 
 @Service
@@ -139,7 +137,6 @@ final class SignalRmsSubscriberMock : Subscriber<AudioSignalsRmsInfo> {
         assertTrue("There were ${audioSignalRmsList.size} signals rms that were not tested -----> $audioSignalRmsList",
             audioSignalRmsList.isEmpty())
     }
-
 }
 
 @Service
@@ -209,7 +206,6 @@ final class AudioClipInfoSubscriberMock : Subscriber<AudioClipInfo> {
         val errorMessage = "There were ${expectedNumOfClips - actualNumOfClips} num of clips that were not tested. \n"
         return errorMessage + expectedClipInfoList.filter { !actualClipInfoList.contains(it) }.map { "$it \n" }
     }
-
 }
 
 @Service
@@ -289,5 +285,4 @@ final class AudioClipSignalSubscriberMock : Subscriber<AudioClipSignal> {
         val errorMessage = "There were ${expectedNumOfClips - actualNumOfClips} num of clips that were not tested. \n"
         return errorMessage + expectedAudioClipSignalList.filter { !actualClipSignalList.contains(it) }.map { "$it \n" }
     }
-
 }

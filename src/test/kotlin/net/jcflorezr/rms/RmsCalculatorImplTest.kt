@@ -18,7 +18,6 @@ import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner
 import java.io.File
 
-
 @ActiveProfiles("test")
 @RunWith(SpringJUnit4ClassRunner::class)
 @ContextConfiguration(classes = [TestRootConfig::class])
@@ -71,5 +70,4 @@ class RmsCalculatorImplTest {
             .map { signalJsonFile -> MAPPER.readValue<AudioSignal>(signalJsonFile) }
             .forEach { rmsCalculator.generateRmsInfo(audioSignal = it) }
     }
-
 }

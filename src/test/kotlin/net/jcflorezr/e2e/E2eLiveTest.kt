@@ -134,13 +134,11 @@ class E2eLiveTest {
                 testGroupedAudioClipsInfo(audioFileName, transactionId)
                 testAudioClipsFiles(audioFileName, transactionId)
                 testRedisWasFullyEmptied(audioFileName, transactionId)
-
             } finally {
                 val transactionId = PropsUtils.getTransactionId(sourceAudioFileName = audioFileName)
                 File("$tempConvertedFilesPath/$transactionId").deleteRecursively()
             }
         }
-
     }
 
     private fun testAudioSource(audioFileName: String, transactionId: String) {
@@ -194,7 +192,6 @@ class E2eLiveTest {
             logger.info { "[$transactionId][TEST] testing audio rms ==> index: ${expectedSignalRms.index}" }
             assertTrue("signalRms ----> $expectedSignalRms was not found", actualSignalRmsList.contains(expectedSignalRms))
         }
-
     }
 
     private fun testAudioClipsInfo(audioFileName: String, transactionId: String) {
@@ -260,5 +257,4 @@ class E2eLiveTest {
         assertTrue("There were ${audioClipInfoList.size} audio clips info that were not removed from database ----> $audioClipInfoList",
             audioClipInfoList.isEmpty())
     }
-
 }

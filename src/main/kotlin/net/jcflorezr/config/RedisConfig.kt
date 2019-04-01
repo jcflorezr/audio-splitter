@@ -98,7 +98,6 @@ class RedisConfig {
     @Bean fun audioSignalRmsDao(): AudioSignalRmsDao = AudioSignalRmsDaoImpl()
 
     @Bean fun audioClipDao(): AudioClipDao = AudioClipDaoImpl()
-
 }
 
 /**
@@ -132,5 +131,4 @@ class Jackson2JsonRedisSerializerKotlin<T>(
             throw SerializationException("Could not write JSON: " + ex.message, ex)
         }
     }
-
 }

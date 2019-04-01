@@ -16,7 +16,7 @@ final class ExceptionHandlerImpl : ExceptionHandler {
         val transactionId = PropsUtils.getTransactionId(sourceAudioFileBaseName)
         println("AN ERROR OCCURRED. Transaction id: $transactionId")
         when (exception) {
-            is AudioSplitterException  -> exception
+            is AudioSplitterException -> exception
             is Error -> throw exception
             else -> InternalServerErrorException(errorCode = "outer_error", ex = (exception.cause ?: exception) as Exception)
         }.apply {
@@ -29,5 +29,4 @@ final class ExceptionHandlerImpl : ExceptionHandler {
             }
         }
     }
-
 }

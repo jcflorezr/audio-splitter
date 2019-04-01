@@ -1,4 +1,4 @@
-package net.jcflorezr.exception;
+package net.jcflorezr.exception
 
 import net.jcflorezr.model.AudioClipInfo
 import net.jcflorezr.model.AudioSignal
@@ -40,7 +40,6 @@ class SourceAudioFileValidationException(
             suggestion = "Please wait until you get notified that the current audio split process " +
                 "has finished and then send the audio file again"
         )
-
     }
 }
 
@@ -55,7 +54,6 @@ class SignalException(message: String) : RuntimeException(message) {
                         "Signal part details ----> $audioSignal"
                 )
             )
-
     }
 }
 
@@ -87,7 +85,6 @@ class AudioClipException(message: String) : RuntimeException(message) {
                     message = "No audio signals were found in database to start creating the audio clip: $audioClipInfo"
                 )
             )
-
     }
 }
 
@@ -101,6 +98,5 @@ class ActorException(message: String) : RuntimeException(message) {
                     message = "Operation $actorOperationClass is not supported by $actorClass."
                 )
             )
-
     }
 }

@@ -1,7 +1,6 @@
 package net.jcflorezr.entrypoint
 
 import javazoom.jl.decoder.JavaLayerException
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
@@ -74,19 +73,19 @@ final class AudioSplitterImpl : AudioSplitter {
         return sourceAudioFile
     }
 
-    private fun File.convertFileToWavIfNeeded() : File? {
-        logger.info { "[1][entry-point] Checking if source audio file ($name) must be converted to ${AudioFormats.WAV}"}
+    private fun File.convertFileToWavIfNeeded(): File? {
+        logger.info { "[1][entry-point] Checking if source audio file ($name) must be converted to ${AudioFormats.WAV}" }
         val audioFileName = nameWithoutExtension
         val audioFileLocation = absolutePath
         val audioFormat = AudioFormats.getExtension(tikaAudioParser.detect(audioFileLocation))
-        return when(audioFormat) {
+        return when (audioFormat) {
             AudioFormats.WAV, AudioFormats.WAVE -> null
             else -> convertAudioFile(audioFileName, audioFileLocation)
         }
     }
 
     private fun convertAudioFile(audioFileName: String, audioFileLocation: String): File {
-        logger.info { "[1][entry-point] Converting source audio file ($audioFileName) to ${AudioFormats.WAV}"}
+        logger.info { "[1][entry-point] Converting source audio file ($audioFileName) to ${AudioFormats.WAV}" }
         try {
             val tempConvertedAudioFile = "$tempConvertedFilesPath/$audioFileName${AudioFormats.WAV.extension}"
             javaZoomAudioConverter.convert(audioFileLocation, tempConvertedAudioFile)
@@ -110,5 +109,4 @@ final class AudioSplitterImpl : AudioSplitter {
                 }
         }
     }
-
 }

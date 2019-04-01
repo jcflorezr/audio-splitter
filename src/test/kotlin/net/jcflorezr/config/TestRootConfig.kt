@@ -60,5 +60,4 @@ class TestRootConfig {
     @Profile("test") @Bean fun signalRmsSubscriberTest(): Subscriber<AudioSignalsRmsInfo> = SignalRmsSubscriberMock()
 
     @Profile("test") @Bean fun audioClipSubscriberTest(): Subscriber<AudioClipInfo> = AudioClipInfoSubscriberMock()
-
 }

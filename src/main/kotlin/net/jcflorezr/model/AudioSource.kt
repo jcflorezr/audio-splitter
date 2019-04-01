@@ -56,7 +56,6 @@ data class AudioSourceInfo constructor(
             }
             return AudioSourceInfo(channels, sampleRate, sampleBits, frameSize, sampleSize, bigEndian, encoding)
         }
-
     }
 }
 

@@ -16,12 +16,12 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface AudioSignalDao {
-    fun storeAudioSignal(audioSignal: AudioSignal) : Boolean
-    fun persistAudioSignalPart(audioSignal: AudioSignal) : AudioPartEntity
-    fun retrieveAudioSignalPart(audioFileName: String, index: Float) : AudioPartEntity?
-    fun retrieveAudioSignalsFromRange(key: String, min: Double, max: Double) : List<AudioSignal>
-    fun retrieveAllAudioSignals(key: String) : List<AudioSignal>
-    suspend fun removeAudioSignalsFromRange(key: String, min: Double, max: Double) : Long
+    fun storeAudioSignal(audioSignal: AudioSignal): Boolean
+    fun persistAudioSignalPart(audioSignal: AudioSignal): AudioPartEntity
+    fun retrieveAudioSignalPart(audioFileName: String, index: Float): AudioPartEntity?
+    fun retrieveAudioSignalsFromRange(key: String, min: Double, max: Double): List<AudioSignal>
+    fun retrieveAllAudioSignals(key: String): List<AudioSignal>
+    suspend fun removeAudioSignalsFromRange(key: String, min: Double, max: Double): Long
 }
 
 class AudioSignalDaoImpl : AudioSignalDao {
@@ -83,7 +83,6 @@ class AudioSignalDaoImpl : AudioSignalDao {
             .boundZSetOps(key)
             .removeRangeByScore(tenthsSecondsFormat(min), tenthsSecondsFormat(max)) ?: 0L
     }
-
 }
 
 interface AudioSignalRmsDao {
@@ -162,12 +161,11 @@ class AudioSignalRmsDaoImpl : AudioSignalRmsDao {
         key: String,
         min: Double,
         max: Double
-    ) : Long {
+    ): Long {
         val transactionId = PropsUtils.getTransactionId(sourceAudioFileName = key.substringAfter("_"))
         logger.info { "[$transactionId][4][sound-zones] Remove set of Root Mean Squares (RMS) from: $min - to: $max." }
         return audioSignalRmsTemplate
             .boundZSetOps(key)
             .removeRangeByScore(tenthsSecondsFormat(min), tenthsSecondsFormat(max)) ?: 0L
     }
-
 }

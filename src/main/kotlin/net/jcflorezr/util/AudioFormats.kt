@@ -34,5 +34,4 @@ enum class AudioFormats(
             throw UnsupportedOperationException("The file extension '$extension' is not supported.")
         }
     }
-
 }

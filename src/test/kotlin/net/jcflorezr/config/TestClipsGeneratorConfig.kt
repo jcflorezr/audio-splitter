@@ -45,5 +45,4 @@ class TestClipsGeneratorConfig {
     @Profile("test") @Bean fun audioClipSignalTopicTest() = Topic<AudioClipSignal>()
 
     @Profile("test") @Bean fun audioClipSignalSubscriberTest(): Subscriber<AudioClipSignal> = AudioClipSignalSubscriberMock()
-
 }

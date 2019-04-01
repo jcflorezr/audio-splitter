@@ -77,5 +77,4 @@ class CassandraConfig : AbstractCassandraConfiguration() {
      */
 
     @Bean fun sourceFileDao(): SourceFileDao = SourceFileDaoImpl()
-
 }

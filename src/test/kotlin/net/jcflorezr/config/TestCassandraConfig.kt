@@ -73,5 +73,4 @@ class TestCassandraConfig : AbstractCassandraConfiguration() {
     fun cassandraAdminTemplateTest(): CassandraOperations {
         return CassandraAdminTemplate(session().getObject(), converterTest())
     }
-
 }

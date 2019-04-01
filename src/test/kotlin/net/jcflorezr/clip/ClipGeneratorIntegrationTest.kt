@@ -105,5 +105,4 @@ class ClipGeneratorIntegrationTest {
         val audioClipInfoList: List<AudioClipInfo> = MAPPER.readValue(File(clipsPath), clipInfoListType)
         clipGenerator.generateClips(audioClipsInfo = audioClipInfoList)
     }
-
 }

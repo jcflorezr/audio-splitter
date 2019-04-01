@@ -1,8 +1,5 @@
 package net.jcflorezr.rms
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import net.jcflorezr.broker.Topic
 import net.jcflorezr.model.AudioSignal
@@ -81,7 +78,6 @@ class RmsCalculatorImpl : RmsCalculator {
         }
         return Math.sqrt(a / length)
     }
-
 }
 
 private data class RmsValues(

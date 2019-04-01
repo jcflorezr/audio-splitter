@@ -148,5 +148,4 @@ class ClipDaoIntegrationTest {
         }
         cassandraInitializer.dropTable(AUDIO_CLIP_INFO_TABLE)
     }
-
 }

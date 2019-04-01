@@ -57,7 +57,6 @@ class SignalRmsSubscriberConfig {
     @Profile("test") @Bean fun audioClipTopicSubscriberTest() = Topic<AudioClipInfo>()
 
     @Profile("test") @Bean fun audioClipSubscriberMockSubscriberTest(): Subscriber<AudioClipInfo> = AudioClipInfoSubscriberMock()
-
 }
 
 @Configuration
@@ -88,5 +87,4 @@ class AudioClipSubscriberConfig {
     @Profile("test") @Bean fun audioClipSignalTopicSubscriberTest() = Topic<AudioClipSignal>()
 
     @Profile("test") @Bean fun audioClipSignalSubscriberMockTest(): Subscriber<AudioClipSignal> = AudioClipSignalSubscriberMock()
-
 }

@@ -1,6 +1,5 @@
 package net.jcflorezr.broker
 
-import kotlinx.coroutines.coroutineScope
 import mu.KotlinLogging
 import net.jcflorezr.clip.AudioClipInfoArrived
 import net.jcflorezr.clip.ClipGeneratorActor
@@ -58,7 +57,6 @@ final class SourceFileSubscriber : Subscriber<InitialConfiguration> {
             exceptionHandler.handle(exception = it, sourceAudioFileName = message.audioFileLocation)
         }
     }
-
 }
 
 @Service
@@ -97,7 +95,6 @@ final class SignalSubscriber : Subscriber<AudioSignal> {
             exceptionHandler.handle(exception = it, sourceAudioFileName = message.audioFileName)
         }
     }
-
 }
 
 @Service
@@ -129,7 +126,6 @@ final class SignalRmsSubscriber : Subscriber<AudioSignalsRmsInfo> {
             exceptionHandler.handle(exception = it, sourceAudioFileName = message.audioSignals.first().audioFileName)
         }.getOrDefault(Unit)
     }
-
 }
 
 @Service
@@ -161,7 +157,6 @@ final class AudioClipInfoSubscriber : Subscriber<AudioClipInfo> {
             exceptionHandler.handle(exception = it, sourceAudioFileName = message.audioFileName)
         }.getOrDefault(Unit)
     }
-
 }
 
 @Service
@@ -181,7 +176,7 @@ final class AudioClipSignalSubscriber : Subscriber<AudioClipSignal> {
 
     override suspend fun update(message: AudioClipSignal) {
         logger.info { "[${PropsUtils.getTransactionId(message.audioFileName)}][6][audio-clip] " +
-            "Message received with Grouped Clip Info (${message.audioClipName})."}
+            "Message received with Grouped Clip Info (${message.audioClipName})." }
         kotlin.runCatching {
             val outputDirectoryPath = PropsUtils.getDirectoryPath()
             val transactionId = PropsUtils.getTransactionId(message.audioFileName)
@@ -202,5 +197,4 @@ final class AudioClipSignalSubscriber : Subscriber<AudioClipSignal> {
 
         // TODO: call transcriber through queue?
     }
-
 }

@@ -99,5 +99,4 @@ class RootConfig {
     @Bean fun soundZonesDetectorActor(): SoundZonesDetectorActor = SoundZonesDetectorActorImpl()
 
     @Bean fun clipGeneratorActor(): ClipGeneratorActor = ClipGeneratorActorImpl()
-
 }

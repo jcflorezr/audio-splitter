@@ -38,5 +38,4 @@ class TestSoundZonesDetectorConfig {
     @Profile("test") @Bean fun audioClipTopicTest() = Topic<AudioClipInfo>()
 
     @Profile("test") @Bean fun audioClipSubscriberMockTest(): Subscriber<AudioClipInfo> = AudioClipInfoSubscriberMock()
-
 }

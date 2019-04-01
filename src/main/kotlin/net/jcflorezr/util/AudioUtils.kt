@@ -3,7 +3,6 @@ package net.jcflorezr.util
 import com.fasterxml.uuid.Generators
 import javazoom.jl.converter.Converter
 import net.jcflorezr.exception.SourceAudioFileValidationException
-import org.apache.commons.io.FilenameUtils
 import org.apache.tika.Tika
 import org.apache.tika.metadata.Metadata
 import org.apache.tika.parser.AutoDetectParser
@@ -35,7 +34,6 @@ object AudioUtils {
         tikaDetectParser.parse(inputStream, bodyContentHandler, metadata, ParseContext())
         return metadata to bodyContentHandler
     }
-
 }
 
 object PropsUtils {
@@ -66,5 +64,4 @@ object PropsUtils {
     }
 
     fun getDirectoryPath(): String = System.getProperty(outputDirectoryPropertyName)
-
 }

@@ -122,7 +122,6 @@ class AudioSignalDaoIntegrationTest {
             assertTrue(actualAudioSignalSet.contains(it))
         }
     }
-
 }
 
 @ActiveProfiles("test")
@@ -196,7 +195,7 @@ class AudioSignalRmsDaoIntegrationTest {
         )
         assertTrue(actualAudioSignalRmsSet.isNotEmpty())
         assertThat(actualAudioSignalRmsSet.size, Is(equalTo(audioSignalRmsList.size)))
-        audioSignalRmsList.forEach{
+        audioSignalRmsList.forEach {
             assertTrue(actualAudioSignalRmsSet.contains(it))
         }
         val actualPersistedAudioSignalRmsList = audioSignalRmsDao.retrieveAllAudioSignalsRmsPersisted(
@@ -204,10 +203,9 @@ class AudioSignalRmsDaoIntegrationTest {
         )
         assertTrue(actualPersistedAudioSignalRmsList.isNotEmpty())
         assertThat(actualPersistedAudioSignalRmsList.size, Is(equalTo(audioSignalRmsList.size)))
-        audioSignalRmsList.forEach{
+        audioSignalRmsList.forEach {
             assertTrue(actualPersistedAudioSignalRmsList.contains(AudioSignalRmsEntity(audioSignalRms = it)))
         }
         cassandraInitializer.dropTable(AUDIO_SIGNAL_RMS_TABLE)
     }
-
 }

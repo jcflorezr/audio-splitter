@@ -36,10 +36,10 @@ internal class AudioBytesPacker(
         bigEndian = audioInfo.bigEndian
         encoding = audioInfo.encoding
         bytesSignedInt16 = listOf(
-            {i -> (i and 0xFF).toByte()},
-            {i -> ((i.ushr(8)) and 0xFF).toByte()})
-        bytesSignedInt24 = bytesSignedInt16 + listOf({i -> ((i.ushr(16)) and 0xFF).toByte()})
-        bytesUnsignedInt = bytesSignedInt24 + listOf({i -> ((i.ushr(24)) and 0xFF).toByte()})
+            { i -> (i and 0xFF).toByte() },
+            { i -> ((i.ushr(8)) and 0xFF).toByte() })
+        bytesSignedInt24 = bytesSignedInt16 + listOf({ i -> ((i.ushr(16)) and 0xFF).toByte() })
+        bytesUnsignedInt = bytesSignedInt24 + listOf({ i -> ((i.ushr(24)) and 0xFF).toByte() })
         bytesSignedInt16Reversed = bytesSignedInt16.reversed()
         bytesSignedInt24Reversed = bytesSignedInt24.reversed()
         bytesUnsignedIntReversed = bytesUnsignedInt.reversed()
@@ -71,7 +71,7 @@ internal class AudioBytesPacker(
             val inBuf = inBufs[channel]
             for (i in 0 until frames) {
                 val clipped = Math.max(-1f, Math.min(1f, inBuf!![inPos + i]))
-                when(encoding) {
+                when (encoding) {
                     AudioFormatEncodings.PCM_SIGNED -> {
                         val v = Math.round(clipped * maxValue)
                         packSignedInt(v, outBuf, p0 + i * frameSize, sampleSizeBits, bigEndian)
@@ -109,5 +109,4 @@ internal class AudioBytesPacker(
         val i = java.lang.Float.floatToIntBits(f)
         packUnsignedInt(i, buf, pos, bigEndian)
     }
-
 }

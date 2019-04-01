@@ -54,5 +54,4 @@ class SourceFileDaoImpl : SourceFileDao {
             .where(QueryBuilder.eq("audio_file_name", audioFileName))
         return cassandraTemplate.selectOne(query, AudioFileMetadataEntity::class)
     }
-
 }

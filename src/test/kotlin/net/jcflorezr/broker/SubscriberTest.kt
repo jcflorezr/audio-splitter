@@ -21,7 +21,6 @@ import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.ApplicationContext
 import org.springframework.test.annotation.DirtiesContext
-import org.springframework.test.annotation.Repeat
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner
@@ -48,7 +47,7 @@ class SignalRmsSubscriberIntegrationTest {
     private val thisClass: Class<SignalRmsSubscriberIntegrationTest> = this.javaClass
     private val testResourcesPath = thisClass.getResource("/rms").path
 
-    @Repeat(value = 50)
+//    @Repeat(value = 50)
     @Test
     fun generateClipInfoForForAudioWithBackgroundNoiseAndLowVoiceVolume() = runBlocking {
         val audioSignalRmsList = getAudioSignalsRmsList(folderName = "background-noise-low-volume")
@@ -58,7 +57,7 @@ class SignalRmsSubscriberIntegrationTest {
         signalRmsSubscriber.validateCompleteness()
     }
 
-    @Repeat(value = 50)
+//    @Repeat(value = 50)
     @Test
     fun generateClipInfoForAudioWithStrongBackgroundNoise() = runBlocking {
         val audioSignalRmsList = getAudioSignalsRmsList(folderName = "strong-background-noise")
@@ -68,7 +67,7 @@ class SignalRmsSubscriberIntegrationTest {
         signalRmsSubscriber.validateCompleteness()
     }
 
-    @Repeat(value = 50)
+//    @Repeat(value = 50)
     @Test
     fun generateClipInfoForAudioWithApplause() = runBlocking {
         val audioSignalRmsList = getAudioSignalsRmsList(folderName = "with-applause")
@@ -78,7 +77,7 @@ class SignalRmsSubscriberIntegrationTest {
         signalRmsSubscriber.validateCompleteness()
     }
 
-    @Repeat(value = 10)
+//    @Repeat(value = 10)
     @Test
     fun generateClipInfoForAllAudios() = runBlocking {
         val audioSignalRmsListLowVolume = getAudioSignalsRmsList(folderName = "background-noise-low-volume")
@@ -136,9 +135,7 @@ class SignalRmsSubscriberIntegrationTest {
         val signalRmsListType = MAPPER.typeFactory.constructCollectionType(List::class.java, AudioSignalRmsInfo::class.java)
         return MAPPER.readValue(File("$testResourcesPath/$folderName/$folderName.json"), signalRmsListType)
     }
-
 }
-
 
 @ActiveProfiles("test")
 @RunWith(SpringJUnit4ClassRunner::class)
@@ -164,7 +161,7 @@ class AudioClipSubscriberIntegrationTest {
     private val signalsResourcesPath = thisClass.getResource("/signal").path
     private val clipsResourcesPath = thisClass.getResource("/clip").path
 
-    @Repeat(value = 50)
+//    @Repeat(value = 50)
     @Test
     fun generateClipForForAudioWithBackgroundNoiseAndLowVoiceVolume() = runBlocking {
         val audioClipInfoList = getAudioClipInfoList(folderName = "background-noise-low-volume")
@@ -175,7 +172,7 @@ class AudioClipSubscriberIntegrationTest {
         audioClipSignalSubscriber.validateCompleteness()
     }
 
-    @Repeat(value = 50)
+//    @Repeat(value = 50)
     @Test
     fun generateClipInfoForAudioWithStrongBackgroundNoise() = runBlocking {
         val audioClipInfoList = getAudioClipInfoList(folderName = "strong-background-noise")
@@ -186,7 +183,7 @@ class AudioClipSubscriberIntegrationTest {
         audioClipSignalSubscriber.validateCompleteness()
     }
 
-    @Repeat(value = 50)
+//    @Repeat(value = 50)
     @Test
     fun generateClipInfoForAudioWithApplause() = runBlocking {
         val audioClipInfoList = getAudioClipInfoList(folderName = "with-applause")
@@ -197,7 +194,7 @@ class AudioClipSubscriberIntegrationTest {
         audioClipSignalSubscriber.validateCompleteness()
     }
 
-    @Repeat(value = 50)
+//    @Repeat(value = 50)
     @Test
     fun generateIncompleteClipForForAudioWithBackgroundNoiseAndLowVoiceVolume() = runBlocking {
         val audioClipInfoList = getAudioClipInfoList(folderName = "background-noise-low-volume-incomplete")
@@ -208,7 +205,7 @@ class AudioClipSubscriberIntegrationTest {
         audioClipSignalSubscriber.validateCompleteness()
     }
 
-    @Repeat(value = 10)
+//    @Repeat(value = 10)
     @Test
     fun generateClipForAllAudios() = runBlocking {
         val audioClipsListLowVolume = getAudioClipInfoList(folderName = "background-noise-low-volume")

@@ -28,9 +28,8 @@ data class GenerateClips(
     val clipGenerator: ClipGenerator
 ) : ClipAction()
 
-
 interface ClipGeneratorActor {
-    fun getActorForGeneratingClips() : SendChannel<ClipAction>
+    fun getActorForGeneratingClips(): SendChannel<ClipAction>
 }
 
 @Service
@@ -107,7 +106,6 @@ class ClipGeneratorActorImpl : ClipGeneratorActor {
             }
         }
     }
-
 }
 
 class ClipGenerator {
@@ -283,5 +281,4 @@ class ClipGenerator {
     private fun AudioClipInfo.logCurrentClipInfo(clipOperation: String, transactionId: String) {
         logger.info { "[$transactionId][5][clip-info] $clipOperation - ${consecutive to audioClipName} - lastClip: $lastClip" }
     }
-
 }

@@ -24,9 +24,9 @@ class InternalServerErrorException(
         stackTraceElements: Array<StackTraceElement>
     ) = stackTraceElements.asSequence().groupByTo(
             destination = LinkedHashMap(),
-            keySelector = {it.className},
-            valueTransform = {it.lineNumber}
-        ).map {SimplifiedStackTraceElement(it.key, it.value)}
+            keySelector = { it.className },
+            valueTransform = { it.lineNumber }
+        ).map { SimplifiedStackTraceElement(it.key, it.value) }
 
     fun getSimplifiedStackTrace() = simplifiedStackTrace
 
@@ -34,7 +34,6 @@ class InternalServerErrorException(
         val className: String,
         val lines: List<Int>
     )
-
 }
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)

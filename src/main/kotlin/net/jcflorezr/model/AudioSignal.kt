@@ -225,5 +225,4 @@ data class AudioClipSignal(
         result = 31 * result + tenthsOfSecond
         return result
     }
-    
 }

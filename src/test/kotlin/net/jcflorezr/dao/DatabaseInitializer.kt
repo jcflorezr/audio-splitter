@@ -24,7 +24,7 @@ class TestRedisInitializer : TestRule {
     }
 
     override fun apply(statement: Statement, description: Description): Statement {
-        return object: Statement() {
+        return object : Statement() {
             override fun evaluate() {
                 redisDockerContainer.start()
                 // Giving some time while the database is up
@@ -37,7 +37,6 @@ class TestRedisInitializer : TestRule {
             }
         }
     }
-
 }
 
 class TestCassandraInitializer : TestRule {
@@ -54,9 +53,11 @@ class TestCassandraInitializer : TestRule {
     }
 
     override fun apply(statement: Statement, description: Description): Statement {
-        return object: Statement() {
+        return object : Statement() {
             override fun evaluate() {
                 cassandraDockerContainer.start()
+                // Giving some time while the database is up
+                Thread.sleep(1000L)
                 val cluster = Cluster
                     .builder()
                     .addContactPoints(cassandraDockerContainer.containerIpAddress)
@@ -84,5 +85,4 @@ class TestCassandraInitializer : TestRule {
     fun dropTable(tableName: String) {
         cassandraAdminTemplate!!.dropTable(CqlIdentifier.of(tableName))
     }
-
 }

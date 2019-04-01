@@ -18,7 +18,6 @@ import org.springframework.context.annotation.Profile
 class TestSourceFileDaoConfig {
 
     @Profile("test") @Bean fun sourceFileDao(): SourceFileDao = SourceFileDaoImpl()
-
 }
 
 @Configuration
@@ -26,7 +25,6 @@ class TestSourceFileDaoConfig {
 class TestSignalDaoConfig {
 
     @Profile("test") @Bean fun audioSignalDao(): AudioSignalDao = AudioSignalDaoImpl()
-
 }
 
 @Configuration
@@ -34,7 +32,6 @@ class TestSignalDaoConfig {
 class TestSignalRmsDaoConfig {
 
     @Profile("test") @Bean fun audioSignalRmsDao(): AudioSignalRmsDao = AudioSignalRmsDaoImpl()
-
 }
 
 @Configuration
@@ -42,5 +39,4 @@ class TestSignalRmsDaoConfig {
 class TestClipDaoConfig {
 
     @Profile("test") @Bean fun audioClipDao(): AudioClipDao = AudioClipDaoImpl()
-
 }

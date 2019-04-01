@@ -38,7 +38,7 @@ final class AudioIoImpl : AudioIo {
         sampleRate: Int,
         transactionId: String
     ) {
-        logger.info { "[$transactionId][6][audio-clip] Creating Clip Audio File ($fileName$extension)."}
+        logger.info { "[$transactionId][6][audio-clip] Creating Clip Audio File ($fileName$extension)." }
         val audioInputStream = getAudioInputStreamForPacking(signal, 0, signal[0]!!.size, sampleRate)
         val fileType = AudioFormats.getFileType(extension)
         AudioSystem.write(audioInputStream, fileType, File(fileName + extension))
@@ -99,5 +99,4 @@ final class AudioIoImpl : AudioIo {
         val audioBytesPacker = AudioBytesPacker(format, signal, pos, len)
         return AudioInputStream(audioBytesPacker, format, len.toLong())
     }
-
 }

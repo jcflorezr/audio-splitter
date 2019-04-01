@@ -3,7 +3,6 @@ package net.jcflorezr.dao
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import net.jcflorezr.config.TestSourceFileDaoConfig
 import net.jcflorezr.model.AudioFileMetadataEntity
@@ -51,5 +50,4 @@ class SourceFileDaoIntegrationTest {
         assertThat(actualAudioMetadata, Is(equalTo(storedAudioMetadata)))
         initializer.dropTable(AUDIO_FILE_METADATA_TABLE)
     }
-
 }

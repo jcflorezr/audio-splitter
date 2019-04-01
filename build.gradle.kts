@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "net.jcflorezr"
-version = "1.0-SNAPSHOT"
+version = "0.1-SNAPSHOT"
 
 buildscript {
     @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
@@ -16,7 +16,6 @@ buildscript {
     var tikaVersion: String by extra
     @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
     var testContainersVersion: String by extra
-
 
     @Suppress("UNUSED_VALUE")
     kotlinVersion = "1.3.10"
@@ -42,7 +41,7 @@ val testContainersVersion: String by extra
 plugins {
     kotlin("jvm") version "1.3.10"
     kotlin("plugin.spring") version "1.3.10"
-    id("org.jmailen.kotlinter") version "1.22.0"
+    id("org.jlleitschuh.gradle.ktlint") version "7.2.1"
 }
 
 repositories {

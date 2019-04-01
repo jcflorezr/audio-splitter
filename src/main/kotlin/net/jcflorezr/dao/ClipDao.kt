@@ -103,5 +103,4 @@ class AudioClipDaoImpl : AudioClipDao {
             .boundZSetOps(key)
             .removeRangeByScore(tenthsSecondsFormat(min), tenthsSecondsFormat(max)) ?: 0L
     }
-
 }

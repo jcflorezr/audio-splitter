@@ -10,5 +10,4 @@ object JsonUtils {
     fun <T> convertMapToPojo(map: Map<*, *>, pojoClass: Class<T>) = MAPPER.convertValue(map, pojoClass)!!
 
     fun convertMapToJsonAsString(map: Map<*, *>) = MAPPER.writeValueAsString(map)
-
 }

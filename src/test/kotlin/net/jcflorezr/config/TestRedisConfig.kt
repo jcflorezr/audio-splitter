@@ -20,7 +20,6 @@ import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer
 import org.springframework.data.redis.serializer.SerializationException
 import org.springframework.lang.Nullable
 
-
 @Configuration
 @PropertySource(value = ["classpath:config/test-redis.properties"])
 class TestRedisConfig {
@@ -60,7 +59,7 @@ class TestRedisConfig {
         return JedisConnectionFactory(
             RedisStandaloneConfiguration(
                 redisDockerContainer.containerIpAddress,
-                redisDockerContainer.getMappedPort(port.toInt())
+                redisDockerContainer.getMappedPort(TestRedisInitializer.redisPort)
             )
         )
     }
@@ -91,9 +90,7 @@ class TestRedisConfig {
         template.valueSerializer = Jackson2JsonRedisSerializerKotlin(AudioClipInfo::class.java)
         return template
     }
-
 }
-
 
 /**
  * Subclass of Jackson Serializer for Redis, this serializer
@@ -127,5 +124,4 @@ class Jackson2JsonRedisSerializerKotlin<T>(
             throw SerializationException("Could not write JSON: " + ex.message, ex)
         }
     }
-
 }
