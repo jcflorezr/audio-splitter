@@ -1,19 +1,23 @@
 package net.jcflorezr.model
 
-import com.fasterxml.jackson.annotation.JsonGetter
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import net.jcflorezr.broker.Message
+import org.jaudiotagger.audio.AudioFileIO
+import org.jaudiotagger.audio.mp3.MP3File
+import org.jaudiotagger.tag.FieldKey
+import org.jaudiotagger.tag.id3.ID3v1Tag
+import org.jaudiotagger.tag.id3.ID3v24Frames
 import org.springframework.data.cassandra.core.cql.PrimaryKeyType
 import org.springframework.data.cassandra.core.mapping.Column
 import org.springframework.data.cassandra.core.mapping.PrimaryKeyColumn
 import org.springframework.data.cassandra.core.mapping.Table
+import java.io.File
 import javax.sound.sampled.AudioFormat
 
 data class InitialConfiguration(
-    val audioFileLocation: String,
+    val audioFileName: String,
     val audioFileMetadata: AudioFileMetadata? = null,
-    val convertedAudioFileLocation: String? = null,
-    val outputDirectory: String
+    val convertedAudioFileLocation: String? = null
 ) : Message
 
 enum class AudioFormatEncodings {
@@ -37,7 +41,6 @@ data class AudioSourceInfo constructor(
     val bigEndian: Boolean,
     val encoding: AudioFormatEncodings
 ) {
-
     companion object {
 
         fun getAudioInfo(format: AudioFormat, buffer: Array<FloatArray?>? = null): AudioSourceInfo {
@@ -63,21 +66,68 @@ data class AudioSourceInfo constructor(
 data class AudioFileMetadata(
     val audioFileName: String,
     val title: String? = null,
-    @get:JsonGetter(PREFIX + "album") val album: String? = null,
-    @get:JsonGetter(PREFIX + "artist") val artist: String? = null,
-    @get:JsonGetter(PREFIX + "trackNumber") val trackNumber: String? = null,
-    @get:JsonGetter(PREFIX + "genre") val genre: String? = null,
-    @get:JsonGetter(PREFIX + "logComment") val comments: String? = null,
-    @get:JsonGetter(PREFIX + "duration") val duration: String? = null,
-    @get:JsonGetter(PREFIX + "audioSampleRate") val sampleRate: String? = null,
-    val channels: String? = null,
-    val version: String? = null,
-    val creator: String? = null,
-    @get:JsonGetter("Content-Type") val contentType: String? = null,
-    val rawMetadata: List<String>? = null
+    val album: String? = null,
+    val artist: String? = null,
+    val trackNumber: String? = null,
+    val genre: String? = null,
+    val comments: String? = null,
+    val duration: Int? = null,
+    val sampleRate: String? = null,
+    val channels: String? = null
 ) {
     companion object {
-        private const val PREFIX = "xmpDM:"
+        fun getAudioFileMetadata(audioFile: File): AudioFileMetadata {
+            val audioFileIO = AudioFileIO.read(audioFile)
+            return when (audioFile) {
+                is MP3File -> extractMetadataForMp3Files(audioFile)
+                else -> {
+                    val audioFileTags = audioFileIO.tag
+                    val audioFileHeaders = audioFileIO.audioHeader
+                    AudioFileMetadata(
+                        audioFileName = audioFile.name,
+                        title = audioFileTags.getFirst(FieldKey.TITLE),
+                        album = audioFileTags.getFirst(FieldKey.ALBUM),
+                        artist = audioFileTags.getFirst(FieldKey.ARTIST),
+                        trackNumber = audioFileTags.getFirst(FieldKey.TRACK) ?: audioFileTags.getFirst("TRACKNUMBER"),
+                        genre = audioFileTags.getFirst(FieldKey.GENRE),
+                        comments = audioFileTags.getFirst(FieldKey.COMMENT).takeIf { it.isNotBlank() } ?: audioFileTags.getFirst("COMMENTS"),
+                        duration = audioFileHeaders.trackLength,
+                        sampleRate = audioFileHeaders.sampleRate,
+                        channels = audioFileHeaders.channels
+                    )
+                }
+            }
+        }
+
+        private fun extractMetadataForMp3Files(audioFile: MP3File): AudioFileMetadata {
+            val tags = audioFile.tag
+            return when (tags) {
+                is ID3v1Tag -> AudioFileMetadata(
+                    audioFileName = audioFile.file.name,
+                    title = tags.firstTitle,
+                    album = tags.firstAlbum,
+                    artist = tags.firstArtist,
+                    trackNumber = tags.firstTrack,
+                    genre = tags.firstGenre,
+                    comments = tags.firstComment
+                )
+                else -> {
+                    val headers = audioFile.mP3AudioHeader
+                    AudioFileMetadata(
+                        audioFileName = audioFile.file.name,
+                        title = tags.getFirst(ID3v24Frames.FRAME_ID_TITLE),
+                        album = tags.getFirst(ID3v24Frames.FRAME_ID_ALBUM),
+                        artist = tags.getFirst(ID3v24Frames.FRAME_ID_ARTIST),
+                        trackNumber = tags.getFirst(ID3v24Frames.FRAME_ID_TRACK),
+                        genre = tags.getFirst(ID3v24Frames.FRAME_ID_GENRE),
+                        comments = tags.getFirst(ID3v24Frames.FRAME_ID_COMMENT),
+                        duration = headers.trackLength,
+                        sampleRate = headers.sampleRate,
+                        channels = headers.channels
+                    )
+                }
+            }
+        }
     }
 }
 
@@ -90,12 +140,8 @@ data class AudioFileMetadataEntity(
     @Column("artist") val artist: String?,
     @Column("track_number") val trackNumber: String?,
     @Column("genre") val genre: String?,
-    @Column("duration") val duration: String?,
+    @Column("duration") val duration: Int?,
     @Column("sample_rate") val sampleRate: String?,
-    @Column("content_type") val contentType: String?,
     @Column("channels") val channels: String?,
-    @Column("version") val version: String?,
-    @Column("creator") val creator: String?,
-    @Column("comments") val comments: String?,
-    @Column("raw_metadata") var rawMetadata: List<String>?
+    @Column("comments") val comments: String?
 )

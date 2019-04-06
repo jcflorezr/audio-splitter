@@ -27,6 +27,8 @@ interface AudioSignalDao {
 class AudioSignalDaoImpl : AudioSignalDao {
 
     @Autowired
+    private lateinit var propsUtils: PropsUtils
+    @Autowired
     private lateinit var audioSignalTemplate: RedisTemplate<String, AudioSignal>
     @Autowired
     private lateinit var cassandraTemplate: CassandraOperations
@@ -36,7 +38,7 @@ class AudioSignalDaoImpl : AudioSignalDao {
     override fun storeAudioSignal(
         audioSignal: AudioSignal
     ): Boolean {
-        logger.info { "[${PropsUtils.getTransactionId(audioSignal.audioFileName)}][2][audio-signal] " +
+        logger.info { "[${propsUtils.getTransactionId(audioSignal.audioFileName)}][2][audio-signal] " +
             "Storing audio signal with index: ${audioSignal.index} for caching." }
         return audioSignalTemplate
             .boundZSetOps("${audioSignal.entityName}_${audioSignal.audioFileName}")
@@ -44,7 +46,7 @@ class AudioSignalDaoImpl : AudioSignalDao {
     }
 
     override fun persistAudioSignalPart(audioSignal: AudioSignal): AudioPartEntity {
-        logger.info { "[${PropsUtils.getTransactionId(audioSignal.audioFileName)}][2][audio-signal] " +
+        logger.info { "[${propsUtils.getTransactionId(audioSignal.audioFileName)}][2][audio-signal] " +
             "Persisting audio signal part with index from ${audioSignal.initialPositionInSeconds} - to: ${audioSignal.endPositionInSeconds}." }
         return cassandraTemplate.insert(AudioPartEntity(audioSignal = audioSignal))
     }
@@ -77,7 +79,7 @@ class AudioSignalDaoImpl : AudioSignalDao {
         min: Double,
         max: Double
     ): Long {
-        val transactionId = PropsUtils.getTransactionId(sourceAudioFileName = key.substringAfter("_"))
+        val transactionId = propsUtils.getTransactionId(sourceAudioFileName = key.substringAfter("_"))
         logger.info { "[$transactionId][5][clip-info] Removing audio signals previously cached. From: $min - to: $max" }
         return audioSignalTemplate
             .boundZSetOps(key)
@@ -98,6 +100,8 @@ interface AudioSignalRmsDao {
 class AudioSignalRmsDaoImpl : AudioSignalRmsDao {
 
     @Autowired
+    private lateinit var propsUtils: PropsUtils
+    @Autowired
     private lateinit var audioSignalRmsTemplate: RedisTemplate<String, AudioSignalRmsInfo>
     @Autowired
     private lateinit var cassandraTemplate: CassandraOperations
@@ -105,7 +109,7 @@ class AudioSignalRmsDaoImpl : AudioSignalRmsDao {
     private val logger = KotlinLogging.logger { }
 
     override suspend fun storeAudioSignalsRms(audioSignalsRms: List<AudioSignalRmsInfo>) {
-        val transactionId = PropsUtils.getTransactionId(audioSignalsRms.first().audioFileName)
+        val transactionId = propsUtils.getTransactionId(audioSignalsRms.first().audioFileName)
         audioSignalsRms.forEach {
             logger.info { "[$transactionId][3][RMS] " +
                 "Storing Root Mean Square (RMS) of audio signal with index: ${it.index} for caching." }
@@ -121,7 +125,7 @@ class AudioSignalRmsDaoImpl : AudioSignalRmsDao {
         .add(audioSignalRms, audioSignalRms.index)!!
 
     override suspend fun persistAudioSignalsRms(audioSignalsRms: List<AudioSignalRmsInfo>) {
-        val transactionId = PropsUtils.getTransactionId(audioSignalsRms.first().audioFileName)
+        val transactionId = propsUtils.getTransactionId(audioSignalsRms.first().audioFileName)
         audioSignalsRms.forEach {
             logger.info { "[$transactionId][3][RMS] Persisting Root Mean Square (RMS) of audio signal with index: ${it.index}." }
             persistAudioSignalRms(audioSignalRms = it)
@@ -162,7 +166,7 @@ class AudioSignalRmsDaoImpl : AudioSignalRmsDao {
         min: Double,
         max: Double
     ): Long {
-        val transactionId = PropsUtils.getTransactionId(sourceAudioFileName = key.substringAfter("_"))
+        val transactionId = propsUtils.getTransactionId(sourceAudioFileName = key.substringAfter("_"))
         logger.info { "[$transactionId][4][sound-zones] Remove set of Root Mean Squares (RMS) from: $min - to: $max." }
         return audioSignalRmsTemplate
             .boundZSetOps(key)

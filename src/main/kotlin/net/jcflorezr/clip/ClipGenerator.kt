@@ -36,6 +36,8 @@ interface ClipGeneratorActor {
 class ClipGeneratorActorImpl : ClipGeneratorActor {
 
     @Autowired
+    private lateinit var propsUtils: PropsUtils
+    @Autowired
     private lateinit var exceptionHandler: ExceptionHandler
     @Autowired
     private lateinit var clipGeneratorFactory: () -> ClipGenerator
@@ -95,7 +97,7 @@ class ClipGeneratorActorImpl : ClipGeneratorActor {
             key = "${sampleAudioClipInfo.entityName}_${sampleAudioClipInfo.audioFileName}"
         ).takeIf { it.isNotEmpty() }
         ?.let { clipsInfoList ->
-            val transactionId = PropsUtils.getTransactionId(clipsInfoList.first().audioFileName)
+            val transactionId = propsUtils.getTransactionId(clipsInfoList.first().audioFileName)
             val whereToStart = clipsInfoList.binarySearchBy(clipGenerator.getNextClipConsecutiveNumberNeeded()) { it.consecutive }
             logger.info { "[$transactionId][5][clip-info] Preparing Clips Info. " +
                 "Number of existing clips ${clipsInfoList.size}. first: clip# ${clipsInfoList.first().consecutive}. last: clip# ${clipsInfoList.last().consecutive}. " +
@@ -110,6 +112,8 @@ class ClipGeneratorActorImpl : ClipGeneratorActor {
 
 class ClipGenerator {
 
+    @Autowired
+    private lateinit var propsUtils: PropsUtils
     @Autowired
     private lateinit var audioClipSignalTopicSignal: Topic<AudioClipSignal>
     @Autowired
@@ -131,7 +135,7 @@ class ClipGenerator {
     private var nextClipConsecutiveNumberNeeded = 1
 
     suspend fun generateClips(audioClipsInfo: List<AudioClipInfo>) {
-        val transactionId = PropsUtils.getTransactionId(audioClipsInfo.first().audioFileName)
+        val transactionId = propsUtils.getTransactionId(audioClipsInfo.first().audioFileName)
         logger.info { "[$transactionId][5][clip-info] Starting to group clips: ${audioClipsInfo.map { it.consecutive to it.audioClipName }}" }
         val audioClipInfoIterator = audioClipsInfo.listIterator()
         clipLoop@while (audioClipInfoIterator.hasNext()) {

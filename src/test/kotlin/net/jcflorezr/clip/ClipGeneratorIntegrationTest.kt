@@ -28,6 +28,8 @@ import java.io.File
 class ClipGeneratorIntegrationTest {
 
     @Autowired
+    private lateinit var propsUtils: PropsUtils
+    @Autowired
     private lateinit var applicationCtx: ApplicationContext
     @Autowired
     private lateinit var clipGenerator: ClipGenerator
@@ -52,7 +54,7 @@ class ClipGeneratorIntegrationTest {
 
     @Test
     fun generateAudioClipsForFileWithBackgroundNoiseAndLowVoiceVolume() = runBlocking {
-        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("background-noise-low-volume"))
+        propsUtils.setTransactionId(sourceAudioFile = File("background-noise-low-volume"))
         generateAudioClips(
             signalsFolderPath = signalResourcesPath + "background-noise-low-volume/",
             clipsPath = clipsResourcesPath + "background-noise-low-volume/background-noise-low-volume.json"
@@ -63,7 +65,7 @@ class ClipGeneratorIntegrationTest {
 
     @Test
     fun generateAudioClipsInfoForFileWithApplause() = runBlocking {
-        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("with-applause"))
+        propsUtils.setTransactionId(sourceAudioFile = File("with-applause"))
         generateAudioClips(
             signalsFolderPath = signalResourcesPath + "with-applause/",
             clipsPath = clipsResourcesPath + "with-applause/with-applause.json"
@@ -74,7 +76,7 @@ class ClipGeneratorIntegrationTest {
 
     @Test
     fun generateAudioClipsInfoForFileWithStrongBackgroundNoise() = runBlocking {
-        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("strong-background-noise"))
+        propsUtils.setTransactionId(sourceAudioFile = File("strong-background-noise"))
         generateAudioClips(
             signalsFolderPath = signalResourcesPath + "strong-background-noise/",
             clipsPath = clipsResourcesPath + "strong-background-noise/strong-background-noise.json"
@@ -85,7 +87,7 @@ class ClipGeneratorIntegrationTest {
 
     @Test
     fun generateIncompleteAudioClipsForFileWithBackgroundNoiseAndLowVoiceVolume() = runBlocking {
-        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("background-noise-low-volume-incomplete"))
+        propsUtils.setTransactionId(sourceAudioFile = File("background-noise-low-volume-incomplete"))
         generateAudioClips(
             signalsFolderPath = signalResourcesPath + "background-noise-low-volume-incomplete/",
             clipsPath = clipsResourcesPath + "background-noise-low-volume-incomplete/background-noise-low-volume-incomplete.json"

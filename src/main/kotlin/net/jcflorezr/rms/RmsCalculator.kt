@@ -18,6 +18,8 @@ interface RmsCalculator {
 class RmsCalculatorImpl : RmsCalculator {
 
     @Autowired
+    private lateinit var propsUtils: PropsUtils
+    @Autowired
     private lateinit var audioSignalRmsTopic: Topic<AudioSignalsRmsInfo>
 
     private val logger = KotlinLogging.logger { }
@@ -28,7 +30,7 @@ class RmsCalculatorImpl : RmsCalculator {
     }
 
     override suspend fun generateRmsInfo(audioSignal: AudioSignal) {
-        logger.info { "[${PropsUtils.getTransactionId(audioSignal.audioFileName)}][3][RMS] " +
+        logger.info { "[${propsUtils.getTransactionId(audioSignal.audioFileName)}][3][RMS] " +
             "Start to generate the Root Mean Square (RMS) of audio signal start: ${audioSignal.initialPositionInSeconds} - " +
             "end: ${audioSignal.endPositionInSeconds}." }
 
@@ -65,7 +67,7 @@ class RmsCalculatorImpl : RmsCalculator {
             RmsValues(pos = endPos, index = it.index + 1, rms = currentRms, diff = currentDiff)
         }.takeWhile { it.pos < signal.size }
         .toList()
-        logger.info { "[${PropsUtils.getTransactionId(audioSignal.audioFileName)}][3][RMS] " +
+        logger.info { "[${propsUtils.getTransactionId(audioSignal.audioFileName)}][3][RMS] " +
             "Root Mean Square (RMS) for audio signals ==> start: ${rmsSignalsInfo.first().initialPositionInSeconds} - " +
             "end: ${rmsSignalsInfo.last().initialPositionInSeconds} were generated." }
         audioSignalRmsTopic.postMessage(message = AudioSignalsRmsInfo(rmsSignalsInfo))

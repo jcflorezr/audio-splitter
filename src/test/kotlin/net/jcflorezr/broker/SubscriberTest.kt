@@ -33,6 +33,8 @@ import java.io.File
 class SignalRmsSubscriberIntegrationTest {
 
     @Autowired
+    private lateinit var propsUtils: PropsUtils
+    @Autowired
     private lateinit var applicationCtx: ApplicationContext
     @Autowired
     private lateinit var audioSignalRmsTopic: Topic<AudioSignalsRmsInfo>
@@ -51,7 +53,7 @@ class SignalRmsSubscriberIntegrationTest {
     @Test
     fun generateClipInfoForForAudioWithBackgroundNoiseAndLowVoiceVolume() = runBlocking {
         val audioSignalRmsList = getAudioSignalsRmsList(folderName = "background-noise-low-volume")
-        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("background-noise-low-volume"))
+        propsUtils.setTransactionId(sourceAudioFile = File("background-noise-low-volume"))
         generateAudioClipInfo(audioSignalRmsList)
         val signalRmsSubscriber = applicationCtx.getBean("audioClipSubscriberMockSubscriberTest") as AudioClipInfoSubscriberMock
         signalRmsSubscriber.validateCompleteness()
@@ -61,7 +63,7 @@ class SignalRmsSubscriberIntegrationTest {
     @Test
     fun generateClipInfoForAudioWithStrongBackgroundNoise() = runBlocking {
         val audioSignalRmsList = getAudioSignalsRmsList(folderName = "strong-background-noise")
-        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("strong-background-noise"))
+        propsUtils.setTransactionId(sourceAudioFile = File("strong-background-noise"))
         generateAudioClipInfo(audioSignalRmsList)
         val signalRmsSubscriber = applicationCtx.getBean("audioClipSubscriberMockSubscriberTest") as AudioClipInfoSubscriberMock
         signalRmsSubscriber.validateCompleteness()
@@ -71,7 +73,7 @@ class SignalRmsSubscriberIntegrationTest {
     @Test
     fun generateClipInfoForAudioWithApplause() = runBlocking {
         val audioSignalRmsList = getAudioSignalsRmsList(folderName = "with-applause")
-        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("with-applause"))
+        propsUtils.setTransactionId(sourceAudioFile = File("with-applause"))
         generateAudioClipInfo(audioSignalRmsList)
         val signalRmsSubscriber = applicationCtx.getBean("audioClipSubscriberMockSubscriberTest") as AudioClipInfoSubscriberMock
         signalRmsSubscriber.validateCompleteness()
@@ -81,11 +83,11 @@ class SignalRmsSubscriberIntegrationTest {
     @Test
     fun generateClipInfoForAllAudios() = runBlocking {
         val audioSignalRmsListLowVolume = getAudioSignalsRmsList(folderName = "background-noise-low-volume")
-        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("background-noise-low-volume"))
+        propsUtils.setTransactionId(sourceAudioFile = File("background-noise-low-volume"))
         val audioSignalRmsListStrongNoise = getAudioSignalsRmsList(folderName = "strong-background-noise")
-        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("strong-background-noise"))
+        propsUtils.setTransactionId(sourceAudioFile = File("strong-background-noise"))
         val audioSignalRmsListApplause = getAudioSignalsRmsList(folderName = "with-applause")
-        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("with-applause"))
+        propsUtils.setTransactionId(sourceAudioFile = File("with-applause"))
         generateConsolidatedAudioClipInfo(
             Triple(
                 audioSignalRmsListLowVolume,
@@ -144,6 +146,8 @@ class SignalRmsSubscriberIntegrationTest {
 class AudioClipSubscriberIntegrationTest {
 
     @Autowired
+    private lateinit var propsUtils: PropsUtils
+    @Autowired
     private lateinit var applicationCtx: ApplicationContext
     @Autowired
     private lateinit var audioSignalRmsTopic: Topic<AudioClipInfo>
@@ -165,7 +169,7 @@ class AudioClipSubscriberIntegrationTest {
     @Test
     fun generateClipForForAudioWithBackgroundNoiseAndLowVoiceVolume() = runBlocking {
         val audioClipInfoList = getAudioClipInfoList(folderName = "background-noise-low-volume")
-        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("background-noise-low-volume"))
+        propsUtils.setTransactionId(sourceAudioFile = File("background-noise-low-volume"))
         generateAudioSignalsForClips(folderName = "background-noise-low-volume")
         generateAudioClipInfo(audioClipInfoList)
         val audioClipSignalSubscriber = applicationCtx.getBean("audioClipSignalSubscriberMockTest") as AudioClipSignalSubscriberMock
@@ -176,7 +180,7 @@ class AudioClipSubscriberIntegrationTest {
     @Test
     fun generateClipInfoForAudioWithStrongBackgroundNoise() = runBlocking {
         val audioClipInfoList = getAudioClipInfoList(folderName = "strong-background-noise")
-        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("strong-background-noise"))
+        propsUtils.setTransactionId(sourceAudioFile = File("strong-background-noise"))
         generateAudioSignalsForClips(folderName = "strong-background-noise")
         generateAudioClipInfo(audioClipInfoList)
         val audioClipSignalSubscriber = applicationCtx.getBean("audioClipSignalSubscriberMockTest") as AudioClipSignalSubscriberMock
@@ -187,7 +191,7 @@ class AudioClipSubscriberIntegrationTest {
     @Test
     fun generateClipInfoForAudioWithApplause() = runBlocking {
         val audioClipInfoList = getAudioClipInfoList(folderName = "with-applause")
-        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("with-applause"))
+        propsUtils.setTransactionId(sourceAudioFile = File("with-applause"))
         generateAudioSignalsForClips(folderName = "with-applause")
         generateAudioClipInfo(audioClipInfoList)
         val audioClipSignalSubscriber = applicationCtx.getBean("audioClipSignalSubscriberMockTest") as AudioClipSignalSubscriberMock
@@ -198,7 +202,7 @@ class AudioClipSubscriberIntegrationTest {
     @Test
     fun generateIncompleteClipForForAudioWithBackgroundNoiseAndLowVoiceVolume() = runBlocking {
         val audioClipInfoList = getAudioClipInfoList(folderName = "background-noise-low-volume-incomplete")
-        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("background-noise-low-volume-incomplete"))
+        propsUtils.setTransactionId(sourceAudioFile = File("background-noise-low-volume-incomplete"))
         generateAudioSignalsForClips(folderName = "background-noise-low-volume-incomplete")
         generateAudioClipInfo(audioClipInfoList)
         val audioClipSignalSubscriber = applicationCtx.getBean("audioClipSignalSubscriberMockTest") as AudioClipSignalSubscriberMock
@@ -209,13 +213,13 @@ class AudioClipSubscriberIntegrationTest {
     @Test
     fun generateClipForAllAudios() = runBlocking {
         val audioClipsListLowVolume = getAudioClipInfoList(folderName = "background-noise-low-volume")
-        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("background-noise-low-volume"))
+        propsUtils.setTransactionId(sourceAudioFile = File("background-noise-low-volume"))
         val audioClipsListStrongNoise = getAudioClipInfoList(folderName = "strong-background-noise")
-        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("strong-background-noise"))
+        propsUtils.setTransactionId(sourceAudioFile = File("strong-background-noise"))
         val audioClipsListApplause = getAudioClipInfoList(folderName = "with-applause")
-        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("with-applause"))
+        propsUtils.setTransactionId(sourceAudioFile = File("with-applause"))
         val audioClipsListIncompleteLowVolume = getAudioClipInfoList(folderName = "background-noise-low-volume-incomplete")
-        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("background-noise-low-volume-incomplete"))
+        propsUtils.setTransactionId(sourceAudioFile = File("background-noise-low-volume-incomplete"))
         generateAudioSignalsForClips(folderName = "background-noise-low-volume")
         generateAudioSignalsForClips(folderName = "strong-background-noise")
         generateAudioSignalsForClips(folderName = "with-applause")

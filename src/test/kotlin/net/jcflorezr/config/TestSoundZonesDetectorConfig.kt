@@ -9,6 +9,7 @@ import net.jcflorezr.exception.ExceptionHandler
 import net.jcflorezr.model.AudioClipInfo
 import net.jcflorezr.model.AudioSignalsRmsInfo
 import net.jcflorezr.rms.SoundZonesDetector
+import net.jcflorezr.util.PropsUtils
 import org.mockito.Mockito.mock
 import org.springframework.beans.factory.config.ConfigurableBeanFactory
 import org.springframework.context.annotation.Bean
@@ -18,6 +19,8 @@ import org.springframework.context.annotation.Scope
 
 @Configuration
 class TestSoundZonesDetectorConfig {
+
+    @Profile("test") @Bean fun propsUtils(): PropsUtils = PropsUtils()
 
     @Profile("test") @Bean fun exceptionHandler(): ExceptionHandler = mock(ExceptionHandler::class.java)
 

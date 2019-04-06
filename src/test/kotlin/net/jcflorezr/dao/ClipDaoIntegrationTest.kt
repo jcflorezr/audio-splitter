@@ -27,6 +27,8 @@ import org.hamcrest.CoreMatchers.`is` as Is
 class ClipDaoIntegrationTest {
 
     @Autowired
+    private lateinit var propsUtils: PropsUtils
+    @Autowired
     private lateinit var audioClipDao: AudioClipDao
 
     private val thisClass: Class<ClipDaoIntegrationTest> = this.javaClass
@@ -46,19 +48,19 @@ class ClipDaoIntegrationTest {
 
     @Test
     fun persistClipInfoForAudioWithBackgroundNoiseAndLowVoiceVolume() {
-        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("strong-background-noise"))
+        propsUtils.setTransactionId(sourceAudioFile = File("strong-background-noise"))
         persistClipInfo(clipInfoFileName = "strong-background-noise")
     }
 
     @Test
     fun persistClipInfoForAudioWithStrongBackgroundNoise() {
-        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("background-noise-low-volume"))
+        propsUtils.setTransactionId(sourceAudioFile = File("background-noise-low-volume"))
         persistClipInfo(clipInfoFileName = "background-noise-low-volume")
     }
 
     @Test
     fun persistClipInfoForAudioWithApplause() {
-        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("with-applause"))
+        propsUtils.setTransactionId(sourceAudioFile = File("with-applause"))
         persistClipInfo(clipInfoFileName = "with-applause")
     }
 
@@ -81,19 +83,19 @@ class ClipDaoIntegrationTest {
 
     @Test
     fun persistGroupedClipInfoForAudioWithBackgroundNoiseAndLowVoiceVolume() {
-        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("strong-background-noise"))
+        propsUtils.setTransactionId(sourceAudioFile = File("strong-background-noise"))
         persistGroupedClipInfo(clipInfoFileName = "strong-background-noise")
     }
 
     @Test
     fun persistGroupedClipInfoForAudioWithStrongBackgroundNoise() {
-        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("background-noise-low-volume"))
+        propsUtils.setTransactionId(sourceAudioFile = File("background-noise-low-volume"))
         persistGroupedClipInfo(clipInfoFileName = "background-noise-low-volume")
     }
 
     @Test
     fun persistGroupedClipInfoForAudioWithApplause() {
-        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("with-applause"))
+        propsUtils.setTransactionId(sourceAudioFile = File("with-applause"))
         persistGroupedClipInfo(clipInfoFileName = "with-applause")
     }
 
@@ -116,19 +118,19 @@ class ClipDaoIntegrationTest {
 
     @Test
     fun storeClipsInfoForAudioWithBackgroundNoiseAndLowVoiceVolume() {
-        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("background-noise-low-volume"))
+        propsUtils.setTransactionId(sourceAudioFile = File("background-noise-low-volume"))
         storeClipsInfo(clipInfoFileName = "background-noise-low-volume")
     }
 
     @Test
     fun storeClipsInfoForAudioWithStrongBackgroundNoise() {
-        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("strong-background-noise"))
+        propsUtils.setTransactionId(sourceAudioFile = File("strong-background-noise"))
         storeClipsInfo(clipInfoFileName = "strong-background-noise")
     }
 
     @Test
     fun storeClipsInfoForAudioWithApplause() {
-        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("with-applause"))
+        propsUtils.setTransactionId(sourceAudioFile = File("with-applause"))
         storeClipsInfo(clipInfoFileName = "with-applause")
     }
 

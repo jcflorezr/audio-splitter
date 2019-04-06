@@ -25,6 +25,8 @@ import java.io.File
 class RmsCalculatorImplTest {
 
     @Autowired
+    private lateinit var propsUtils: PropsUtils
+    @Autowired
     private lateinit var applicationCtx: ApplicationContext
     @Autowired
     private lateinit var rmsCalculator: RmsCalculator
@@ -42,7 +44,7 @@ class RmsCalculatorImplTest {
 
     @Test
     fun generateRmsInfoForFileWithBackgroundNoiseAndLowVoiceVolume() = runBlocking {
-        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("background-noise-low-volume"))
+        propsUtils.setTransactionId(sourceAudioFile = File("background-noise-low-volume"))
         generateRmsInfo(path = testResourcesPath + "background-noise-low-volume/")
         val signalRmsSubscriber = applicationCtx.getBean("signalRmsSubscriberTest") as SignalRmsSubscriberMock
         signalRmsSubscriber.validateCompleteness()
@@ -50,7 +52,7 @@ class RmsCalculatorImplTest {
 
     @Test
     fun generateRmsInfoForFileWithApplause() = runBlocking {
-        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("with-applause"))
+        propsUtils.setTransactionId(sourceAudioFile = File("with-applause"))
         generateRmsInfo(path = testResourcesPath + "with-applause/")
         val signalRmsSubscriber = applicationCtx.getBean("signalRmsSubscriberTest") as SignalRmsSubscriberMock
         signalRmsSubscriber.validateCompleteness()
@@ -58,7 +60,7 @@ class RmsCalculatorImplTest {
 
     @Test
     fun generateRmsInfoForFileWithStrongBackgroundNoise() = runBlocking {
-        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("strong-background-noise"))
+        propsUtils.setTransactionId(sourceAudioFile = File("strong-background-noise"))
         generateRmsInfo(path = testResourcesPath + "strong-background-noise/")
         val signalRmsSubscriber = applicationCtx.getBean("signalRmsSubscriberTest") as SignalRmsSubscriberMock
         signalRmsSubscriber.validateCompleteness()

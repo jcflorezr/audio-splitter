@@ -29,6 +29,8 @@ import org.hamcrest.CoreMatchers.`is` as Is
 final class SourceFileSubscriberMock : Subscriber<InitialConfiguration> {
 
     @Autowired
+    private lateinit var propsUtils: PropsUtils
+    @Autowired
     private lateinit var sourceFileTopic: Topic<InitialConfiguration>
 
     companion object {
@@ -48,10 +50,14 @@ final class SourceFileSubscriberMock : Subscriber<InitialConfiguration> {
     }
 
     override suspend fun update(message: InitialConfiguration) {
-        val transactionId = PropsUtils.getTransactionId(message.audioFileMetadata!!.audioFileName)
-        val expectedConfiguration = MAPPER.readValue<InitialConfiguration>(File("$testResourcesPath/initial-configuration.json"))
+        val audioFileName = message.audioFileMetadata!!.audioFileName
+        val audioFileExtension = File(audioFileName).extension
+        val transactionId = propsUtils.getTransactionId(audioFileName)
+        val configurationFile = "$testResourcesPath/initial-configuration-$audioFileExtension.json"
+        val expectedConfiguration = MAPPER.readValue<InitialConfiguration>(File(configurationFile))
         logger.info { "[$transactionId][TEST] testing initial configuration ==> $message" }
-        assertTrue(File(message.audioFileLocation).exists())
+        assertTrue(File(message.audioFileName).exists())
+        assertTrue(File(message.convertedAudioFileLocation).exists())
         assertThat(FilenameUtils.getName(message.convertedAudioFileLocation), Is(equalTo(expectedConfiguration.convertedAudioFileLocation)))
         assertThat(message.audioFileMetadata.toString(), Is(equalTo(expectedConfiguration.audioFileMetadata.toString())))
     }
@@ -60,6 +66,8 @@ final class SourceFileSubscriberMock : Subscriber<InitialConfiguration> {
 @Service
 final class SignalSubscriberMock : Subscriber<AudioSignal> {
 
+    @Autowired
+    private lateinit var propsUtils: PropsUtils
     @Autowired
     private lateinit var signalTopic: Topic<AudioSignal>
 
@@ -80,7 +88,7 @@ final class SignalSubscriberMock : Subscriber<AudioSignal> {
     }
 
     override suspend fun update(message: AudioSignal) {
-        val transactionId = PropsUtils.getTransactionId(message.audioFileName)
+        val transactionId = propsUtils.getTransactionId(message.audioFileName)
         val folderName = FilenameUtils.getBaseName(message.audioFileName)
         val fileNamePrefix = (message.index).toString().replace(".", "_")
         val signalPartFilePath = "$testResourcesPath/$folderName/$fileNamePrefix-$folderName.json"
@@ -98,6 +106,8 @@ final class SignalSubscriberMock : Subscriber<AudioSignal> {
 @Service
 final class SignalRmsSubscriberMock : Subscriber<AudioSignalsRmsInfo> {
 
+    @Autowired
+    private lateinit var propsUtils: PropsUtils
     @Autowired
     private lateinit var audioSignalRmsTopic: Topic<AudioSignalsRmsInfo>
 
@@ -119,7 +129,7 @@ final class SignalRmsSubscriberMock : Subscriber<AudioSignalsRmsInfo> {
     }
 
     override suspend fun update(message: AudioSignalsRmsInfo) {
-        val transactionId = PropsUtils.getTransactionId(message.audioSignals.first().audioFileName)
+        val transactionId = propsUtils.getTransactionId(message.audioSignals.first().audioFileName)
         val folderName = FilenameUtils.getBaseName(message.audioSignals.first().audioFileName)
         if (audioSignalRmsList.isEmpty()) {
             val signalRmsListType = MAPPER.typeFactory.constructCollectionType(List::class.java, AudioSignalRmsInfo::class.java)
@@ -142,6 +152,8 @@ final class SignalRmsSubscriberMock : Subscriber<AudioSignalsRmsInfo> {
 @Service
 final class AudioClipInfoSubscriberMock : Subscriber<AudioClipInfo> {
 
+    @Autowired
+    private lateinit var propsUtils: PropsUtils
     @Autowired
     private lateinit var audioClipTopic: Topic<AudioClipInfo>
 
@@ -168,7 +180,7 @@ final class AudioClipInfoSubscriberMock : Subscriber<AudioClipInfo> {
 
     override suspend fun update(message: AudioClipInfo) {
         val folderName = FilenameUtils.getBaseName(message.audioFileName)
-        val transactionId = PropsUtils.getTransactionId(message.audioFileName)
+        val transactionId = propsUtils.getTransactionId(message.audioFileName)
         if (expectedClipInfoList.isEmpty() || !foldersProcessed.contains(folderName)) {
             val previousExpectedClipsListSize = expectedClipInfoList.size
             val audioClipListType = MAPPER.typeFactory.constructCollectionType(List::class.java, AudioClipInfo::class.java)
@@ -212,6 +224,8 @@ final class AudioClipInfoSubscriberMock : Subscriber<AudioClipInfo> {
 final class AudioClipSignalSubscriberMock : Subscriber<AudioClipSignal> {
 
     @Autowired
+    private lateinit var propsUtils: PropsUtils
+    @Autowired
     private lateinit var audioClipSignalTopic: Topic<AudioClipSignal>
     @Autowired
     private lateinit var audioSignalDao: AudioSignalDao
@@ -241,7 +255,7 @@ final class AudioClipSignalSubscriberMock : Subscriber<AudioClipSignal> {
 
     override suspend fun update(message: AudioClipSignal) {
         val folderName = FilenameUtils.getBaseName(message.audioFileName)
-        val transactionId = PropsUtils.getTransactionId(message.audioFileName)
+        val transactionId = propsUtils.getTransactionId(message.audioFileName)
         if (expectedAudioClipSignalList.isEmpty() || !foldersProcessed.contains(folderName)) {
             val previousExpectedClipsListSize = expectedAudioClipSignalList.size
             expectedAudioClipSignalList.addAll(File("$testResourcesPath/$folderName/signal/").listFiles()

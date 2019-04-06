@@ -18,6 +18,7 @@ import net.jcflorezr.rms.AudioSignalRmsArrived
 import net.jcflorezr.rms.RmsCalculator
 import net.jcflorezr.rms.SoundZonesDetectorActor
 import net.jcflorezr.signal.AudioIo
+import net.jcflorezr.storage.BucketClient
 import net.jcflorezr.util.AudioFormats
 import net.jcflorezr.util.PropsUtils
 import org.springframework.beans.factory.annotation.Autowired
@@ -34,6 +35,8 @@ interface Subscriber<T : Message> {
 final class SourceFileSubscriber : Subscriber<InitialConfiguration> {
 
     @Autowired
+    private lateinit var propsUtils: PropsUtils
+    @Autowired
     private lateinit var exceptionHandler: ExceptionHandler
     @Autowired
     private lateinit var sourceFileTopic: Topic<InitialConfiguration>
@@ -48,13 +51,14 @@ final class SourceFileSubscriber : Subscriber<InitialConfiguration> {
     fun init() = sourceFileTopic.register(this)
 
     override suspend fun update(message: InitialConfiguration) {
-        logger.info { "[${PropsUtils.getTransactionId(message.audioFileLocation)}][1][entry-point] " +
+        val sourceAudioFileName = message.audioFileName
+        logger.info { "[${propsUtils.getTransactionId(sourceAudioFileName)}][1][entry-point] " +
             "Message received with the initial configuration." }
         kotlin.runCatching {
             sourceFileDao.persistAudioFileMetadata(initialConfiguration = message)
             audioIo.generateAudioSignalFromAudioFile(configuration = message)
         }.onFailure {
-            exceptionHandler.handle(exception = it, sourceAudioFileName = message.audioFileLocation)
+            exceptionHandler.handle(exception = it, sourceAudioFileName = sourceAudioFileName)
         }
     }
 }
@@ -62,6 +66,8 @@ final class SourceFileSubscriber : Subscriber<InitialConfiguration> {
 @Service
 final class SignalSubscriber : Subscriber<AudioSignal> {
 
+    @Autowired
+    private lateinit var propsUtils: PropsUtils
     @Autowired
     private lateinit var exceptionHandler: ExceptionHandler
     @Autowired
@@ -77,7 +83,7 @@ final class SignalSubscriber : Subscriber<AudioSignal> {
     fun init() = signalTopic.register(this)
 
     override suspend fun update(message: AudioSignal) {
-        logger.info { "[${PropsUtils.getTransactionId(message.audioFileName)}][2][audio-signal] " +
+        logger.info { "[${propsUtils.getTransactionId(message.audioFileName)}][2][audio-signal] " +
             "Message received with audio signal with index: ${message.index}." }
         kotlin.runCatching {
             audioSignalDao.persistAudioSignalPart(audioSignal = message)
@@ -101,6 +107,8 @@ final class SignalSubscriber : Subscriber<AudioSignal> {
 final class SignalRmsSubscriber : Subscriber<AudioSignalsRmsInfo> {
 
     @Autowired
+    private lateinit var propsUtils: PropsUtils
+    @Autowired
     private lateinit var exceptionHandler: ExceptionHandler
     @Autowired
     private lateinit var audioSignalRmsTopic: Topic<AudioSignalsRmsInfo>
@@ -115,7 +123,7 @@ final class SignalRmsSubscriber : Subscriber<AudioSignalsRmsInfo> {
     fun init() = audioSignalRmsTopic.register(this)
 
     override suspend fun update(message: AudioSignalsRmsInfo) {
-        logger.info { "[${PropsUtils.getTransactionId(message.audioSignals.first().audioFileName)}][3][RMS] " +
+        logger.info { "[${propsUtils.getTransactionId(message.audioSignals.first().audioFileName)}][3][RMS] " +
             "Message received with RMS for audio signals from: ${message.audioSignals.first().initialPositionInSeconds} - " +
             "to: ${message.audioSignals.last().initialPositionInSeconds}" }
         kotlin.runCatching {
@@ -132,6 +140,8 @@ final class SignalRmsSubscriber : Subscriber<AudioSignalsRmsInfo> {
 final class AudioClipInfoSubscriber : Subscriber<AudioClipInfo> {
 
     @Autowired
+    private lateinit var propsUtils: PropsUtils
+    @Autowired
     private lateinit var exceptionHandler: ExceptionHandler
     @Autowired
     private lateinit var audioClipTopic: Topic<AudioClipInfo>
@@ -146,7 +156,7 @@ final class AudioClipInfoSubscriber : Subscriber<AudioClipInfo> {
     fun init() = audioClipTopic.register(this)
 
     override suspend fun update(message: AudioClipInfo) {
-        logger.info { "[${PropsUtils.getTransactionId(message.audioFileName)}][5][clip-info] " +
+        logger.info { "[${propsUtils.getTransactionId(message.audioFileName)}][5][clip-info] " +
             "Message received with Clip Info ${message.consecutive to message.audioClipName}. " +
             "Start: ${message.initialPositionInSeconds} - end: ${message.endPositionInSeconds}" }
         kotlin.runCatching {
@@ -163,36 +173,51 @@ final class AudioClipInfoSubscriber : Subscriber<AudioClipInfo> {
 final class AudioClipSignalSubscriber : Subscriber<AudioClipSignal> {
 
     @Autowired
+    private lateinit var bucketClient: BucketClient
+    @Autowired
+    private lateinit var propsUtils: PropsUtils
+    @Autowired
     private lateinit var exceptionHandler: ExceptionHandler
     @Autowired
     private lateinit var audioClipSignalTopic: Topic<AudioClipSignal>
     @Autowired
     private lateinit var audioIo: AudioIo
 
+    private val thisClass: Class<AudioClipSignalSubscriber> = this.javaClass
+    private lateinit var tempDirectoryPath: String
     private val logger = KotlinLogging.logger { }
 
     @PostConstruct
-    fun init() = audioClipSignalTopic.register(this)
+    fun init() {
+        audioClipSignalTopic.register(this)
+        tempDirectoryPath = thisClass.getResource("/temp-converted-files").path
+    }
 
     override suspend fun update(message: AudioClipSignal) {
-        logger.info { "[${PropsUtils.getTransactionId(message.audioFileName)}][6][audio-clip] " +
+        logger.info { "[${propsUtils.getTransactionId(message.audioFileName)}][6][audio-clip] " +
             "Message received with Grouped Clip Info (${message.audioClipName})." }
+        val transactionId = propsUtils.getTransactionId(message.audioFileName)
         kotlin.runCatching {
-            val outputDirectoryPath = PropsUtils.getDirectoryPath()
-            val transactionId = PropsUtils.getTransactionId(message.audioFileName)
-            val audioClipDirectoryPath = "$outputDirectoryPath/$transactionId"
+            val audioClipDirectoryPath = "$tempDirectoryPath/$transactionId"
             File(audioClipDirectoryPath)
             .takeIf { !it.exists() }
             ?.apply { mkdirs() }
-            audioIo.saveAudioFile(
-                fileName = "$audioClipDirectoryPath/${message.audioClipName}",
-                extension = AudioFormats.FLAC.extension,
-                signal = message.signal,
-                sampleRate = message.sampleRate,
-                transactionId = transactionId
-            )
+            val audioClipPath = "$audioClipDirectoryPath/${message.audioClipName}"
+            takeIf {
+                audioIo.saveAudioFile(
+                    fileName = audioClipPath,
+                    extension = AudioFormats.FLAC.extension,
+                    signal = message.signal,
+                    sampleRate = message.sampleRate,
+                    transactionId = transactionId
+                )
+            }?.let {
+                bucketClient.uploadFileToBucket(File("$audioClipPath${AudioFormats.FLAC.extension}"), transactionId)
+            }
         }.onFailure {
             exceptionHandler.handle(exception = it, sourceAudioFileName = message.audioFileName)
+        }.run {
+            File("$tempDirectoryPath/${propsUtils.getSourceFileLocation(transactionId)}").delete()
         }
 
         // TODO: call transcriber through queue?

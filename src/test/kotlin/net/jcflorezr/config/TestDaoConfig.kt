@@ -8,6 +8,7 @@ import net.jcflorezr.dao.AudioSignalRmsDao
 import net.jcflorezr.dao.AudioSignalRmsDaoImpl
 import net.jcflorezr.dao.SourceFileDao
 import net.jcflorezr.dao.SourceFileDaoImpl
+import net.jcflorezr.util.PropsUtils
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
@@ -17,6 +18,7 @@ import org.springframework.context.annotation.Profile
 @Import(value = [TestCassandraConfig::class])
 class TestSourceFileDaoConfig {
 
+    @Profile("test") @Bean fun propsUtils(): PropsUtils = PropsUtils()
     @Profile("test") @Bean fun sourceFileDao(): SourceFileDao = SourceFileDaoImpl()
 }
 
@@ -24,6 +26,7 @@ class TestSourceFileDaoConfig {
 @Import(value = [TestCassandraConfig::class, TestRedisConfig::class])
 class TestSignalDaoConfig {
 
+    @Profile("test") @Bean fun propsUtils(): PropsUtils = PropsUtils()
     @Profile("test") @Bean fun audioSignalDao(): AudioSignalDao = AudioSignalDaoImpl()
 }
 
@@ -31,6 +34,7 @@ class TestSignalDaoConfig {
 @Import(value = [TestCassandraConfig::class, TestRedisConfig::class])
 class TestSignalRmsDaoConfig {
 
+    @Profile("test") @Bean fun propsUtils(): PropsUtils = PropsUtils()
     @Profile("test") @Bean fun audioSignalRmsDao(): AudioSignalRmsDao = AudioSignalRmsDaoImpl()
 }
 
@@ -38,5 +42,6 @@ class TestSignalRmsDaoConfig {
 @Import(value = [TestCassandraConfig::class, TestRedisConfig::class])
 class TestClipDaoConfig {
 
+    @Profile("test") @Bean fun propsUtils(): PropsUtils = PropsUtils()
     @Profile("test") @Bean fun audioClipDao(): AudioClipDao = AudioClipDaoImpl()
 }

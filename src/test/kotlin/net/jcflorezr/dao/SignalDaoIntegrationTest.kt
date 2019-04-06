@@ -33,6 +33,8 @@ import org.hamcrest.CoreMatchers.`is` as Is
 class AudioSignalDaoIntegrationTest {
 
     @Autowired
+    private lateinit var propsUtils: PropsUtils
+    @Autowired
     private lateinit var audioSignalDao: AudioSignalDao
 
     private val thisClass: Class<AudioSignalDaoIntegrationTest> = this.javaClass
@@ -51,19 +53,19 @@ class AudioSignalDaoIntegrationTest {
 
     @Test
     fun persistPartForAudioWithBackgroundNoiseAndLowVoiceVolume() {
-        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("strong-background-noise"))
+        propsUtils.setTransactionId(sourceAudioFile = File("strong-background-noise"))
         persistPart(sourceFilesFolderPath = "$testSignalResourcesPath/strong-background-noise/")
     }
 
     @Test
     fun persistPartForAudioWithStrongBackgroundNoise() {
-        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("background-noise-low-volume"))
+        propsUtils.setTransactionId(sourceAudioFile = File("background-noise-low-volume"))
         persistPart(sourceFilesFolderPath = "$testSignalResourcesPath/background-noise-low-volume/")
     }
 
     @Test
     fun persistPartForAudioWithApplause() {
-        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("with-applause"))
+        propsUtils.setTransactionId(sourceAudioFile = File("with-applause"))
         persistPart(sourceFilesFolderPath = "$testSignalResourcesPath/with-applause/")
     }
 
@@ -88,19 +90,19 @@ class AudioSignalDaoIntegrationTest {
 
     @Test
     fun storeSignalPartsForAudioWithBackgroundNoiseAndLowVoiceVolume() {
-        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("background-noise-low-volume"))
+        propsUtils.setTransactionId(sourceAudioFile = File("background-noise-low-volume"))
         storeSignalParts(sourceFilesFolderPath = "$testSignalResourcesPath/background-noise-low-volume/")
     }
 
     @Test
     fun storeSignalPartsForAudioWithStrongBackgroundNoise() {
-        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("strong-background-noise"))
+        propsUtils.setTransactionId(sourceAudioFile = File("strong-background-noise"))
         storeSignalParts(sourceFilesFolderPath = "$testSignalResourcesPath/strong-background-noise/")
     }
 
     @Test
     fun storeSignalPartsForAudioWithApplause() {
-        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("with-applause"))
+        propsUtils.setTransactionId(sourceAudioFile = File("with-applause"))
         storeSignalParts(sourceFilesFolderPath = "$testSignalResourcesPath/with-applause/")
     }
 
@@ -131,6 +133,8 @@ class AudioSignalDaoIntegrationTest {
 class AudioSignalRmsDaoIntegrationTest {
 
     @Autowired
+    private lateinit var propsUtils: PropsUtils
+    @Autowired
     private lateinit var audioSignalRmsDao: AudioSignalRmsDao
 
     private val thisClass: Class<AudioSignalRmsDaoIntegrationTest> = this.javaClass
@@ -154,7 +158,7 @@ class AudioSignalRmsDaoIntegrationTest {
 
     @Test
     fun storeSignalRmsForAudioWithBackgroundNoiseAndLowVoiceVolume() {
-        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("background-noise-low-volume"))
+        propsUtils.setTransactionId(sourceAudioFile = File("background-noise-low-volume"))
         storeSignalRms(
             sourceFilePath = "$testSignalRmsResourcesPath/background-noise-low-volume/background-noise-low-volume.json",
             minIndex = 0.0,
@@ -164,7 +168,7 @@ class AudioSignalRmsDaoIntegrationTest {
 
     @Test
     fun storeSignalRmsForAudioWithStrongBackgroundNoise() {
-        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("strong-background-noise"))
+        propsUtils.setTransactionId(sourceAudioFile = File("strong-background-noise"))
         storeSignalRms(
             sourceFilePath = "$testSignalRmsResourcesPath/strong-background-noise/strong-background-noise.json",
             minIndex = 0.0,
@@ -174,7 +178,7 @@ class AudioSignalRmsDaoIntegrationTest {
 
     @Test
     fun storeSignalRmsForAudioWithApplause() {
-        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("with-applause"))
+        propsUtils.setTransactionId(sourceAudioFile = File("with-applause"))
         storeSignalRms(
             sourceFilePath = "$testSignalRmsResourcesPath/with-applause/with-applause.json",
             minIndex = 0.0,

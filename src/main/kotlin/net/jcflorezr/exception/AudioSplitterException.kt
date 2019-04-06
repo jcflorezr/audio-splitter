@@ -44,8 +44,9 @@ open class BadRequestException(
 ) : AudioSplitterException(errorCode) {
     override fun toString(): String {
         return "AudioSplitterException{" +
-                "message='" + message + '\''.toString() +
+                "errorCode='" + errorCode + '\''.toString() +
+                ", message='" + message + '\''.toString() +
                 ", suggestion='" + suggestion + '\''.toString() +
-                '}'.toString()
+            '}'.toString()
     }
 }

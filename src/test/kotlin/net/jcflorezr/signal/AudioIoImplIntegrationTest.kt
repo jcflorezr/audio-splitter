@@ -9,6 +9,7 @@ import net.jcflorezr.model.AudioFileMetadata
 import net.jcflorezr.model.InitialConfiguration
 import net.jcflorezr.util.AudioFormats
 import net.jcflorezr.util.PropsUtils
+import org.apache.commons.io.FileUtils
 import org.apache.commons.io.IOUtils
 import org.hamcrest.CoreMatchers.`is` as Is
 import org.hamcrest.CoreMatchers.equalTo
@@ -29,40 +30,57 @@ import java.io.FileInputStream
 class AudioIoImplIntegrationTest {
 
     @Autowired
+    private lateinit var propsUtils: PropsUtils
+    @Autowired
     private lateinit var audioIo: AudioIo
 
     companion object {
         private val MAPPER = ObjectMapper().registerKotlinModule()
     }
 
+    private val tempFilesFolder: String
     private val signalResourcesPath: String
     private val clipResourcesPath: String
     private val thisClass: Class<AudioIoImplIntegrationTest> = this.javaClass
 
     init {
+        tempFilesFolder = thisClass.getResource("/temp-converted-files").path
         signalResourcesPath = thisClass.getResource("/signal").path
         clipResourcesPath = thisClass.getResource("/clip").path
     }
 
     @Test
     fun retrieveSignalFromFileWithBackgroundNoiseAndLowVoiceVolume() {
-        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("background-noise-low-volume"))
+        propsUtils.setTransactionId(sourceAudioFile = File("background-noise-low-volume"))
         val audioFileLocation = "$signalResourcesPath/background-noise-low-volume/background-noise-low-volume.wav"
-        retrieveSignalFromAudioFile(audioFileLocation, File(audioFileLocation).name)
+        retrieveSignalFromAudioFile(audioFileLocation)
     }
 
     @Test
     fun retrieveSignalFromFileWithApplause() {
-        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("with-applause"))
+        propsUtils.setTransactionId(sourceAudioFile = File("with-applause"))
         val audioFileLocation = "$signalResourcesPath/with-applause/with-applause.wav"
-        retrieveSignalFromAudioFile(audioFileLocation, File(audioFileLocation).name)
+        retrieveSignalFromAudioFile(audioFileLocation)
     }
 
     @Test
     fun retrieveSignalFromFileWithStrongBackgroundNoise() {
-        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("strong-background-noise"))
+        propsUtils.setTransactionId(sourceAudioFile = File("strong-background-noise"))
         val audioFileLocation = "$signalResourcesPath/strong-background-noise/strong-background-noise.wav"
-        retrieveSignalFromAudioFile(audioFileLocation, File(audioFileLocation).name)
+        retrieveSignalFromAudioFile(audioFileLocation)
+    }
+
+    private fun retrieveSignalFromAudioFile(audioFileLocation: String) = runBlocking {
+        val audioFile = File(audioFileLocation)
+        val tempFile = File("$tempFilesFolder/${audioFile.name}")
+        FileUtils.copyFile(audioFile, tempFile)
+        audioIo.generateAudioSignalFromAudioFile(
+            InitialConfiguration(
+                audioFileName = tempFile.absolutePath,
+                audioFileMetadata = AudioFileMetadata(audioFileName = audioFile.name)
+            )
+        )
+        tempFile.delete()
     }
 
     @Test
@@ -78,16 +96,6 @@ class AudioIoImplIntegrationTest {
     @Test
     fun createAudioClipsForAudioFileWithStrongBackgroundNoise() {
         createAudioClips("strong-background-noise")
-    }
-
-    private fun retrieveSignalFromAudioFile(audioFileLocation: String, audioFileName: String) = runBlocking {
-        audioIo.generateAudioSignalFromAudioFile(
-            InitialConfiguration(
-                audioFileLocation = audioFileLocation,
-                audioFileMetadata = AudioFileMetadata(audioFileName = audioFileName),
-                outputDirectory = "any-output-directory"
-            )
-        )
     }
 
     private fun createAudioClips(folderName: String) = runBlocking {

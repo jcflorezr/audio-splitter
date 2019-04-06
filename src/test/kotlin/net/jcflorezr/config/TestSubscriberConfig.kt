@@ -22,6 +22,7 @@ import net.jcflorezr.model.AudioSignalsRmsInfo
 import net.jcflorezr.rms.SoundZonesDetector
 import net.jcflorezr.rms.SoundZonesDetectorActor
 import net.jcflorezr.rms.SoundZonesDetectorActorImpl
+import net.jcflorezr.util.PropsUtils
 import org.mockito.Mockito
 import org.springframework.beans.factory.config.ConfigurableBeanFactory
 import org.springframework.context.annotation.Bean
@@ -34,6 +35,8 @@ import org.springframework.data.cassandra.core.CassandraOperations
 @Configuration
 @Import(value = [TestRedisConfig::class])
 class SignalRmsSubscriberConfig {
+
+    @Profile("test") @Bean fun propsUtils(): PropsUtils = PropsUtils()
 
     @Profile("test") @Bean fun exceptionHandler(): ExceptionHandler = Mockito.mock(ExceptionHandler::class.java)
 
@@ -62,6 +65,8 @@ class SignalRmsSubscriberConfig {
 @Configuration
 @Import(value = [TestRedisConfig::class])
 class AudioClipSubscriberConfig {
+
+    @Profile("test") @Bean fun propsUtils(): PropsUtils = PropsUtils()
 
     @Profile("test") @Bean fun exceptionHandler(): ExceptionHandler = Mockito.mock(ExceptionHandler::class.java)
 

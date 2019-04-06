@@ -2,6 +2,7 @@ package net.jcflorezr.exception
 
 import net.jcflorezr.util.PropsUtils
 import org.apache.commons.io.FilenameUtils
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 interface ExceptionHandler {
@@ -11,9 +12,12 @@ interface ExceptionHandler {
 @Service
 final class ExceptionHandlerImpl : ExceptionHandler {
 
+    @Autowired
+    private lateinit var propsUtils: PropsUtils
+
     override suspend fun handle(exception: Throwable, sourceAudioFileName: String) {
         val sourceAudioFileBaseName = FilenameUtils.getBaseName(sourceAudioFileName)
-        val transactionId = PropsUtils.getTransactionId(sourceAudioFileBaseName)
+        val transactionId = propsUtils.getTransactionId(sourceAudioFileBaseName)
         println("AN ERROR OCCURRED. Transaction id: $transactionId")
         when (exception) {
             is AudioSplitterException -> exception

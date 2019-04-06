@@ -26,6 +26,8 @@ interface AudioClipDao {
 class AudioClipDaoImpl : AudioClipDao {
 
     @Autowired
+    private lateinit var propsUtils: PropsUtils
+    @Autowired
     private lateinit var audioClipTemplate: RedisTemplate<String, AudioClipInfo>
     @Autowired
     private lateinit var cassandraTemplate: CassandraOperations
@@ -42,7 +44,7 @@ class AudioClipDaoImpl : AudioClipDao {
     }
 
     override suspend fun persistAudioClipInfo(audioClipInfo: AudioClipInfo) {
-        val transactionId = PropsUtils.getTransactionId(audioClipInfo.audioFileName)
+        val transactionId = propsUtils.getTransactionId(audioClipInfo.audioFileName)
         logger.info { "[$transactionId][5][clip-info] " +
             "Persisting Clip Info ${audioClipInfo.consecutive to audioClipInfo.audioClipName}. " +
             "Start: ${audioClipInfo.initialPositionInSeconds} - " +
@@ -54,7 +56,7 @@ class AudioClipDaoImpl : AudioClipDao {
         firstAudioClipInfo: AudioClipInfo,
         lastAudioClipInfo: AudioClipInfo
     ) {
-        val transactionId = PropsUtils.getTransactionId(firstAudioClipInfo.audioFileName)
+        val transactionId = propsUtils.getTransactionId(firstAudioClipInfo.audioFileName)
         logger.info { "[$transactionId][5][clip-info] " +
             "Persisting Grouped Clip Info ${firstAudioClipInfo.consecutive to firstAudioClipInfo.audioClipName}. " +
             "Start: ${firstAudioClipInfo.initialPositionInSeconds} - " +
@@ -96,7 +98,7 @@ class AudioClipDaoImpl : AudioClipDao {
         min: Double,
         max: Double
     ): Long {
-        val transactionId = PropsUtils.getTransactionId(sourceAudioFileName = key.substringAfter("_"))
+        val transactionId = propsUtils.getTransactionId(sourceAudioFileName = key.substringAfter("_"))
         logger.info { "[$transactionId][5][clip-info] Removing clip info previously cached. From: ${tenthsSecondsFormat(min)} - " +
             "to: ${tenthsSecondsFormat(max)}" }
         return audioClipTemplate

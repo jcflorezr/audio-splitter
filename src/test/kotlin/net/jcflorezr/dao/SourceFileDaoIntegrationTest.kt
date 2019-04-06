@@ -26,6 +26,8 @@ import org.hamcrest.CoreMatchers.`is` as Is
 class SourceFileDaoIntegrationTest {
 
     @Autowired
+    private lateinit var propsUtils: PropsUtils
+    @Autowired
     private lateinit var sourceFileDao: SourceFileDao
 
     private val thisClass: Class<SourceFileDaoIntegrationTest> = this.javaClass
@@ -41,10 +43,21 @@ class SourceFileDaoIntegrationTest {
 
     // TODO: this test is failing because it cannot connect to cassandra
     @Test
-    fun storeInitialConfigurationWithAudioMetadata() = runBlocking {
+    fun storeInitialConfigurationWithAudioMetadataFromMp3File() = runBlocking {
         initializer.createTable(AUDIO_FILE_METADATA_TABLE, AudioFileMetadataEntity::class.java)
-        val initialConfiguration = MAPPER.readValue<InitialConfiguration>(File(testResourcesPath + "initial-configuration.json"))
-        PropsUtils.setTransactionIdProperty(sourceAudioFile = File(initialConfiguration.audioFileLocation))
+        val initialConfiguration = MAPPER.readValue<InitialConfiguration>(File(testResourcesPath + "initial-configuration-mp3.json"))
+        propsUtils.setTransactionId(sourceAudioFile = File(initialConfiguration.audioFileName))
+        val storedAudioMetadata = sourceFileDao.persistAudioFileMetadata(initialConfiguration)
+        val actualAudioMetadata = sourceFileDao.retrieveAudioFileMetadata(storedAudioMetadata.audioFileName)
+        assertThat(actualAudioMetadata, Is(equalTo(storedAudioMetadata)))
+        initializer.dropTable(AUDIO_FILE_METADATA_TABLE)
+    }
+
+    @Test
+    fun storeInitialConfigurationWithAudioMetadataFromFlacFile() = runBlocking {
+        initializer.createTable(AUDIO_FILE_METADATA_TABLE, AudioFileMetadataEntity::class.java)
+        val initialConfiguration = MAPPER.readValue<InitialConfiguration>(File(testResourcesPath + "initial-configuration-flac.json"))
+        propsUtils.setTransactionId(sourceAudioFile = File(initialConfiguration.audioFileName))
         val storedAudioMetadata = sourceFileDao.persistAudioFileMetadata(initialConfiguration)
         val actualAudioMetadata = sourceFileDao.retrieveAudioFileMetadata(storedAudioMetadata.audioFileName)
         assertThat(actualAudioMetadata, Is(equalTo(storedAudioMetadata)))

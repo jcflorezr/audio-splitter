@@ -6,12 +6,10 @@ import net.jcflorezr.dao.TestRedisInitializer
 import net.jcflorezr.model.AudioClipInfo
 import net.jcflorezr.model.AudioSignal
 import net.jcflorezr.model.AudioSignalRmsInfo
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.beans.factory.config.ConfigurableBeanFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
-import org.springframework.context.annotation.PropertySource
 import org.springframework.context.annotation.Scope
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory
@@ -21,11 +19,7 @@ import org.springframework.data.redis.serializer.SerializationException
 import org.springframework.lang.Nullable
 
 @Configuration
-@PropertySource(value = ["classpath:config/test-redis.properties"])
 class TestRedisConfig {
-
-    @Value("\${redis.port}")
-    private lateinit var port: Integer
 
     @Profile("test")
     @Bean

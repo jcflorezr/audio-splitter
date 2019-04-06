@@ -11,6 +11,7 @@ import net.jcflorezr.dao.AudioSignalDao
 import net.jcflorezr.dao.AudioSignalDaoImpl
 import net.jcflorezr.model.AudioClipSignal
 import net.jcflorezr.model.AudioSignal
+import net.jcflorezr.util.PropsUtils
 import org.mockito.Mockito.mock
 import org.springframework.beans.factory.config.ConfigurableBeanFactory
 import org.springframework.context.annotation.Bean
@@ -23,6 +24,8 @@ import org.springframework.data.cassandra.core.CassandraOperations
 @Configuration
 @Import(value = [TestRedisConfig::class])
 class TestClipsGeneratorConfig {
+
+    @Profile("test") @Bean fun propsUtils(): PropsUtils = PropsUtils()
 
     @Profile("test") @Bean fun audioIoTest() = AudioIoImpl()
 

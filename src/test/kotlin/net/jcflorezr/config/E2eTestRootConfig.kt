@@ -27,8 +27,8 @@ import net.jcflorezr.rms.SoundZonesDetector
 import net.jcflorezr.rms.SoundZonesDetectorActor
 import net.jcflorezr.rms.SoundZonesDetectorActorImpl
 import net.jcflorezr.storage.BucketClient
-import net.jcflorezr.storage.BucketClientImpl
 import net.jcflorezr.util.PropsUtils
+import org.mockito.Mockito.mock
 import org.springframework.beans.factory.config.ConfigurableBeanFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -39,7 +39,7 @@ import org.springframework.context.annotation.Scope
 @Configuration
 @PropertySource(value = ["config/files-config.properties"])
 @Import(value = [RedisConfig::class, CassandraConfig::class])
-class RootConfig {
+class E2eTestRootConfig {
 
     /*
     Services
@@ -47,7 +47,7 @@ class RootConfig {
 
     @Bean fun propsUtils(): PropsUtils = PropsUtils()
 
-    @Bean fun bucketClient(): BucketClient = BucketClientImpl()
+    @Bean fun bucketClient(): BucketClient = mock(BucketClient::class.java)
 
     @Bean fun exceptionHandler(): ExceptionHandler = ExceptionHandlerImpl()
 

@@ -17,6 +17,8 @@ import net.jcflorezr.model.AudioSignalsRmsInfo
 import net.jcflorezr.model.InitialConfiguration
 import net.jcflorezr.rms.RmsCalculator
 import net.jcflorezr.rms.RmsCalculatorImpl
+import net.jcflorezr.storage.BucketClient
+import net.jcflorezr.util.PropsUtils
 import org.mockito.Mockito.mock
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -28,6 +30,10 @@ class TestRootConfig {
     /*
     Services
      */
+
+    @Profile("test") @Bean fun bucketClient(): BucketClient = mock(BucketClient::class.java)
+
+    @Profile("test") @Bean fun propsUtils(): PropsUtils = PropsUtils()
 
     @Profile("test") @Bean fun exceptionHandler(): ExceptionHandler = mock(ExceptionHandler::class.java)
 

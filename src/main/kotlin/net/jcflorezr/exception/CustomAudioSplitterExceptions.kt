@@ -7,7 +7,7 @@ class SourceAudioFileValidationException(
     message: String,
     errorCode: String,
     suggestion: String? = null
-) : BadRequestException(message, errorCode, suggestion) {
+) : BadRequestException(message = message, errorCode = errorCode, suggestion = suggestion) {
     companion object {
 
         fun audioFileDoesNotExist(audioFileName: String) =
@@ -16,22 +16,22 @@ class SourceAudioFileValidationException(
                 message = "Source audio file '$audioFileName' does not exist."
             )
 
+        fun audioFileDoesNotExistInBucket(audioFileName: String) =
+            SourceAudioFileValidationException(
+                errorCode = "audio_file_not_found_in_bucket",
+                message = "Source audio file '$audioFileName' does not exist in the bucket."
+            )
+
         fun audioFileShouldNotBeDirectory(audioFileName: String) =
             SourceAudioFileValidationException(
                 errorCode = "audio_file_path_is_a_directory_path",
                 message = "Source audio file: '$audioFileName' should be a file, not a directory."
             )
 
-        fun invalidOutputDirectoryPath(outputDirectoryPath: String) =
-            SourceAudioFileValidationException(
-                errorCode = "invalid_output_directory",
-                message = "The output directory '$outputDirectoryPath' is not valid or does not exist."
-            )
-
         fun mandatoryFieldsMissingException() = SourceAudioFileValidationException(
             message = "There are empty mandatory fields.",
             errorCode = "missing_mandatory_fields",
-            suggestion = "Mandatory fields are: [audioFileName, outputDirectoryPath]"
+            suggestion = "Mandatory fields are: [audioFileName]"
         )
 
         fun existingAudioSplitProcessException(audioFileName: String) = SourceAudioFileValidationException(

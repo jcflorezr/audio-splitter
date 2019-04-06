@@ -8,7 +8,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
-import net.jcflorezr.config.RootConfig
+import net.jcflorezr.config.E2eTestRootConfig
 import net.jcflorezr.dao.AudioClipDao
 import net.jcflorezr.dao.AudioSignalDao
 import net.jcflorezr.dao.AudioSignalRmsDao
@@ -25,8 +25,10 @@ import net.jcflorezr.model.AudioSignalRmsEntity
 import net.jcflorezr.model.AudioSignalRmsInfo
 import net.jcflorezr.model.GroupedAudioClipInfoEntity
 import net.jcflorezr.model.InitialConfiguration
+import net.jcflorezr.storage.BucketClient
 import net.jcflorezr.util.AudioFormats
 import net.jcflorezr.util.PropsUtils
+import org.apache.commons.io.FileUtils
 import org.apache.commons.io.IOUtils
 import org.hamcrest.CoreMatchers.`is` as Is
 import org.hamcrest.CoreMatchers.equalTo
@@ -36,6 +38,7 @@ import org.junit.Assert.assertTrue
 import org.junit.ClassRule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Mockito.`when` as When
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
@@ -46,9 +49,11 @@ import java.io.FileInputStream
 
 @ActiveProfiles("test")
 @RunWith(SpringJUnit4ClassRunner::class)
-@ContextConfiguration(classes = [RootConfig::class])
-class E2eLiveTest {
+@ContextConfiguration(classes = [E2eTestRootConfig::class])
+class E2eTest {
 
+    @Autowired
+    private lateinit var propsUtils: PropsUtils
     @Autowired
     private lateinit var sourceFileDao: SourceFileDao
     @Autowired
@@ -57,10 +62,14 @@ class E2eLiveTest {
     private lateinit var audioSignalRmsDao: AudioSignalRmsDao
     @Autowired
     private lateinit var audioClipDao: AudioClipDao
+    @Autowired
+    private lateinit var audioSplitter: AudioSplitter
+    @Autowired
+    private lateinit var bucketClient: BucketClient
 
     private val logger = KotlinLogging.logger { }
 
-    private val thisClass: Class<E2eLiveTest> = this.javaClass
+    private val thisClass: Class<E2eTest> = this.javaClass
     private val testResourcesPath: String
     private val signalResourcesPath: String
     private val rmsResourcesPath: String
@@ -102,19 +111,20 @@ class E2eLiveTest {
         cassandraInitializer.createTable(GROUPED_AUDIO_CLIP_INFO_TABLE, GroupedAudioClipInfoEntity::class.java)
     }
 
-    @Autowired
-    private lateinit var audioSplitter: AudioSplitter
-
     @Test
     fun splitAudioIntoClips() = runBlocking {
         val audioFilesNames = listOf("background-noise-low-volume", "with-applause", "strong-background-noise")
         coroutineScope {
             audioFilesNames.forEach { audioFileName ->
+                val sourceFile = File("$signalResourcesPath/$audioFileName/$audioFileName${AudioFormats.WAV.extension}")
+                val tempFile = File("$tempConvertedFilesPath/$audioFileName${AudioFormats.WAV.extension}")
+                FileUtils.copyFile(sourceFile, tempFile)
+                When(bucketClient.downloadSourceFileFromBucket("$audioFileName${AudioFormats.WAV.extension}"))
+                    .thenReturn(tempFile)
                 launch {
                     audioSplitter.splitAudioIntoClips(
                         configuration = InitialConfiguration(
-                            audioFileLocation = "$signalResourcesPath/$audioFileName/$audioFileName${AudioFormats.WAV.extension}",
-                            outputDirectory = tempConvertedFilesPath
+                            audioFileName = "$audioFileName${AudioFormats.WAV.extension}"
                         )
                     )
                 }
@@ -125,8 +135,7 @@ class E2eLiveTest {
 
         audioFilesNames.forEach { audioFileName ->
             try {
-                val transactionId = PropsUtils.getTransactionId(audioFileName)
-
+                val transactionId = propsUtils.getTransactionId(audioFileName)
                 testAudioSource(audioFileName, transactionId)
                 testAudioContent(audioFileName, transactionId)
                 testAudioRms(audioFileName, transactionId)
@@ -135,14 +144,14 @@ class E2eLiveTest {
                 testAudioClipsFiles(audioFileName, transactionId)
                 testRedisWasFullyEmptied(audioFileName, transactionId)
             } finally {
-                val transactionId = PropsUtils.getTransactionId(sourceAudioFileName = audioFileName)
+                val transactionId = propsUtils.getTransactionId(sourceAudioFileName = audioFileName)
                 File("$tempConvertedFilesPath/$transactionId").deleteRecursively()
             }
         }
     }
 
     private fun testAudioSource(audioFileName: String, transactionId: String) {
-        val audioMetadataLocation = "$testResourcesPath/audio-metadata/$audioFileName.json"
+        val audioMetadataLocation = "$testResourcesPath/$audioFileName.json"
         val expectedAudioMetadata = MAPPER.readValue<AudioFileMetadataEntity>(File(audioMetadataLocation))
         val actualAudioMetadata = sourceFileDao.retrieveAudioFileMetadata("$audioFileName${AudioFormats.WAV.extension}")
 

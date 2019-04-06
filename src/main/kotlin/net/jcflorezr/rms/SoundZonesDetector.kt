@@ -34,6 +34,8 @@ interface SoundZonesDetectorActor {
 class SoundZonesDetectorActorImpl : SoundZonesDetectorActor {
 
     @Autowired
+    private lateinit var propsUtils: PropsUtils
+    @Autowired
     private lateinit var soundZonesDetectorFactory: () -> SoundZonesDetector
     @Autowired
     private lateinit var audioSignalRmsDao: AudioSignalRmsDao
@@ -83,7 +85,7 @@ class SoundZonesDetectorActorImpl : SoundZonesDetectorActor {
     }
 
     private suspend fun detectSoundZones(sampleAudioRmsInfo: AudioSignalRmsInfo, soundZonesDetector: SoundZonesDetector) {
-        val transactionId = PropsUtils.getTransactionId(sampleAudioRmsInfo.audioFileName)
+        val transactionId = propsUtils.getTransactionId(sampleAudioRmsInfo.audioFileName)
         audioSignalRmsDao.retrieveAllAudioSignalsRms(
             key = "${sampleAudioRmsInfo.entityName}_${sampleAudioRmsInfo.audioFileName}"
         ).let {
@@ -122,6 +124,8 @@ class SoundZonesDetectorActorImpl : SoundZonesDetectorActor {
 class SoundZonesDetector {
 
     @Autowired
+    private lateinit var propsUtils: PropsUtils
+    @Autowired
     private lateinit var audioClipTopic: Topic<AudioClipInfo>
     @Autowired
     private lateinit var audioSignalRmsDao: AudioSignalRmsDao
@@ -151,7 +155,7 @@ class SoundZonesDetector {
     private fun AudioSignalRmsInfo.initializeNewActiveZone() { startActiveZonePosition = initialPosition }
 
     suspend fun detectSoundZones(audioRmsInfoList: List<AudioSignalRmsInfo>) {
-        val transactionId = PropsUtils.getTransactionId(audioRmsInfoList.first().audioFileName)
+        val transactionId = propsUtils.getTransactionId(audioRmsInfoList.first().audioFileName)
 
         logIntroMessage(transactionId, audioRmsInfoList.first(), audioRmsInfoList.last(), SoundZoneDetectionMethods.BY_SILENCE_SEGMENTS)
 
@@ -203,7 +207,7 @@ class SoundZonesDetector {
     }
 
     private suspend fun detectSoundZonesByActiveSegments(audioRmsInfoList: List<AudioSignalRmsInfo>) {
-        val transactionId = PropsUtils.getTransactionId(audioRmsInfoList.first().audioFileName)
+        val transactionId = propsUtils.getTransactionId(audioRmsInfoList.first().audioFileName)
 
         logIntroMessage(transactionId, audioRmsInfoList.first(), audioRmsInfoList.last(), SoundZoneDetectionMethods.BY_ACTIVE_SEGMENTS)
 

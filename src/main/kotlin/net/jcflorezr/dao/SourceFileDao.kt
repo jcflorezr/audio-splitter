@@ -19,30 +19,28 @@ interface SourceFileDao {
 class SourceFileDaoImpl : SourceFileDao {
 
     @Autowired
+    private lateinit var propsUtils: PropsUtils
+    @Autowired
     private lateinit var cassandraTemplate: CassandraOperations
 
     private val logger = KotlinLogging.logger { }
 
     override fun persistAudioFileMetadata(initialConfiguration: InitialConfiguration): AudioFileMetadataEntity {
         val audioFileMetadata = initialConfiguration.audioFileMetadata
-        val audioFileName = audioFileMetadata?.audioFileName?.takeIf { it.isNotBlank() } ?: initialConfiguration.audioFileLocation
+        val audioFileName = audioFileMetadata!!.audioFileName
         val audioFileMetadataEntity = AudioFileMetadataEntity(
             audioFileName = audioFileName,
-            title = audioFileMetadata?.title,
-            album = audioFileMetadata?.album,
-            artist = audioFileMetadata?.artist,
-            trackNumber = audioFileMetadata?.trackNumber,
-            genre = audioFileMetadata?.genre,
-            comments = audioFileMetadata?.comments,
-            rawMetadata = audioFileMetadata?.rawMetadata,
-            sampleRate = audioFileMetadata?.sampleRate,
-            channels = audioFileMetadata?.channels,
-            duration = audioFileMetadata?.duration,
-            version = audioFileMetadata?.version,
-            creator = audioFileMetadata?.creator,
-            contentType = audioFileMetadata?.contentType
+            title = audioFileMetadata.title,
+            album = audioFileMetadata.album,
+            artist = audioFileMetadata.artist,
+            trackNumber = audioFileMetadata.trackNumber,
+            genre = audioFileMetadata.genre,
+            comments = audioFileMetadata.comments,
+            sampleRate = audioFileMetadata.sampleRate,
+            channels = audioFileMetadata.channels,
+            duration = audioFileMetadata.duration
         )
-        logger.info { "[${PropsUtils.getTransactionId(audioFileMetadataEntity.audioFileName)}][1][entry-point] " +
+        logger.info { "[${propsUtils.getTransactionId(audioFileMetadataEntity.audioFileName)}][1][entry-point] " +
             "Persisting audio metadata for ${audioFileMetadataEntity.audioFileName}." }
         return cassandraTemplate.insert(audioFileMetadataEntity)
     }

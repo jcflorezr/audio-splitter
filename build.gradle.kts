@@ -13,8 +13,6 @@ buildscript {
     @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
     var jacksonVersion: String by extra
     @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
-    var tikaVersion: String by extra
-    @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
     var testContainersVersion: String by extra
 
     @Suppress("UNUSED_VALUE")
@@ -26,8 +24,6 @@ buildscript {
     @Suppress("UNUSED_VALUE")
     jacksonVersion = "2.9.8"
     @Suppress("UNUSED_VALUE")
-    tikaVersion = "1.20"
-    @Suppress("UNUSED_VALUE")
     testContainersVersion = "1.10.6"
 }
 
@@ -35,7 +31,6 @@ val kotlinVersion: String by extra
 val springVersion: String by extra
 val springDataVersion: String by extra
 val jacksonVersion: String by extra
-val tikaVersion: String by extra
 val testContainersVersion: String by extra
 
 plugins {
@@ -46,6 +41,8 @@ plugins {
 
 repositories {
     jcenter()
+    mavenCentral()
+    maven(url = "http://dl.bintray.com/ijabz/maven")
 }
 
 dependencies {
@@ -71,14 +68,17 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
     implementation("com.fasterxml.uuid:java-uuid-generator:3.1.4")
-    implementation("javazoom:jlayer:1.0.1")
     implementation("commons-io:commons-io:2.5")
     implementation("org.apache.commons:commons-lang3:3.0")
-    implementation("org.apache.tika:tika-core:$tikaVersion")
-    implementation("org.apache.tika:tika-parsers:$tikaVersion")
+    implementation("org.apache.tika:tika-parsers:1.20")
+    implementation("net.jthink:jaudiotagger:2.2.5")
     implementation("net.sourceforge.javaflacencoder:java-flac-encoder:0.3.7")
+    implementation("com.googlecode.soundlibs:vorbisspi:1.0.3.3")
+    implementation("org.jflac:jflac-codec:1.5.2")
+    implementation("com.googlecode.soundlibs:mp3spi:1.9.5.4")
     implementation("io.github.microutils:kotlin-logging:1.6.25")
     implementation("ch.qos.logback:logback-classic:1.2.3")
+    implementation("com.google.cloud:google-cloud-storage:1.66.0")
 
     // Testing
     testImplementation("org.springframework:spring-test:$springVersion")

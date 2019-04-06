@@ -19,13 +19,15 @@ import javax.sound.sampled.AudioInputStream
 import javax.sound.sampled.AudioSystem
 
 interface AudioIo {
-    suspend fun saveAudioFile(fileName: String, extension: String, signal: Array<FloatArray?>, sampleRate: Int, transactionId: String)
+    suspend fun saveAudioFile(fileName: String, extension: String, signal: Array<FloatArray?>, sampleRate: Int, transactionId: String): Boolean
     suspend fun generateAudioSignalFromAudioFile(configuration: InitialConfiguration)
 }
 
 @Service
 final class AudioIoImpl : AudioIo {
 
+    @Autowired
+    private lateinit var propsUtils: PropsUtils
     @Autowired
     private lateinit var audioSignalTopic: Topic<AudioSignal>
 
@@ -37,17 +39,18 @@ final class AudioIoImpl : AudioIo {
         signal: Array<FloatArray?>,
         sampleRate: Int,
         transactionId: String
-    ) {
+    ): Boolean {
         logger.info { "[$transactionId][6][audio-clip] Creating Clip Audio File ($fileName$extension)." }
         val audioInputStream = getAudioInputStreamForPacking(signal, 0, signal[0]!!.size, sampleRate)
         val fileType = AudioFormats.getFileType(extension)
-        AudioSystem.write(audioInputStream, fileType, File(fileName + extension))
+        return AudioSystem.write(audioInputStream, fileType, File("$fileName$extension")) > 0
     }
 
     override suspend fun generateAudioSignalFromAudioFile(configuration: InitialConfiguration) = coroutineScope<Unit> {
-        AudioSystem.getAudioInputStream(File(configuration.convertedAudioFileLocation ?: configuration.audioFileLocation)).use { stream ->
-            logger.info { "[${PropsUtils.getTransactionId(configuration.audioFileLocation)}][2][audio-signal] " +
-                "Starting to generate audio signal segments for ${configuration.audioFileLocation}." }
+        val sourceAudioFileName = configuration.audioFileName
+        AudioSystem.getAudioInputStream(File(configuration.convertedAudioFileLocation ?: sourceAudioFileName)).use { stream ->
+            logger.info { "[${propsUtils.getTransactionId(sourceAudioFileName)}][2][audio-signal] " +
+                "Starting to generate audio signal segments for $sourceAudioFileName." }
 
             val totalFrames = stream.frameLength.takeIf { it <= Integer.MAX_VALUE }?.toInt()
                 ?: throw IOException("Sound file too long.")
@@ -82,7 +85,7 @@ final class AudioIoImpl : AudioIo {
                     audioSourceInfo = audioInfo
                 )
                 launch {
-                    logger.info { "[${PropsUtils.getTransactionId(configuration.audioFileLocation)}][2][audio-signal] " +
+                    logger.info { "[${propsUtils.getTransactionId(sourceAudioFileName)}][2][audio-signal] " +
                         "Audio signal ==> start: ${audioSignal.initialPositionInSeconds} - " +
                         "end: ${audioSignal.endPositionInSeconds}. has been generated." }
                     audioSignalTopic.postMessage(message = audioSignal)

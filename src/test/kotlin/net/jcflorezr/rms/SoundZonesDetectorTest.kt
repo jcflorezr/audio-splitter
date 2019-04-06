@@ -24,6 +24,8 @@ import java.io.File
 class SoundZonesDetectorTest {
 
     @Autowired
+    private lateinit var propsUtils: PropsUtils
+    @Autowired
     private lateinit var applicationCtx: ApplicationContext
     @Autowired
     private lateinit var soundZonesDetector: SoundZonesDetector
@@ -43,7 +45,7 @@ class SoundZonesDetectorTest {
 
     @Test
     fun generateAudioClipsInfoForFileWithBackgroundNoiseAndLowVoiceVolume() = runBlocking {
-        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("background-noise-low-volume"))
+        propsUtils.setTransactionId(sourceAudioFile = File("background-noise-low-volume"))
         detectSoundZones(
             path = signalResourcesPath + "background-noise-low-volume/background-noise-low-volume.json"
         )
@@ -53,7 +55,7 @@ class SoundZonesDetectorTest {
 
     @Test
     fun generateAudioClipsInfoForFileWithApplause() = runBlocking {
-        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("with-applause"))
+        propsUtils.setTransactionId(sourceAudioFile = File("with-applause"))
         detectSoundZones(
             path = signalResourcesPath + "with-applause/with-applause.json"
         )
@@ -63,7 +65,7 @@ class SoundZonesDetectorTest {
 
     @Test
     fun generateAudioClipsInfoForFileWithStrongBackgroundNoise() = runBlocking {
-        PropsUtils.setTransactionIdProperty(sourceAudioFile = File("strong-background-noise"))
+        propsUtils.setTransactionId(sourceAudioFile = File("strong-background-noise"))
         detectSoundZones(
             path = signalResourcesPath + "strong-background-noise/strong-background-noise.json"
         )
