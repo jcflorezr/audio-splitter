@@ -59,8 +59,8 @@ class ClipGeneratorIntegrationTest {
             signalsFolderPath = signalResourcesPath + "background-noise-low-volume/",
             clipsPath = clipsResourcesPath + "background-noise-low-volume/background-noise-low-volume.json"
         )
-        val signalRmsSubscriber = applicationCtx.getBean("audioClipSignalSubscriberTest") as AudioClipSignalSubscriberMock
-        signalRmsSubscriber.validateCompleteness()
+        val audioClipSignalSubscriber = applicationCtx.getBean("audioClipSignalSubscriberTest") as AudioClipSignalSubscriberMock
+        audioClipSignalSubscriber.validateCompleteness()
     }
 
     @Test
@@ -70,8 +70,8 @@ class ClipGeneratorIntegrationTest {
             signalsFolderPath = signalResourcesPath + "with-applause/",
             clipsPath = clipsResourcesPath + "with-applause/with-applause.json"
         )
-        val signalRmsSubscriber = applicationCtx.getBean("audioClipSignalSubscriberTest") as AudioClipSignalSubscriberMock
-        signalRmsSubscriber.validateCompleteness()
+        val audioClipSignalSubscriber = applicationCtx.getBean("audioClipSignalSubscriberTest") as AudioClipSignalSubscriberMock
+        audioClipSignalSubscriber.validateCompleteness()
     }
 
     @Test
@@ -81,8 +81,8 @@ class ClipGeneratorIntegrationTest {
             signalsFolderPath = signalResourcesPath + "strong-background-noise/",
             clipsPath = clipsResourcesPath + "strong-background-noise/strong-background-noise.json"
         )
-        val signalRmsSubscriber = applicationCtx.getBean("audioClipSignalSubscriberTest") as AudioClipSignalSubscriberMock
-        signalRmsSubscriber.validateCompleteness()
+        val audioClipSignalSubscriber = applicationCtx.getBean("audioClipSignalSubscriberTest") as AudioClipSignalSubscriberMock
+        audioClipSignalSubscriber.validateCompleteness()
     }
 
     @Test
@@ -92,8 +92,8 @@ class ClipGeneratorIntegrationTest {
             signalsFolderPath = signalResourcesPath + "background-noise-low-volume-incomplete/",
             clipsPath = clipsResourcesPath + "background-noise-low-volume-incomplete/background-noise-low-volume-incomplete.json"
         )
-        val signalRmsSubscriber = applicationCtx.getBean("audioClipSignalSubscriberTest") as AudioClipSignalSubscriberMock
-        signalRmsSubscriber.validateCompleteness()
+        val audioClipSignalSubscriber = applicationCtx.getBean("audioClipSignalSubscriberTest") as AudioClipSignalSubscriberMock
+        audioClipSignalSubscriber.validateCompleteness()
     }
 
     private suspend fun generateAudioClips(clipsPath: String, signalsFolderPath: String) {

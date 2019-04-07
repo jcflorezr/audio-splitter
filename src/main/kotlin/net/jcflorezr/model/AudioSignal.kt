@@ -193,7 +193,10 @@ data class AudioClipSignal(
     val hours: Int,
     val minutes: Int,
     val seconds: Int,
-    val tenthsOfSecond: Int
+    val tenthsOfSecond: Int,
+    val initialPositionInSeconds: Float,
+    val endPositionInSeconds: Float,
+    val lastClip: Boolean
 ) : Message {
 
     override fun equals(other: Any?): Boolean {
@@ -210,6 +213,9 @@ data class AudioClipSignal(
         if (minutes != other.minutes) return false
         if (seconds != other.seconds) return false
         if (tenthsOfSecond != other.tenthsOfSecond) return false
+        if (initialPositionInSeconds != other.initialPositionInSeconds) return false
+        if (endPositionInSeconds != other.endPositionInSeconds) return false
+        if (lastClip != other.lastClip) return false
 
         return true
     }
@@ -223,6 +229,9 @@ data class AudioClipSignal(
         result = 31 * result + minutes
         result = 31 * result + seconds
         result = 31 * result + tenthsOfSecond
+        result = 31 * result + initialPositionInSeconds.hashCode()
+        result = 31 * result + endPositionInSeconds.hashCode()
+        result = 31 * result + lastClip.hashCode()
         return result
     }
 }

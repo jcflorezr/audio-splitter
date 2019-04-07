@@ -131,7 +131,6 @@ class ClipGenerator {
     private var groupedAudioClipsInfo = ArrayList<AudioClipInfo>()
     private var groupedClipSecondsAmount = 0.0f
     private var previousAudioClipInfo: AudioClipInfo? = null
-    private var groupNumber = 0
     private var nextClipConsecutiveNumberNeeded = 1
 
     suspend fun generateClips(audioClipsInfo: List<AudioClipInfo>) {
@@ -211,7 +210,10 @@ class ClipGenerator {
                     hours = firstClip.hours,
                     minutes = firstClip.minutes,
                     seconds = firstClip.seconds,
-                    tenthsOfSecond = firstClip.tenthsOfSecond
+                    tenthsOfSecond = firstClip.tenthsOfSecond,
+                    initialPositionInSeconds = firstClip.initialPositionInSeconds,
+                    endPositionInSeconds = lastClip.endPositionInSeconds,
+                    lastClip = lastClip.lastClip
                 )
             )
         }

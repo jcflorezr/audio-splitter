@@ -218,6 +218,9 @@ final class AudioClipSignalSubscriber : Subscriber<AudioClipSignal> {
             exceptionHandler.handle(exception = it, sourceAudioFileName = message.audioFileName)
         }.run {
             File("$tempDirectoryPath/${propsUtils.getSourceFileLocation(transactionId)}").delete()
+            if (message.lastClip) {
+                File("$tempDirectoryPath/$transactionId").deleteRecursively()
+            }
         }
 
         // TODO: call transcriber through queue?
