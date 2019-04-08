@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service
 interface Message
 
 @Service
-final class Topic<T : Message> {
+class Topic<T : Message> {
 
     private val subscribers = mutableListOf<Subscriber<T>>()
 

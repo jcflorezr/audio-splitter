@@ -14,6 +14,8 @@ buildscript {
     var jacksonVersion: String by extra
     @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
     var testContainersVersion: String by extra
+    @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
+    var swaggerVersion: String by extra
 
     @Suppress("UNUSED_VALUE")
     kotlinVersion = "1.3.10"
@@ -25,6 +27,8 @@ buildscript {
     jacksonVersion = "2.9.8"
     @Suppress("UNUSED_VALUE")
     testContainersVersion = "1.10.6"
+    @Suppress("UNUSED_VALUE")
+    swaggerVersion = "2.9.2"
 }
 
 val kotlinVersion: String by extra
@@ -32,11 +36,13 @@ val springVersion: String by extra
 val springDataVersion: String by extra
 val jacksonVersion: String by extra
 val testContainersVersion: String by extra
+val swaggerVersion: String by extra
 
 plugins {
     kotlin("jvm") version "1.3.10"
     kotlin("plugin.spring") version "1.3.10"
     id("org.jlleitschuh.gradle.ktlint") version "7.2.1"
+    war
 }
 
 repositories {
@@ -52,8 +58,13 @@ dependencies {
     implementation(kotlin(module = "reflect", version = kotlinVersion))
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.1.0")
 
-    // Spring core
+    // Spring
     implementation("org.springframework:spring-core:$springVersion")
+    implementation("org.springframework:spring-web:$springVersion")
+    implementation("org.springframework:spring-webmvc:$springVersion")
+
+    // Web
+    implementation("javax.servlet:javax.servlet-api:3.1.0")
 
     // Redis
     implementation("org.springframework.data:spring-data-redis:$springDataVersion")
@@ -63,6 +74,10 @@ dependencies {
     implementation("org.springframework.data:spring-data-cassandra:$springDataVersion")
     implementation("com.datastax.cassandra:cassandra-driver-core:3.6.0")
     implementation("com.codahale.metrics:metrics-core:3.0.2")
+
+    // Swagger
+    implementation("io.springfox:springfox-swagger2:$swaggerVersion")
+    implementation("io.springfox:springfox-swagger-ui:$swaggerVersion")
 
     // Util
     implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
@@ -82,6 +97,7 @@ dependencies {
 
     // Testing
     testImplementation("org.springframework:spring-test:$springVersion")
+    testImplementation("com.jayway.jsonpath:json-path:2.4.0")
     testImplementation("junit:junit:4.12")
     testImplementation("org.mockito:mockito-core:2.24.5")
     testImplementation("org.testcontainers:testcontainers:$testContainersVersion")

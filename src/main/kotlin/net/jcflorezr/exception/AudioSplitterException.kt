@@ -1,10 +1,12 @@
 package net.jcflorezr.exception
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonInclude
 import net.jcflorezr.broker.Message
 import java.lang.RuntimeException
 import kotlin.collections.LinkedHashMap
 
+@JsonIgnoreProperties(value = ["stackTrace", "localizedMessage"])
 open class AudioSplitterException(val errorCode: String) : RuntimeException(), Message
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -30,6 +32,10 @@ class InternalServerErrorException(
 
     fun getSimplifiedStackTrace() = simplifiedStackTrace
 
+    override fun toString(): String {
+        return "InternalServerErrorException(ex=$ex, message=$message, simplifiedStackTrace=$simplifiedStackTrace)"
+    }
+
     data class SimplifiedStackTraceElement(
         val className: String,
         val lines: List<Int>
@@ -40,10 +46,10 @@ class InternalServerErrorException(
 open class BadRequestException(
     errorCode: String,
     override val message: String,
-    private val suggestion: String?
+    val suggestion: String?
 ) : AudioSplitterException(errorCode) {
     override fun toString(): String {
-        return "AudioSplitterException{" +
+        return "BadRequestException{" +
                 "errorCode='" + errorCode + '\''.toString() +
                 ", message='" + message + '\''.toString() +
                 ", suggestion='" + suggestion + '\''.toString() +

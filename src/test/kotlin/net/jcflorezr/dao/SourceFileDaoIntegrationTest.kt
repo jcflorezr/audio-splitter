@@ -41,7 +41,6 @@ class SourceFileDaoIntegrationTest {
         private const val AUDIO_FILE_METADATA_TABLE = "AUDIO_FILE_METADATA"
     }
 
-    // TODO: this test is failing because it cannot connect to cassandra
     @Test
     fun storeInitialConfigurationWithAudioMetadataFromMp3File() = runBlocking {
         initializer.createTable(AUDIO_FILE_METADATA_TABLE, AudioFileMetadataEntity::class.java)

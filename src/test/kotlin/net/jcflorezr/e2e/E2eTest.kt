@@ -25,6 +25,7 @@ import net.jcflorezr.model.AudioSignalRmsEntity
 import net.jcflorezr.model.AudioSignalRmsInfo
 import net.jcflorezr.model.GroupedAudioClipInfoEntity
 import net.jcflorezr.model.InitialConfiguration
+import net.jcflorezr.model.SuccessResponse
 import net.jcflorezr.storage.BucketClient
 import net.jcflorezr.util.AudioFormats
 import net.jcflorezr.util.PropsUtils
@@ -33,6 +34,7 @@ import org.apache.commons.io.IOUtils
 import org.hamcrest.CoreMatchers.`is` as Is
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
+import org.junit.Assert
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.ClassRule
@@ -126,7 +128,12 @@ class E2eTest {
                         configuration = InitialConfiguration(
                             audioFileName = "$audioFileName${AudioFormats.WAV.extension}"
                         )
-                    )
+                    ).let { response ->
+                        assertTrue(response is SuccessResponse)
+                        val actualTransactionId = (response as SuccessResponse).transactionId
+                        val expectedTransactionId = propsUtils.getTransactionId(audioFileName)
+                        Assert.assertThat(actualTransactionId, Is(equalTo(expectedTransactionId)))
+                    }
                 }
             }
         }

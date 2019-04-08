@@ -36,30 +36,6 @@ class RedisConfig {
     @Bean
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     fun jedisConnectionFactory(): JedisConnectionFactory {
-
-        /*
-         TODO: currently a new connection is open for each redisDockerContainer transaction,
-            let us investigate how to open a single connection for all transactions
-          */
-
-//        val poolConfig = JedisPoolConfig()
-//        poolConfig.maxTotal = 128
-//        poolConfig.maxIdle = 128
-//        poolConfig.minIdle = 16
-//        poolConfig.testOnBorrow = true
-//        poolConfig.testOnReturn = true
-//        poolConfig.testWhileIdle = true
-//        poolConfig.minEvictableIdleTimeMillis = Duration.ofSeconds(60).toMillis()
-//        poolConfig.timeBetweenEvictionRunsMillis = Duration.ofSeconds(30).toMillis()
-//        poolConfig.numTestsPerEvictionRun = 3
-//        poolConfig.blockWhenExhausted = true
-//
-//        val factory = JedisConnectionFactory(poolConfig)
-//        factory.hostName = hostName
-//        factory.usePool = true
-//        factory.port = port.toInt()
-//        return factory
-
         return JedisConnectionFactory(RedisStandaloneConfiguration(hostName, port.toInt()))
     }
 

@@ -12,8 +12,6 @@ import net.jcflorezr.broker.Topic
 import net.jcflorezr.clip.ClipGenerator
 import net.jcflorezr.clip.ClipGeneratorActor
 import net.jcflorezr.clip.ClipGeneratorActorImpl
-import net.jcflorezr.entrypoint.AudioSplitter
-import net.jcflorezr.entrypoint.AudioSplitterImpl
 import net.jcflorezr.exception.ExceptionHandler
 import net.jcflorezr.exception.ExceptionHandlerImpl
 import net.jcflorezr.model.AudioClipInfo
@@ -35,8 +33,10 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
 import org.springframework.context.annotation.PropertySource
 import org.springframework.context.annotation.Scope
+import org.springframework.web.servlet.config.annotation.EnableWebMvc
 
 @Configuration
+@EnableWebMvc
 @PropertySource(value = ["config/files-config.properties"])
 @Import(value = [RedisConfig::class, CassandraConfig::class])
 class RootConfig {
@@ -50,8 +50,6 @@ class RootConfig {
     @Bean fun bucketClient(): BucketClient = BucketClientImpl()
 
     @Bean fun exceptionHandler(): ExceptionHandler = ExceptionHandlerImpl()
-
-    @Bean fun audioSplitter(): AudioSplitter = AudioSplitterImpl()
 
     @Bean fun audioIo(): AudioIo = AudioIoImpl()
 
