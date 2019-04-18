@@ -37,7 +37,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc
 
 @Configuration
 @EnableWebMvc
-@PropertySource(value = ["config/files-config.properties"])
+@PropertySource(value = ["classpath:config/files-config.properties"])
 @Import(value = [RedisConfig::class, CassandraConfig::class])
 class RootConfig {
 

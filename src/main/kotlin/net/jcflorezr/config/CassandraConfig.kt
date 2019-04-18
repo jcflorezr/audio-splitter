@@ -5,6 +5,7 @@ import net.jcflorezr.dao.SourceFileDaoImpl
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.PropertySource
 import org.springframework.data.cassandra.config.AbstractCassandraConfiguration
 import org.springframework.data.cassandra.core.CassandraOperations
 import org.springframework.data.cassandra.core.CassandraTemplate
@@ -18,6 +19,7 @@ import org.springframework.data.cassandra.core.mapping.CassandraMappingContext
 import org.springframework.data.cassandra.core.mapping.SimpleUserTypeResolver
 
 @Configuration
+@PropertySource(value = ["classpath:config/cassandra.properties"])
 class CassandraConfig : AbstractCassandraConfiguration() {
 
     @Value("\${cassandra.contactpoints}")

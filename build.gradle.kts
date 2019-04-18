@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "net.jcflorezr"
-version = "0.1-SNAPSHOT"
+project.version = "0.1-SNAPSHOT"
 
 buildscript {
     @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
@@ -40,9 +40,10 @@ val swaggerVersion: String by extra
 
 plugins {
     kotlin("jvm") version "1.3.10"
+    war
     kotlin("plugin.spring") version "1.3.10"
     id("org.jlleitschuh.gradle.ktlint") version "7.2.1"
-    war
+    id("com.palantir.docker") version "0.21.0"
 }
 
 repositories {
@@ -115,4 +116,12 @@ val compileTestKotlin by tasks.getting(KotlinCompile::class) {
     kotlinOptions.jvmTarget = "1.8"
     kotlinOptions.freeCompilerArgs = listOf("-Xjsr305=strict")
     doLast { println("Finished compiling Kotlin source code for testing") }
+}
+
+docker {
+    name = "jcflorezr/audio-splitter:${project.version}"
+    dependsOn(tasks.build.get())
+    setDockerfile(File("./Dockerfile"))
+    buildArgs(mapOf("BUILD_VERSION" to "${project.version}"))
+    files("./build/libs/${project.name}-${project.version}.war")
 }
