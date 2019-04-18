@@ -1,0 +1,16 @@
+{
+  "audioFileName" : "test-audio-mono.mp3",
+  "audioFileMetadata" : {
+    "audioFileName" : "test-audio-mono.mp3",
+    "title" : "Presidential Candidacy Announcement",
+    "album" : "Speeches",
+    "artist" : "Barack Obama",
+    "trackNumber" : "1",
+    "genre" : "",
+    "comments" : "Great president",
+    "duration" : 3,
+    "sampleRate" : "22050",
+    "channels" : "Mono"
+  },
+  "convertedAudioFileLocation" : "test-audio-mono.wav"
+}
