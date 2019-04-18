@@ -182,6 +182,8 @@ final class AudioClipSignalSubscriber : Subscriber<AudioClipSignal> {
     private lateinit var audioClipSignalTopic: Topic<AudioClipSignal>
     @Autowired
     private lateinit var audioIo: AudioIo
+    @Autowired
+    private lateinit var audioSplitterProducer: AudioSplitterProducer
 
     private val thisClass: Class<AudioClipSignalSubscriber> = this.javaClass
     private lateinit var tempDirectoryPath: String
@@ -194,9 +196,8 @@ final class AudioClipSignalSubscriber : Subscriber<AudioClipSignal> {
     }
 
     override suspend fun update(message: AudioClipSignal) {
-        logger.info { "[${propsUtils.getTransactionId(message.audioFileName)}][6][audio-clip] " +
-            "Message received with Grouped Clip Info (${message.audioClipName})." }
         val transactionId = propsUtils.getTransactionId(message.audioFileName)
+        logger.info { "[$transactionId][6][audio-clip] Message received with Grouped Clip Info (${message.audioClipName})." }
         kotlin.runCatching {
             val audioClipDirectoryPath = "$tempDirectoryPath/$transactionId"
             File(audioClipDirectoryPath)
@@ -213,17 +214,10 @@ final class AudioClipSignalSubscriber : Subscriber<AudioClipSignal> {
                 )
             }?.let {
                 bucketClient.uploadFileToBucket(File("$audioClipPath${AudioFormats.FLAC.extension}"), transactionId)
+                audioSplitterProducer.sendAudioClip(audioClip = message, transactionId = transactionId)
             }
         }.onFailure {
             exceptionHandler.handle(exception = it, sourceAudioFileName = message.audioFileName)
-        }.run {
-            File("$tempDirectoryPath/${propsUtils.getSourceFileLocation(transactionId)}").delete()
-            // TODO: let us perform the folder deletion in the broker that receives this last message
-//            if (message.lastClip) {
-//                File("$tempDirectoryPath/$transactionId").deleteRecursively()
-//            }
         }
-
-        // TODO: call transcriber through queue?
     }
 }

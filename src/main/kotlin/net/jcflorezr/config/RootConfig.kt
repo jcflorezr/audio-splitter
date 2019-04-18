@@ -4,6 +4,8 @@ import net.jcflorezr.signal.AudioIo
 import net.jcflorezr.signal.AudioIoImpl
 import net.jcflorezr.broker.AudioClipSignalSubscriber
 import net.jcflorezr.broker.AudioClipInfoSubscriber
+import net.jcflorezr.broker.AudioSplitterProducer
+import net.jcflorezr.broker.AudioSplitterProducerImpl
 import net.jcflorezr.broker.SignalRmsSubscriber
 import net.jcflorezr.broker.SignalSubscriber
 import net.jcflorezr.broker.SourceFileSubscriber
@@ -98,6 +100,12 @@ class RootConfig {
     @Bean fun audioClipInfoSubscriber(): Subscriber<AudioClipInfo> = AudioClipInfoSubscriber()
 
     @Bean fun audioClipSignalSubscriber(): Subscriber<AudioClipSignal> = AudioClipSignalSubscriber()
+
+    /*
+    Producer
+     */
+
+    @Bean fun audioSplitterProducer(): AudioSplitterProducer = AudioSplitterProducerImpl()
 
     /*
     Actors

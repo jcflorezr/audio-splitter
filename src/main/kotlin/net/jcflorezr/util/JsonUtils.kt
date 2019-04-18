@@ -6,7 +6,7 @@ import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 
 object JsonUtils {
 
-    private val MAPPER = ObjectMapper().registerKotlinModule()
+    val MAPPER = ObjectMapper().registerKotlinModule()
 
     fun <T> convertStringToPojo(json: String, pojoClass: Class<T>) = MAPPER.readValue(json, pojoClass)
 

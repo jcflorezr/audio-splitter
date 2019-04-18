@@ -80,6 +80,9 @@ dependencies {
     implementation("io.springfox:springfox-swagger2:$swaggerVersion")
     implementation("io.springfox:springfox-swagger-ui:$swaggerVersion")
 
+    // Kafka
+    implementation("org.apache.kafka:kafka_2.12:2.2.0")
+
     // Util
     implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
