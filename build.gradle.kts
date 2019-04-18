@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "net.jcflorezr"
-project.version = "0.1-SNAPSHOT"
+project.version = "0.2-SNAPSHOT"
 
 buildscript {
     @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
