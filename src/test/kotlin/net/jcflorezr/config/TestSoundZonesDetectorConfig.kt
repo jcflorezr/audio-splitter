@@ -26,7 +26,8 @@ class TestSoundZonesDetectorConfig {
 
     @Profile("test") @Bean fun signalRmsTopicTest() = Topic<AudioSignalsRmsInfo>()
 
-    @Profile("test") @Bean fun signalRmsSubscriberMockTest(): Subscriber<AudioSignalsRmsInfo> = SignalRmsSubscriberMock()
+    @Profile("test") @Bean fun signalRmsSubscriberMockTest(): Subscriber<AudioSignalsRmsInfo> =
+        SignalRmsSubscriberMock(propsUtils(), signalRmsTopicTest())
 
     // SoundZonesDetector is a prototype
 
@@ -34,11 +35,13 @@ class TestSoundZonesDetectorConfig {
 
     @Bean
     @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-    fun soundZonesDetectorSubscriberTest(): SoundZonesDetector = SoundZonesDetector()
+    fun soundZonesDetectorSubscriberTest(): SoundZonesDetector =
+        SoundZonesDetector(propsUtils(), audioClipTopicTest(), audioSignalRmsTest())
 
     @Profile("test") @Bean fun audioSignalRmsTest(): AudioSignalRmsDao = mock(AudioSignalRmsDao::class.java)
 
     @Profile("test") @Bean fun audioClipTopicTest() = Topic<AudioClipInfo>()
 
-    @Profile("test") @Bean fun audioClipSubscriberMockTest(): Subscriber<AudioClipInfo> = AudioClipInfoSubscriberMock()
+    @Profile("test") @Bean fun audioClipSubscriberMockTest(): Subscriber<AudioClipInfo> =
+        AudioClipInfoSubscriberMock(propsUtils(), audioClipTopicTest())
 }

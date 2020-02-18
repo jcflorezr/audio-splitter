@@ -7,8 +7,8 @@ import net.jcflorezr.exception.ExceptionHandler
 import net.jcflorezr.exception.ExceptionHandlerImpl
 import net.jcflorezr.model.InitialConfiguration
 import net.jcflorezr.storage.BucketClient
-import net.jcflorezr.storage.BucketClientImpl
 import net.jcflorezr.util.PropsUtils
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.MediaType
@@ -19,13 +19,16 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 
 @Configuration
 @EnableWebMvc
-class WebConfig : WebMvcConfigurer {
+class TestWebConfig : WebMvcConfigurer {
 
-    fun propsUtils(): PropsUtils = PropsUtils()
+    @Autowired
+    private lateinit var testRestApiConfig: TestRestApiConfig
+
+    fun propsUtils(): PropsUtils = testRestApiConfig.propsUtils()
 
     fun messageLauncher(): Topic<InitialConfiguration> = Topic()
 
-    fun bucketClient(): BucketClient = BucketClientImpl()
+    fun bucketClient(): BucketClient = testRestApiConfig.bucketClient()
 
     fun exceptionHandler(): ExceptionHandler = ExceptionHandlerImpl(propsUtils())
 

@@ -16,7 +16,6 @@ import net.jcflorezr.storage.BucketClient
 import net.jcflorezr.util.AudioFormats
 import net.jcflorezr.util.AudioUtils
 import net.jcflorezr.util.PropsUtils
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -34,16 +33,12 @@ interface AudioSplitter {
 
 @RestController
 @RequestMapping("/v1/audio-splitter")
-final class AudioSplitterImpl : AudioSplitter {
-
-    @Autowired
-    private lateinit var propsUtils: PropsUtils
-    @Autowired
-    private lateinit var messageLauncher: Topic<InitialConfiguration>
-    @Autowired
-    private lateinit var bucketClient: BucketClient
-    @Autowired
-    private lateinit var exceptionHandler: ExceptionHandler
+final class AudioSplitterImpl(
+    private val propsUtils: PropsUtils,
+    private val messageLauncher: Topic<InitialConfiguration>,
+    private val bucketClient: BucketClient,
+    private val exceptionHandler: ExceptionHandler
+) : AudioSplitter {
 
     private val logger = KotlinLogging.logger { }
     private val tempConvertedFilesPath: String

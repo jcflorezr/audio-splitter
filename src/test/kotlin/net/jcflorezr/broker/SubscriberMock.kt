@@ -19,19 +19,13 @@ import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.stereotype.Service
 import java.io.File
-import javax.annotation.PostConstruct
 import org.hamcrest.CoreMatchers.`is` as Is
 
-@Service
-final class SourceFileSubscriberMock : Subscriber<InitialConfiguration> {
-
-    @Autowired
-    private lateinit var propsUtils: PropsUtils
-    @Autowired
-    private lateinit var sourceFileTopic: Topic<InitialConfiguration>
+class SourceFileSubscriberMock(
+    private val propsUtils: PropsUtils,
+    sourceFileTopic: Topic<InitialConfiguration>
+) : Subscriber<InitialConfiguration> {
 
     companion object {
         private val MAPPER = ObjectMapper().registerKotlinModule()
@@ -39,11 +33,10 @@ final class SourceFileSubscriberMock : Subscriber<InitialConfiguration> {
 
     private val logger = KotlinLogging.logger { }
 
-    private lateinit var testResourcesPath: String
-    private lateinit var thisClass: Class<SourceFileSubscriberMock>
+    private val testResourcesPath: String
+    private val thisClass: Class<SourceFileSubscriberMock>
 
-    @PostConstruct
-    fun init() {
+    init {
         sourceFileTopic.register(this)
         thisClass = this.javaClass
         testResourcesPath = thisClass.getResource("/entrypoint").path
@@ -63,13 +56,10 @@ final class SourceFileSubscriberMock : Subscriber<InitialConfiguration> {
     }
 }
 
-@Service
-final class SignalSubscriberMock : Subscriber<AudioSignal> {
-
-    @Autowired
-    private lateinit var propsUtils: PropsUtils
-    @Autowired
-    private lateinit var signalTopic: Topic<AudioSignal>
+class SignalSubscriberMock(
+    private val propsUtils: PropsUtils,
+    signalTopic: Topic<AudioSignal>
+) : Subscriber<AudioSignal> {
 
     companion object {
         private val MAPPER = ObjectMapper().registerKotlinModule()
@@ -77,11 +67,10 @@ final class SignalSubscriberMock : Subscriber<AudioSignal> {
 
     private val logger = KotlinLogging.logger { }
 
-    private lateinit var testResourcesPath: String
-    private lateinit var thisClass: Class<SignalSubscriberMock>
+    private val testResourcesPath: String
+    private val thisClass: Class<SignalSubscriberMock>
 
-    @PostConstruct
-    fun init() {
+    init {
         signalTopic.register(this)
         thisClass = this.javaClass
         testResourcesPath = thisClass.getResource("/signal").path
@@ -103,13 +92,10 @@ final class SignalSubscriberMock : Subscriber<AudioSignal> {
     }
 }
 
-@Service
-final class SignalRmsSubscriberMock : Subscriber<AudioSignalsRmsInfo> {
-
-    @Autowired
-    private lateinit var propsUtils: PropsUtils
-    @Autowired
-    private lateinit var audioSignalRmsTopic: Topic<AudioSignalsRmsInfo>
+class SignalRmsSubscriberMock(
+    private val propsUtils: PropsUtils,
+    audioSignalRmsTopic: Topic<AudioSignalsRmsInfo>
+) : Subscriber<AudioSignalsRmsInfo> {
 
     companion object {
         private val MAPPER = ObjectMapper().registerKotlinModule()
@@ -117,12 +103,11 @@ final class SignalRmsSubscriberMock : Subscriber<AudioSignalsRmsInfo> {
 
     private val logger = KotlinLogging.logger { }
 
-    private lateinit var testResourcesPath: String
-    private lateinit var thisClass: Class<SignalRmsSubscriberMock>
+    private val testResourcesPath: String
+    private val thisClass: Class<SignalRmsSubscriberMock>
     private var audioSignalRmsList: ArrayList<AudioSignalRmsInfo> = ArrayList()
 
-    @PostConstruct
-    fun init() {
+    init {
         audioSignalRmsTopic.register(this)
         thisClass = this.javaClass
         testResourcesPath = thisClass.getResource("/rms").path
@@ -149,13 +134,10 @@ final class SignalRmsSubscriberMock : Subscriber<AudioSignalsRmsInfo> {
     }
 }
 
-@Service
-final class AudioClipInfoSubscriberMock : Subscriber<AudioClipInfo> {
-
-    @Autowired
-    private lateinit var propsUtils: PropsUtils
-    @Autowired
-    private lateinit var audioClipTopic: Topic<AudioClipInfo>
+class AudioClipInfoSubscriberMock(
+    private val propsUtils: PropsUtils,
+    audioClipTopic: Topic<AudioClipInfo>
+) : Subscriber<AudioClipInfo> {
 
     companion object {
         private val MAPPER = ObjectMapper().registerKotlinModule()
@@ -163,16 +145,15 @@ final class AudioClipInfoSubscriberMock : Subscriber<AudioClipInfo> {
 
     private val logger = KotlinLogging.logger { }
 
-    private lateinit var testResourcesPath: String
-    private lateinit var thisClass: Class<AudioClipInfoSubscriberMock>
+    private val testResourcesPath: String
+    private val thisClass: Class<AudioClipInfoSubscriberMock>
     private lateinit var audioFileName: String
     private val expectedClipInfoList: ArrayList<AudioClipInfo> = ArrayList()
     private val unexpectedClipInfoList: ArrayList<AudioClipInfo> = ArrayList()
     private val actualClipInfoList: ArrayList<AudioClipInfo> = ArrayList()
     private val foldersProcessed: HashSet<String> = HashSet()
 
-    @PostConstruct
-    fun init() {
+    init {
         audioClipTopic.register(this)
         thisClass = this.javaClass
         testResourcesPath = thisClass.getResource("/clip").path
@@ -220,17 +201,12 @@ final class AudioClipInfoSubscriberMock : Subscriber<AudioClipInfo> {
     }
 }
 
-@Service
-final class AudioClipSignalSubscriberMock : Subscriber<AudioClipSignal> {
-
-    @Autowired
-    private lateinit var propsUtils: PropsUtils
-    @Autowired
-    private lateinit var audioClipSignalTopic: Topic<AudioClipSignal>
-    @Autowired
-    private lateinit var audioSignalDao: AudioSignalDao
-    @Autowired
-    private lateinit var audioClipDao: AudioClipDao
+class AudioClipSignalSubscriberMock(
+    private val propsUtils: PropsUtils,
+    audioClipSignalTopic: Topic<AudioClipSignal>,
+    private val audioSignalDao: AudioSignalDao,
+    private val audioClipDao: AudioClipDao
+) : Subscriber<AudioClipSignal> {
 
     private val logger = KotlinLogging.logger { }
 
@@ -238,16 +214,15 @@ final class AudioClipSignalSubscriberMock : Subscriber<AudioClipSignal> {
         private val MAPPER = ObjectMapper().registerKotlinModule()
     }
 
-    private lateinit var thisClass: Class<AudioClipSignalSubscriberMock>
-    private lateinit var testResourcesPath: String
+    private val thisClass: Class<AudioClipSignalSubscriberMock>
+    private val testResourcesPath: String
     private lateinit var audioFileName: String
     private var expectedAudioClipSignalList: ArrayList<AudioClipSignal> = ArrayList()
     private val unexpectedClipSignalList: ArrayList<AudioClipSignal> = ArrayList()
     private val actualClipSignalList: ArrayList<AudioClipSignal> = ArrayList()
     private val foldersProcessed: HashSet<String> = HashSet()
 
-    @PostConstruct
-    fun init() {
+    init {
         audioClipSignalTopic.register(this)
         thisClass = this.javaClass
         testResourcesPath = thisClass.getResource("/clip").path

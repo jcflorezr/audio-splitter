@@ -2,6 +2,7 @@ package net.jcflorezr.config
 
 import net.jcflorezr.dao.SourceFileDao
 import net.jcflorezr.dao.SourceFileDaoImpl
+import net.jcflorezr.util.PropsUtils
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -78,5 +79,8 @@ class CassandraConfig : AbstractCassandraConfiguration() {
     DAOs
      */
 
-    @Bean fun sourceFileDao(): SourceFileDao = SourceFileDaoImpl()
+    fun propsUtils(): PropsUtils = PropsUtils()
+
+    @Bean fun sourceFileDao(): SourceFileDao =
+        SourceFileDaoImpl(propsUtils(), cassandraCustomTemplate())
 }

@@ -3,18 +3,14 @@ package net.jcflorezr.exception
 import mu.KotlinLogging
 import net.jcflorezr.util.PropsUtils
 import org.apache.commons.io.FilenameUtils
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.stereotype.Service
 
 interface ExceptionHandler {
     suspend fun handle(exception: Throwable, sourceAudioFileName: String)
 }
 
-@Service
-final class ExceptionHandlerImpl : ExceptionHandler {
-
-    @Autowired
-    private lateinit var propsUtils: PropsUtils
+class ExceptionHandlerImpl(
+    private val propsUtils: PropsUtils
+) : ExceptionHandler {
 
     private val logger = KotlinLogging.logger { }
 

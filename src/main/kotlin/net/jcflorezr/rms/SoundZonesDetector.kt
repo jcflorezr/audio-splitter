@@ -14,10 +14,16 @@ import net.jcflorezr.model.AudioClipInfo
 import net.jcflorezr.model.AudioSignalRmsInfo
 import net.jcflorezr.util.AudioUtils
 import net.jcflorezr.util.PropsUtils
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.stereotype.Service
 import java.util.ArrayDeque
-import javax.annotation.PostConstruct
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
+import kotlin.collections.List
+import kotlin.collections.ListIterator
+import kotlin.collections.binarySearchBy
+import kotlin.collections.first
+import kotlin.collections.isNotEmpty
+import kotlin.collections.last
+import kotlin.collections.map
 
 sealed class SoundDetectorAction
 data class AudioSignalRmsArrived(val audioSignalRms: AudioSignalRmsInfo) : SoundDetectorAction()
@@ -30,23 +36,18 @@ interface SoundZonesDetectorActor {
     fun getActorForDetectingSoundZones(): SendChannel<SoundDetectorAction>
 }
 
-@Service
-class SoundZonesDetectorActorImpl : SoundZonesDetectorActor {
-
-    @Autowired
-    private lateinit var propsUtils: PropsUtils
-    @Autowired
-    private lateinit var soundZonesDetectorFactory: () -> SoundZonesDetector
-    @Autowired
-    private lateinit var audioSignalRmsDao: AudioSignalRmsDao
+class SoundZonesDetectorActorImpl(
+    private val propsUtils: PropsUtils,
+    private val soundZonesDetectorFactory: () -> SoundZonesDetector,
+    private val audioSignalRmsDao: AudioSignalRmsDao
+) : SoundZonesDetectorActor {
 
     private val logger = KotlinLogging.logger { }
 
-    private lateinit var mainActor: SendChannel<SoundDetectorAction>
-    private lateinit var actorsForAudioFiles: HashMap<String, Pair<SendChannel<SoundDetectorAction>, SoundZonesDetector>>
+    private val mainActor: SendChannel<SoundDetectorAction>
+    private val actorsForAudioFiles: HashMap<String, Pair<SendChannel<SoundDetectorAction>, SoundZonesDetector>>
 
-    @PostConstruct
-    fun init() {
+    init {
         mainActor = createMainActor()
         actorsForAudioFiles = HashMap()
     }
@@ -121,14 +122,11 @@ class SoundZonesDetectorActorImpl : SoundZonesDetectorActor {
  * 2. By Active Segments: this occurs when there is strong background noise that makes difficult
  *    the voice detection and this voice should be detected by "inactive" segments.
  */
-class SoundZonesDetector {
-
-    @Autowired
-    private lateinit var propsUtils: PropsUtils
-    @Autowired
-    private lateinit var audioClipTopic: Topic<AudioClipInfo>
-    @Autowired
-    private lateinit var audioSignalRmsDao: AudioSignalRmsDao
+class SoundZonesDetector(
+    private val propsUtils: PropsUtils,
+    private val audioClipTopic: Topic<AudioClipInfo>,
+    private val audioSignalRmsDao: AudioSignalRmsDao
+) {
 
     private val logger = KotlinLogging.logger { }
 

@@ -1,25 +1,22 @@
 package net.jcflorezr.storage
 
 import com.google.cloud.storage.BlobId
+import com.google.cloud.storage.BlobInfo
 import com.google.cloud.storage.Storage
 import com.google.cloud.storage.StorageOptions
 import mu.KotlinLogging
 import net.jcflorezr.exception.SourceAudioFileValidationException
+import net.jcflorezr.util.AudioUtils
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.stereotype.Service
 import java.io.File
 import java.nio.file.Paths
-import javax.annotation.PostConstruct
-import com.google.cloud.storage.BlobInfo
-import net.jcflorezr.util.AudioUtils
 
 interface BucketClient {
     fun downloadSourceFileFromBucket(audioFileName: String): File
     fun uploadFileToBucket(audioFile: File, transactionId: String)
 }
 
-@Service
-final class BucketClientImpl : BucketClient {
+class BucketClientImpl : BucketClient {
 
     @Value("\${files-config.bucket-name}")
     private lateinit var bucketName: String
@@ -27,13 +24,12 @@ final class BucketClientImpl : BucketClient {
     private lateinit var bucketDirectory: String
 
     private val thisClass: Class<BucketClientImpl> = this.javaClass
-    private lateinit var tempDirectory: String
-    private lateinit var bucketInstance: Storage
+    private val tempDirectory: String
+    private val bucketInstance: Storage
 
     private val logger = KotlinLogging.logger { }
 
-    @PostConstruct
-    fun init() {
+    init {
         bucketInstance = StorageOptions.getDefaultInstance().service
         tempDirectory = thisClass.getResource("/temp-converted-files").path
     }

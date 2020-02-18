@@ -29,6 +29,7 @@ import net.jcflorezr.rms.SoundZonesDetectorActorImpl
 import net.jcflorezr.storage.BucketClient
 import net.jcflorezr.storage.BucketClientImpl
 import net.jcflorezr.util.PropsUtils
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.config.ConfigurableBeanFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -43,19 +44,25 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc
 @Import(value = [RedisConfig::class, CassandraConfig::class])
 class RootConfig {
 
+    @Autowired
+    private lateinit var cassandraConfig: CassandraConfig
+
+    @Autowired
+    private lateinit var redisConfig: RedisConfig
+
     /*
     Services
      */
 
-    @Bean fun propsUtils(): PropsUtils = PropsUtils()
+    fun propsUtils(): PropsUtils = PropsUtils()
 
-    @Bean fun bucketClient(): BucketClient = BucketClientImpl()
+    fun bucketClient(): BucketClient = BucketClientImpl()
 
-    @Bean fun exceptionHandler(): ExceptionHandler = ExceptionHandlerImpl()
+    fun exceptionHandler(): ExceptionHandler = ExceptionHandlerImpl(propsUtils())
 
-    @Bean fun audioIo(): AudioIo = AudioIoImpl()
+    fun audioIo(): AudioIo = AudioIoImpl(propsUtils(), signalTopic())
 
-    @Bean fun rmsCalculator(): RmsCalculator = RmsCalculatorImpl()
+    fun rmsCalculator(): RmsCalculator = RmsCalculatorImpl(propsUtils(), signalRmsTopic())
 
     // SoundZonesDetector is a prototype bean
 
@@ -63,7 +70,8 @@ class RootConfig {
 
     @Bean
     @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-    fun soundZonesDetector(): SoundZonesDetector = SoundZonesDetector()
+    fun soundZonesDetector(): SoundZonesDetector =
+        SoundZonesDetector(propsUtils(), audioClipInfoTopic(), redisConfig.audioSignalRmsDao())
 
     // ClipGenerator is a prototype
 
@@ -71,47 +79,55 @@ class RootConfig {
 
     @Bean
     @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-    fun clipGenerator(): ClipGenerator = ClipGenerator()
+    fun clipGenerator(): ClipGenerator =
+        ClipGenerator(propsUtils(), audioClipSignalTopic(), redisConfig.audioSignalDao(), redisConfig.audioClipDao())
 
     /*
     Topics
      */
 
-    @Bean fun sourceFileTopic() = Topic<InitialConfiguration>()
+    fun sourceFileTopic() = Topic<InitialConfiguration>()
 
-    @Bean fun signalTopic() = Topic<AudioSignal>()
+    fun signalTopic() = Topic<AudioSignal>()
 
-    @Bean fun signalRmsTopic() = Topic<AudioSignalsRmsInfo>()
+    fun signalRmsTopic() = Topic<AudioSignalsRmsInfo>()
 
-    @Bean fun audioClipInfoTopic() = Topic<AudioClipInfo>()
+    fun audioClipInfoTopic() = Topic<AudioClipInfo>()
 
-    @Bean fun audioClipSignalTopic() = Topic<AudioClipSignal>()
+    fun audioClipSignalTopic() = Topic<AudioClipSignal>()
 
     /*
     Subscribers
      */
 
-    @Bean fun sourceFileSubscriber(): Subscriber<InitialConfiguration> = SourceFileSubscriber()
+    @Bean fun sourceFileSubscriber(): Subscriber<InitialConfiguration> =
+        SourceFileSubscriber(propsUtils(), exceptionHandler(), sourceFileTopic(), audioIo(), cassandraConfig.sourceFileDao())
 
-    @Bean fun signalSubscriber(): Subscriber<AudioSignal> = SignalSubscriber()
+    @Bean fun signalSubscriber(): Subscriber<AudioSignal> =
+        SignalSubscriber(propsUtils(), exceptionHandler(), signalTopic(), rmsCalculator(), redisConfig.audioSignalDao())
 
-    @Bean fun signalRmsSubscriber(): Subscriber<AudioSignalsRmsInfo> = SignalRmsSubscriber()
+    @Bean fun signalRmsSubscriber(): Subscriber<AudioSignalsRmsInfo> =
+        SignalRmsSubscriber(propsUtils(), exceptionHandler(), signalRmsTopic(), soundZonesDetectorActor(), redisConfig.audioSignalRmsDao())
 
-    @Bean fun audioClipInfoSubscriber(): Subscriber<AudioClipInfo> = AudioClipInfoSubscriber()
+    @Bean fun audioClipInfoSubscriber(): Subscriber<AudioClipInfo> =
+        AudioClipInfoSubscriber(propsUtils(), exceptionHandler(), audioClipInfoTopic(), redisConfig.audioClipDao(), clipGeneratorActor())
 
-    @Bean fun audioClipSignalSubscriber(): Subscriber<AudioClipSignal> = AudioClipSignalSubscriber()
+    @Bean fun audioClipSignalSubscriber(): Subscriber<AudioClipSignal> =
+        AudioClipSignalSubscriber(propsUtils(), exceptionHandler(), bucketClient(), audioClipSignalTopic(), audioIo(), audioSplitterProducer())
 
     /*
     Producer
      */
 
-    @Bean fun audioSplitterProducer(): AudioSplitterProducer = AudioSplitterProducerImpl()
+    fun audioSplitterProducer(): AudioSplitterProducer = AudioSplitterProducerImpl()
 
     /*
     Actors
      */
 
-    @Bean fun soundZonesDetectorActor(): SoundZonesDetectorActor = SoundZonesDetectorActorImpl()
+    fun soundZonesDetectorActor(): SoundZonesDetectorActor =
+        SoundZonesDetectorActorImpl(propsUtils(), soundZonesDetectorFactory(), redisConfig.audioSignalRmsDao())
 
-    @Bean fun clipGeneratorActor(): ClipGeneratorActor = ClipGeneratorActorImpl()
+    fun clipGeneratorActor(): ClipGeneratorActor =
+        ClipGeneratorActorImpl(propsUtils(), exceptionHandler(), clipGeneratorFactory(), redisConfig.audioClipDao())
 }

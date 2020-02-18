@@ -64,7 +64,6 @@ class AudioSplitterProducerImpl : AudioSplitterProducer {
         props[ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG] = AudioClipSerializer::class.java.name
         return KafkaProducer<String, AudioClipSignal>(props)
     }
-
 }
 
 class AudioClipSerializer : Serializer<AudioClipSignal> {

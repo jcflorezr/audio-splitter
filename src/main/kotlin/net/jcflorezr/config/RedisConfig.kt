@@ -13,6 +13,8 @@ import net.jcflorezr.dao.SourceFileDao
 import net.jcflorezr.dao.SourceFileDaoImpl
 import net.jcflorezr.model.AudioClipInfo
 import net.jcflorezr.model.AudioSignal
+import net.jcflorezr.util.PropsUtils
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.beans.factory.config.ConfigurableBeanFactory
 import org.springframework.context.annotation.Bean
@@ -29,6 +31,12 @@ import org.springframework.lang.Nullable
 @Configuration
 @PropertySource(value = ["classpath:config/redis.properties"])
 class RedisConfig {
+
+    @Autowired
+    private lateinit var cassandraConfig: CassandraConfig
+
+    @Autowired
+    private lateinit var redisConfig: RedisConfig
 
     @Value("\${redis.hostname}")
     private lateinit var hostName: String
@@ -69,13 +77,19 @@ class RedisConfig {
     DAOs
      */
 
-    @Bean fun sourceFileDao(): SourceFileDao = SourceFileDaoImpl()
+    fun propsUtils(): PropsUtils = PropsUtils()
 
-    @Bean fun audioSignalDao(): AudioSignalDao = AudioSignalDaoImpl()
+    @Bean fun sourceFileDao(): SourceFileDao =
+        SourceFileDaoImpl(propsUtils(), cassandraConfig.cassandraCustomTemplate())
 
-    @Bean fun audioSignalRmsDao(): AudioSignalRmsDao = AudioSignalRmsDaoImpl()
+    @Bean fun audioSignalDao(): AudioSignalDao =
+        AudioSignalDaoImpl(propsUtils(), redisConfig.audioSignalDaoTemplate(), cassandraConfig.cassandraCustomTemplate())
 
-    @Bean fun audioClipDao(): AudioClipDao = AudioClipDaoImpl()
+    @Bean fun audioSignalRmsDao(): AudioSignalRmsDao =
+        AudioSignalRmsDaoImpl(propsUtils(), redisConfig.audioSignalRmsDaoTemplate(), cassandraConfig.cassandraCustomTemplate())
+
+    @Bean fun audioClipDao(): AudioClipDao =
+        AudioClipDaoImpl(propsUtils(), redisConfig.audioClipDaoTemplateTest(), cassandraConfig.cassandraCustomTemplate())
 }
 
 /**

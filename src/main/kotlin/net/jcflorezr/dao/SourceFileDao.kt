@@ -5,7 +5,6 @@ import mu.KotlinLogging
 import net.jcflorezr.model.AudioFileMetadataEntity
 import net.jcflorezr.model.InitialConfiguration
 import net.jcflorezr.util.PropsUtils
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.cassandra.core.CassandraOperations
 import org.springframework.data.cassandra.core.selectOne
 import org.springframework.stereotype.Repository
@@ -16,12 +15,10 @@ interface SourceFileDao {
 }
 
 @Repository
-class SourceFileDaoImpl : SourceFileDao {
-
-    @Autowired
-    private lateinit var propsUtils: PropsUtils
-    @Autowired
-    private lateinit var cassandraTemplate: CassandraOperations
+class SourceFileDaoImpl(
+    private val propsUtils: PropsUtils,
+    private val cassandraTemplate: CassandraOperations
+) : SourceFileDao {
 
     private val logger = KotlinLogging.logger { }
 

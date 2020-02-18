@@ -17,9 +17,6 @@ import net.jcflorezr.model.AudioClipSignal
 import net.jcflorezr.model.AudioSignal
 import net.jcflorezr.util.AudioUtils
 import net.jcflorezr.util.PropsUtils
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.stereotype.Service
-import javax.annotation.PostConstruct
 
 sealed class ClipAction
 data class AudioClipInfoArrived(val audioClipInfo: AudioClipInfo) : ClipAction()
@@ -32,25 +29,19 @@ interface ClipGeneratorActor {
     fun getActorForGeneratingClips(): SendChannel<ClipAction>
 }
 
-@Service
-class ClipGeneratorActorImpl : ClipGeneratorActor {
-
-    @Autowired
-    private lateinit var propsUtils: PropsUtils
-    @Autowired
-    private lateinit var exceptionHandler: ExceptionHandler
-    @Autowired
-    private lateinit var clipGeneratorFactory: () -> ClipGenerator
-    @Autowired
-    private lateinit var audioClipDao: AudioClipDao
+class ClipGeneratorActorImpl(
+    private val propsUtils: PropsUtils,
+    private val exceptionHandler: ExceptionHandler,
+    private val clipGeneratorFactory: () -> ClipGenerator,
+    private val audioClipDao: AudioClipDao
+) : ClipGeneratorActor {
 
     private val logger = KotlinLogging.logger { }
 
-    private lateinit var mainActor: SendChannel<ClipAction>
-    private lateinit var actorsForAudioFiles: HashMap<String, Pair<SendChannel<ClipAction>, ClipGenerator>>
+    private val mainActor: SendChannel<ClipAction>
+    private val actorsForAudioFiles: HashMap<String, Pair<SendChannel<ClipAction>, ClipGenerator>>
 
-    @PostConstruct
-    fun init() {
+    init {
         mainActor = createMainActor()
         actorsForAudioFiles = HashMap()
     }
@@ -110,16 +101,12 @@ class ClipGeneratorActorImpl : ClipGeneratorActor {
     }
 }
 
-class ClipGenerator {
-
-    @Autowired
-    private lateinit var propsUtils: PropsUtils
-    @Autowired
-    private lateinit var audioClipSignalTopicSignal: Topic<AudioClipSignal>
-    @Autowired
-    private lateinit var audioSignalDao: AudioSignalDao
-    @Autowired
-    private lateinit var audioClipDao: AudioClipDao
+class ClipGenerator(
+    private val propsUtils: PropsUtils,
+    private val audioClipSignalTopicSignal: Topic<AudioClipSignal>,
+    private val audioSignalDao: AudioSignalDao,
+    private val audioClipDao: AudioClipDao
+) {
 
     private val logger = KotlinLogging.logger { }
 

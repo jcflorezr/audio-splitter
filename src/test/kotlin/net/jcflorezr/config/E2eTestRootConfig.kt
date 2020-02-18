@@ -1,11 +1,8 @@
 package net.jcflorezr.config
 
-import net.jcflorezr.signal.AudioIo
-import net.jcflorezr.signal.AudioIoImpl
-import net.jcflorezr.broker.AudioClipSignalSubscriber
 import net.jcflorezr.broker.AudioClipInfoSubscriber
+import net.jcflorezr.broker.AudioClipSignalSubscriber
 import net.jcflorezr.broker.AudioSplitterProducer
-import net.jcflorezr.broker.AudioSplitterProducerImpl
 import net.jcflorezr.broker.SignalRmsSubscriber
 import net.jcflorezr.broker.SignalSubscriber
 import net.jcflorezr.broker.SourceFileSubscriber
@@ -28,20 +25,27 @@ import net.jcflorezr.rms.RmsCalculatorImpl
 import net.jcflorezr.rms.SoundZonesDetector
 import net.jcflorezr.rms.SoundZonesDetectorActor
 import net.jcflorezr.rms.SoundZonesDetectorActorImpl
+import net.jcflorezr.signal.AudioIo
+import net.jcflorezr.signal.AudioIoImpl
 import net.jcflorezr.storage.BucketClient
 import net.jcflorezr.util.PropsUtils
 import org.mockito.Mockito.mock
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.config.ConfigurableBeanFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
-import org.springframework.context.annotation.PropertySource
 import org.springframework.context.annotation.Scope
 
 @Configuration
-@PropertySource(value = ["config/files-config.properties"])
 @Import(value = [RedisConfig::class, CassandraConfig::class])
 class E2eTestRootConfig {
+
+    @Autowired
+    private lateinit var cassandraConfig: CassandraConfig
+
+    @Autowired
+    private lateinit var redisConfig: RedisConfig
 
     /*
     Services
@@ -51,13 +55,14 @@ class E2eTestRootConfig {
 
     @Bean fun bucketClient(): BucketClient = mock(BucketClient::class.java)
 
-    @Bean fun exceptionHandler(): ExceptionHandler = ExceptionHandlerImpl()
+    @Bean fun exceptionHandler(): ExceptionHandler = ExceptionHandlerImpl(propsUtils())
 
-    @Bean fun audioSplitter(): AudioSplitter = AudioSplitterImpl()
+    @Bean fun audioSplitter(): AudioSplitter =
+        AudioSplitterImpl(propsUtils(), sourceFileTopic(), bucketClient(), exceptionHandler())
 
-    @Bean fun audioIo(): AudioIo = AudioIoImpl()
+    @Bean fun audioIo(): AudioIo = AudioIoImpl(propsUtils(), signalTopic())
 
-    @Bean fun rmsCalculator(): RmsCalculator = RmsCalculatorImpl()
+    @Bean fun rmsCalculator(): RmsCalculator = RmsCalculatorImpl(propsUtils(), signalRmsTopic())
 
     // SoundZonesDetector is a prototype bean
 
@@ -65,7 +70,7 @@ class E2eTestRootConfig {
 
     @Bean
     @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-    fun soundZonesDetector(): SoundZonesDetector = SoundZonesDetector()
+    fun soundZonesDetector(): SoundZonesDetector = SoundZonesDetector(propsUtils(), audioClipInfoTopic(), redisConfig.audioSignalRmsDao())
 
     // ClipGenerator is a prototype
 
@@ -73,7 +78,8 @@ class E2eTestRootConfig {
 
     @Bean
     @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-    fun clipGenerator(): ClipGenerator = ClipGenerator()
+    fun clipGenerator(): ClipGenerator =
+        ClipGenerator(propsUtils(), audioClipSignalTopic(), redisConfig.audioSignalDao(), redisConfig.audioClipDao())
 
     /*
     Topics
@@ -93,15 +99,20 @@ class E2eTestRootConfig {
     Subscribers
      */
 
-    @Bean fun sourceFileSubscriber(): Subscriber<InitialConfiguration> = SourceFileSubscriber()
+    @Bean fun sourceFileSubscriber(): Subscriber<InitialConfiguration> =
+        SourceFileSubscriber(propsUtils(), exceptionHandler(), sourceFileTopic(), audioIo(), cassandraConfig.sourceFileDao())
 
-    @Bean fun signalSubscriber(): Subscriber<AudioSignal> = SignalSubscriber()
+    @Bean fun signalSubscriber(): Subscriber<AudioSignal> =
+        SignalSubscriber(propsUtils(), exceptionHandler(), signalTopic(), rmsCalculator(), redisConfig.audioSignalDao())
 
-    @Bean fun signalRmsSubscriber(): Subscriber<AudioSignalsRmsInfo> = SignalRmsSubscriber()
+    @Bean fun signalRmsSubscriber(): Subscriber<AudioSignalsRmsInfo> =
+        SignalRmsSubscriber(propsUtils(), exceptionHandler(), signalRmsTopic(), soundZonesDetectorActor(), redisConfig.audioSignalRmsDao())
 
-    @Bean fun audioClipInfoSubscriber(): Subscriber<AudioClipInfo> = AudioClipInfoSubscriber()
+    @Bean fun audioClipInfoSubscriber(): Subscriber<AudioClipInfo> =
+        AudioClipInfoSubscriber(propsUtils(), exceptionHandler(), audioClipInfoTopic(), redisConfig.audioClipDao(), clipGeneratorActor())
 
-    @Bean fun audioClipSignalSubscriber(): Subscriber<AudioClipSignal> = AudioClipSignalSubscriber()
+    @Bean fun audioClipSignalSubscriber(): Subscriber<AudioClipSignal> =
+        AudioClipSignalSubscriber(propsUtils(), exceptionHandler(), bucketClient(), audioClipSignalTopic(), audioIo(), audioSplitterProducer())
 
     /*
     Producer
@@ -113,7 +124,9 @@ class E2eTestRootConfig {
     Actors
      */
 
-    @Bean fun soundZonesDetectorActor(): SoundZonesDetectorActor = SoundZonesDetectorActorImpl()
+    @Bean fun soundZonesDetectorActor(): SoundZonesDetectorActor =
+        SoundZonesDetectorActorImpl(propsUtils(), soundZonesDetectorFactory(), redisConfig.audioSignalRmsDao())
 
-    @Bean fun clipGeneratorActor(): ClipGeneratorActor = ClipGeneratorActorImpl()
+    @Bean fun clipGeneratorActor(): ClipGeneratorActor =
+        ClipGeneratorActorImpl(propsUtils(), exceptionHandler(), clipGeneratorFactory(), redisConfig.audioClipDao())
 }

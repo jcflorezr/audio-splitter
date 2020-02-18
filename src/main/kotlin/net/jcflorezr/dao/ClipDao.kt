@@ -2,15 +2,13 @@ package net.jcflorezr.dao
 
 import com.datastax.driver.core.querybuilder.QueryBuilder
 import mu.KotlinLogging
-import net.jcflorezr.model.AudioClipInfoEntity
 import net.jcflorezr.model.AudioClipInfo
+import net.jcflorezr.model.AudioClipInfoEntity
 import net.jcflorezr.model.GroupedAudioClipInfoEntity
 import net.jcflorezr.util.AudioUtils.tenthsSecondsFormat
 import net.jcflorezr.util.PropsUtils
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.cassandra.core.CassandraOperations
 import org.springframework.data.redis.core.RedisTemplate
-import org.springframework.stereotype.Repository
 
 interface AudioClipDao {
     suspend fun storeAudioClipInfo(audioClipInfo: AudioClipInfo)
@@ -22,15 +20,11 @@ interface AudioClipDao {
     suspend fun removeAudioClipInfoFromRange(key: String, min: Double, max: Double): Long
 }
 
-@Repository
-class AudioClipDaoImpl : AudioClipDao {
-
-    @Autowired
-    private lateinit var propsUtils: PropsUtils
-    @Autowired
-    private lateinit var audioClipTemplate: RedisTemplate<String, AudioClipInfo>
-    @Autowired
-    private lateinit var cassandraTemplate: CassandraOperations
+class AudioClipDaoImpl(
+    private val propsUtils: PropsUtils,
+    private val audioClipTemplate: RedisTemplate<String, AudioClipInfo>,
+    private val cassandraTemplate: CassandraOperations
+) : AudioClipDao {
 
     private val logger = KotlinLogging.logger { }
 

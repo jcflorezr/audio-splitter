@@ -7,20 +7,15 @@ import net.jcflorezr.model.AudioSignalRmsInfo
 import net.jcflorezr.model.AudioSignalsRmsInfo
 import net.jcflorezr.util.AudioUtils
 import net.jcflorezr.util.PropsUtils
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.stereotype.Service
 
 interface RmsCalculator {
     suspend fun generateRmsInfo(audioSignal: AudioSignal)
 }
 
-@Service
-class RmsCalculatorImpl : RmsCalculator {
-
-    @Autowired
-    private lateinit var propsUtils: PropsUtils
-    @Autowired
-    private lateinit var audioSignalRmsTopic: Topic<AudioSignalsRmsInfo>
+class RmsCalculatorImpl(
+    private val propsUtils: PropsUtils,
+    private val audioSignalRmsTopic: Topic<AudioSignalsRmsInfo>
+) : RmsCalculator {
 
     private val logger = KotlinLogging.logger { }
 

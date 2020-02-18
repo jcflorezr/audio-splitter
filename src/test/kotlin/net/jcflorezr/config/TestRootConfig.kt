@@ -37,11 +37,12 @@ class TestRootConfig {
 
     @Profile("test") @Bean fun exceptionHandler(): ExceptionHandler = mock(ExceptionHandler::class.java)
 
-    @Profile("test") @Bean fun audioSplitterTest(): AudioSplitter = AudioSplitterImpl()
+    @Profile("test") @Bean fun audioSplitterTest(): AudioSplitter =
+        AudioSplitterImpl(propsUtils(), sourceFileTopicTest(), bucketClient(), exceptionHandler())
 
-    @Profile("test") @Bean fun audioIoTest(): AudioIo = AudioIoImpl()
+    @Profile("test") @Bean fun audioIoTest(): AudioIo = AudioIoImpl(propsUtils(), signalTopicTest())
 
-    @Profile("test") @Bean fun rmsCalculatorTest(): RmsCalculator = RmsCalculatorImpl()
+    @Profile("test") @Bean fun rmsCalculatorTest(): RmsCalculator = RmsCalculatorImpl(propsUtils(), signalRmsTopicTest())
 
     /*
     Topics
@@ -59,11 +60,15 @@ class TestRootConfig {
     Subscribers Mocks
      */
 
-    @Profile("test") @Bean fun sourceFileSubscriberTest(): Subscriber<InitialConfiguration> = SourceFileSubscriberMock()
+    @Profile("test") @Bean fun sourceFileSubscriberTest(): Subscriber<InitialConfiguration> =
+        SourceFileSubscriberMock(propsUtils(), sourceFileTopicTest())
 
-    @Profile("test") @Bean fun signalSubscriberTest(): Subscriber<AudioSignal> = SignalSubscriberMock()
+    @Profile("test") @Bean fun signalSubscriberTest(): Subscriber<AudioSignal> =
+        SignalSubscriberMock(propsUtils(), signalTopicTest())
 
-    @Profile("test") @Bean fun signalRmsSubscriberTest(): Subscriber<AudioSignalsRmsInfo> = SignalRmsSubscriberMock()
+    @Profile("test") @Bean fun signalRmsSubscriberTest(): Subscriber<AudioSignalsRmsInfo> =
+        SignalRmsSubscriberMock(propsUtils(), signalRmsTopicTest())
 
-    @Profile("test") @Bean fun audioClipSubscriberTest(): Subscriber<AudioClipInfo> = AudioClipInfoSubscriberMock()
+    @Profile("test") @Bean fun audioClipSubscriberTest(): Subscriber<AudioClipInfo> =
+        AudioClipInfoSubscriberMock(propsUtils(), audioClipTopicTest())
 }

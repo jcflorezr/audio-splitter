@@ -8,13 +8,10 @@ import net.jcflorezr.model.AudioSignalRmsEntity
 import net.jcflorezr.model.AudioSignalRmsInfo
 import net.jcflorezr.util.AudioUtils.tenthsSecondsFormat
 import net.jcflorezr.util.PropsUtils
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.cassandra.core.CassandraOperations
 import org.springframework.data.cassandra.core.selectOne
 import org.springframework.data.redis.core.RedisTemplate
-import org.springframework.stereotype.Repository
 
-@Repository
 interface AudioSignalDao {
     fun storeAudioSignal(audioSignal: AudioSignal): Boolean
     fun persistAudioSignalPart(audioSignal: AudioSignal): AudioPartEntity
@@ -24,14 +21,11 @@ interface AudioSignalDao {
     suspend fun removeAudioSignalsFromRange(key: String, min: Double, max: Double): Long
 }
 
-class AudioSignalDaoImpl : AudioSignalDao {
-
-    @Autowired
-    private lateinit var propsUtils: PropsUtils
-    @Autowired
-    private lateinit var audioSignalTemplate: RedisTemplate<String, AudioSignal>
-    @Autowired
-    private lateinit var cassandraTemplate: CassandraOperations
+class AudioSignalDaoImpl(
+    private val propsUtils: PropsUtils,
+    private val audioSignalTemplate: RedisTemplate<String, AudioSignal>,
+    private val cassandraTemplate: CassandraOperations
+) : AudioSignalDao {
 
     private val logger = KotlinLogging.logger { }
 
@@ -96,15 +90,11 @@ interface AudioSignalRmsDao {
     suspend fun persistAudioSignalsRms(audioSignalsRms: List<AudioSignalRmsInfo>)
 }
 
-@Repository
-class AudioSignalRmsDaoImpl : AudioSignalRmsDao {
-
-    @Autowired
-    private lateinit var propsUtils: PropsUtils
-    @Autowired
-    private lateinit var audioSignalRmsTemplate: RedisTemplate<String, AudioSignalRmsInfo>
-    @Autowired
-    private lateinit var cassandraTemplate: CassandraOperations
+class AudioSignalRmsDaoImpl(
+    private val propsUtils: PropsUtils,
+    private val audioSignalRmsTemplate: RedisTemplate<String, AudioSignalRmsInfo>,
+    private val cassandraTemplate: CassandraOperations
+) : AudioSignalRmsDao {
 
     private val logger = KotlinLogging.logger { }
 

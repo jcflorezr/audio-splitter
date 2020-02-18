@@ -10,8 +10,6 @@ import net.jcflorezr.model.InitialConfiguration
 import net.jcflorezr.util.AudioFormats
 import net.jcflorezr.util.AudioUtils
 import net.jcflorezr.util.PropsUtils
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.stereotype.Service
 import java.io.File
 import java.io.IOException
 import javax.sound.sampled.AudioFormat
@@ -23,13 +21,10 @@ interface AudioIo {
     suspend fun generateAudioSignalFromAudioFile(configuration: InitialConfiguration)
 }
 
-@Service
-final class AudioIoImpl : AudioIo {
-
-    @Autowired
-    private lateinit var propsUtils: PropsUtils
-    @Autowired
-    private lateinit var audioSignalTopic: Topic<AudioSignal>
+class AudioIoImpl(
+    private val propsUtils: PropsUtils,
+    private val audioSignalTopic: Topic<AudioSignal>
+) : AudioIo {
 
     private val logger = KotlinLogging.logger { }
 

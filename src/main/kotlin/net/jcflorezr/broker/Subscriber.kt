@@ -21,34 +21,26 @@ import net.jcflorezr.signal.AudioIo
 import net.jcflorezr.storage.BucketClient
 import net.jcflorezr.util.AudioFormats
 import net.jcflorezr.util.PropsUtils
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.stereotype.Service
 import java.io.File
 import java.nio.ByteBuffer
-import javax.annotation.PostConstruct
 
 interface Subscriber<T : Message> {
     suspend fun update(message: T)
 }
 
-@Service
-final class SourceFileSubscriber : Subscriber<InitialConfiguration> {
-
-    @Autowired
-    private lateinit var propsUtils: PropsUtils
-    @Autowired
-    private lateinit var exceptionHandler: ExceptionHandler
-    @Autowired
-    private lateinit var sourceFileTopic: Topic<InitialConfiguration>
-    @Autowired
-    private lateinit var audioIo: AudioIo
-    @Autowired
-    private lateinit var sourceFileDao: SourceFileDao
+class SourceFileSubscriber(
+    private val propsUtils: PropsUtils,
+    private val exceptionHandler: ExceptionHandler,
+    sourceFileTopic: Topic<InitialConfiguration>,
+    private val audioIo: AudioIo,
+    private val sourceFileDao: SourceFileDao
+) : Subscriber<InitialConfiguration> {
 
     private val logger = KotlinLogging.logger { }
 
-    @PostConstruct
-    fun init() = sourceFileTopic.register(this)
+    init {
+        sourceFileTopic.register(this)
+    }
 
     override suspend fun update(message: InitialConfiguration) {
         val sourceAudioFileName = message.audioFileName
@@ -63,24 +55,19 @@ final class SourceFileSubscriber : Subscriber<InitialConfiguration> {
     }
 }
 
-@Service
-final class SignalSubscriber : Subscriber<AudioSignal> {
-
-    @Autowired
-    private lateinit var propsUtils: PropsUtils
-    @Autowired
-    private lateinit var exceptionHandler: ExceptionHandler
-    @Autowired
-    private lateinit var signalTopic: Topic<AudioSignal>
-    @Autowired
-    private lateinit var rmsCalculator: RmsCalculator
-    @Autowired
-    private lateinit var audioSignalDao: AudioSignalDao
+class SignalSubscriber(
+    private val propsUtils: PropsUtils,
+    private val exceptionHandler: ExceptionHandler,
+    signalTopic: Topic<AudioSignal>,
+    private val rmsCalculator: RmsCalculator,
+    private val audioSignalDao: AudioSignalDao
+) : Subscriber<AudioSignal> {
 
     private val logger = KotlinLogging.logger { }
 
-    @PostConstruct
-    fun init() = signalTopic.register(this)
+    init {
+        signalTopic.register(this)
+    }
 
     override suspend fun update(message: AudioSignal) {
         logger.info { "[${propsUtils.getTransactionId(message.audioFileName)}][2][audio-signal] " +
@@ -103,24 +90,19 @@ final class SignalSubscriber : Subscriber<AudioSignal> {
     }
 }
 
-@Service
-final class SignalRmsSubscriber : Subscriber<AudioSignalsRmsInfo> {
-
-    @Autowired
-    private lateinit var propsUtils: PropsUtils
-    @Autowired
-    private lateinit var exceptionHandler: ExceptionHandler
-    @Autowired
-    private lateinit var audioSignalRmsTopic: Topic<AudioSignalsRmsInfo>
-    @Autowired
-    private lateinit var soundZonesDetectorActor: SoundZonesDetectorActor
-    @Autowired
-    private lateinit var audioSignalRmsDao: AudioSignalRmsDao
+class SignalRmsSubscriber(
+    private val propsUtils: PropsUtils,
+    private val exceptionHandler: ExceptionHandler,
+    audioSignalRmsTopic: Topic<AudioSignalsRmsInfo>,
+    private val soundZonesDetectorActor: SoundZonesDetectorActor,
+    private val audioSignalRmsDao: AudioSignalRmsDao
+) : Subscriber<AudioSignalsRmsInfo> {
 
     private val logger = KotlinLogging.logger { }
 
-    @PostConstruct
-    fun init() = audioSignalRmsTopic.register(this)
+    init {
+        audioSignalRmsTopic.register(this)
+    }
 
     override suspend fun update(message: AudioSignalsRmsInfo) {
         logger.info { "[${propsUtils.getTransactionId(message.audioSignals.first().audioFileName)}][3][RMS] " +
@@ -136,24 +118,19 @@ final class SignalRmsSubscriber : Subscriber<AudioSignalsRmsInfo> {
     }
 }
 
-@Service
-final class AudioClipInfoSubscriber : Subscriber<AudioClipInfo> {
-
-    @Autowired
-    private lateinit var propsUtils: PropsUtils
-    @Autowired
-    private lateinit var exceptionHandler: ExceptionHandler
-    @Autowired
-    private lateinit var audioClipTopic: Topic<AudioClipInfo>
-    @Autowired
-    private lateinit var audioClipDao: AudioClipDao
-    @Autowired
-    private lateinit var clipGeneratorActor: ClipGeneratorActor
+class AudioClipInfoSubscriber(
+    private val propsUtils: PropsUtils,
+    private val exceptionHandler: ExceptionHandler,
+    audioClipInfoTopic: Topic<AudioClipInfo>,
+    private val audioClipDao: AudioClipDao,
+    private val clipGeneratorActor: ClipGeneratorActor
+) : Subscriber<AudioClipInfo> {
 
     private val logger = KotlinLogging.logger { }
 
-    @PostConstruct
-    fun init() = audioClipTopic.register(this)
+    init {
+        audioClipInfoTopic.register(this)
+    }
 
     override suspend fun update(message: AudioClipInfo) {
         logger.info { "[${propsUtils.getTransactionId(message.audioFileName)}][5][clip-info] " +
@@ -169,28 +146,20 @@ final class AudioClipInfoSubscriber : Subscriber<AudioClipInfo> {
     }
 }
 
-@Service
-final class AudioClipSignalSubscriber : Subscriber<AudioClipSignal> {
-
-    @Autowired
-    private lateinit var bucketClient: BucketClient
-    @Autowired
-    private lateinit var propsUtils: PropsUtils
-    @Autowired
-    private lateinit var exceptionHandler: ExceptionHandler
-    @Autowired
-    private lateinit var audioClipSignalTopic: Topic<AudioClipSignal>
-    @Autowired
-    private lateinit var audioIo: AudioIo
-    @Autowired
-    private lateinit var audioSplitterProducer: AudioSplitterProducer
+class AudioClipSignalSubscriber(
+    private val propsUtils: PropsUtils,
+    private val exceptionHandler: ExceptionHandler,
+    private val bucketClient: BucketClient,
+    audioClipSignalTopic: Topic<AudioClipSignal>,
+    private val audioIo: AudioIo,
+    private val audioSplitterProducer: AudioSplitterProducer
+) : Subscriber<AudioClipSignal> {
 
     private val thisClass: Class<AudioClipSignalSubscriber> = this.javaClass
-    private lateinit var tempDirectoryPath: String
+    private val tempDirectoryPath: String
     private val logger = KotlinLogging.logger { }
 
-    @PostConstruct
-    fun init() {
+    init {
         audioClipSignalTopic.register(this)
         tempDirectoryPath = thisClass.getResource("/temp-converted-files").path
     }

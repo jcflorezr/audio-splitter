@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import net.jcflorezr.config.TestRestApiConfig
-import net.jcflorezr.config.WebConfig
+import net.jcflorezr.config.TestWebConfig
 import net.jcflorezr.exception.BadRequestException
 import net.jcflorezr.exception.SourceAudioFileValidationException
 import net.jcflorezr.model.InitialConfiguration
@@ -38,7 +38,7 @@ import org.mockito.Mockito.`when` as When
 
 @ActiveProfiles("test")
 @RunWith(SpringJUnit4ClassRunner::class)
-@ContextConfiguration(classes = [WebConfig::class, TestRestApiConfig::class])
+@ContextConfiguration(classes = [TestWebConfig::class, TestRestApiConfig::class])
 @WebAppConfiguration
 class AudioSplitterRestApiTest {
 
