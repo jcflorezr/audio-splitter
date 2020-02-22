@@ -1,0 +1,12 @@
+{
+  "audioFileName": "test-audio-mono.wav",
+  "title": "",
+  "album": "",
+  "artist": "",
+  "trackNumber": "",
+  "genre": "",
+  "comments": "",
+  "duration": 3,
+  "sampleRate": "22050",
+  "channels": "1"
+}

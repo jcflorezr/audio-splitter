@@ -1,8 +1,5 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-group = "net.jcflorezr"
-project.version = "0.2-SNAPSHOT"
-
 buildscript {
     @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
     var kotlinVersion: String by extra
@@ -39,17 +36,30 @@ val testContainersVersion: String by extra
 val swaggerVersion: String by extra
 
 plugins {
-    kotlin("jvm") version "1.3.10"
+    kotlin("jvm") version "1.3.60"
     war
-    kotlin("plugin.spring") version "1.3.10"
+    kotlin("plugin.spring") version "1.3.60"
     id("org.jlleitschuh.gradle.ktlint") version "7.2.1"
     id("com.palantir.docker") version "0.21.0"
 }
 
-repositories {
-    jcenter()
-    mavenCentral()
-    maven(url = "http://dl.bintray.com/ijabz/maven")
+allprojects {
+
+    group = "net.jcflorezr.audio.splitter"
+    project.version = "0.2-SNAPSHOT"
+
+    tasks.withType<KotlinCompile> {
+        kotlinOptions {
+            freeCompilerArgs = listOf("-Xjsr305=strict")
+            jvmTarget = "1.8"
+        }
+    }
+
+    repositories {
+        jcenter()
+        mavenCentral()
+        maven(url = "http://dl.bintray.com/ijabz/maven")
+    }
 }
 
 dependencies {
@@ -57,7 +67,7 @@ dependencies {
     // Kotlin
     implementation(kotlin(module = "stdlib-jdk8", version = kotlinVersion))
     implementation(kotlin(module = "reflect", version = kotlinVersion))
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.1.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.0")
 
     // Spring
     implementation("org.springframework:spring-core:$springVersion")
@@ -90,13 +100,13 @@ dependencies {
     implementation("commons-io:commons-io:2.5")
     implementation("org.apache.commons:commons-lang3:3.0")
     implementation("org.apache.tika:tika-parsers:1.20")
-    implementation("net.jthink:jaudiotagger:2.2.5")
     implementation("net.sourceforge.javaflacencoder:java-flac-encoder:0.3.7")
     implementation("com.googlecode.soundlibs:vorbisspi:1.0.3.3")
-    implementation("org.jflac:jflac-codec:1.5.2")
     implementation("com.googlecode.soundlibs:mp3spi:1.9.5.4")
+    implementation("org.jflac:jflac-codec:1.5.2")
     implementation("io.github.microutils:kotlin-logging:1.6.25")
     implementation("ch.qos.logback:logback-classic:1.2.3")
+    implementation("net.jthink:jaudiotagger:2.2.5")
     implementation("com.google.cloud:google-cloud-storage:1.66.0")
 
     // Testing
@@ -106,25 +116,4 @@ dependencies {
     testImplementation("org.mockito:mockito-core:2.24.5")
     testImplementation("org.testcontainers:testcontainers:$testContainersVersion")
     testImplementation("org.testcontainers:cassandra:$testContainersVersion")
-}
-
-val compileKotlin by tasks.getting(KotlinCompile::class) {
-    // Overwriting the "implementationKotlin" task.
-    kotlinOptions.jvmTarget = "1.8"
-    kotlinOptions.freeCompilerArgs = listOf("-Xjsr305=strict")
-    doLast { println("Finished compiling Kotlin source code") }
-}
-val compileTestKotlin by tasks.getting(KotlinCompile::class) {
-    // Overwriting the "implementationTestKotlin" task.
-    kotlinOptions.jvmTarget = "1.8"
-    kotlinOptions.freeCompilerArgs = listOf("-Xjsr305=strict")
-    doLast { println("Finished compiling Kotlin source code for testing") }
-}
-
-docker {
-    name = "jcflorezr/audio-splitter:${project.version}"
-    dependsOn(tasks.build.get())
-    setDockerfile(File("./Dockerfile"))
-    buildArgs(mapOf("BUILD_VERSION" to "${project.version}"))
-    files("./build/libs/${project.name}-${project.version}.war")
 }
