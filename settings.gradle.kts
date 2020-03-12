@@ -1,3 +1,5 @@
-rootProject.name = "audio-splitter"
+rootProject.name = "transcriber"
 
-include("domain", "adapters", "application")
+include(":audio-splitter:domain", ":audio-splitter:adapters", ":audio-splitter:application")
+
+include(":core")
