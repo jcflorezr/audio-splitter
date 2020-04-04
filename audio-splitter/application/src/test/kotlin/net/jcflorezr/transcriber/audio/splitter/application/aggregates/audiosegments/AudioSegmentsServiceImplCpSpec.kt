@@ -1,13 +1,11 @@
-package net.jcflorezr.transcriber.audio.splitter.application.audiosegments
+package net.jcflorezr.transcriber.audio.splitter.application.aggregates.audiosegments
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ObsoleteCoroutinesApi
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import net.jcflorezr.transcriber.audio.splitter.application.aggregates.audiosegments.AudioSegmentsService
 import net.jcflorezr.transcriber.audio.splitter.application.di.AudioSegmentsServiceImplCpSpecDI
 import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.sourcefileinfo.AudioContentInfo
 import org.junit.jupiter.api.Test
@@ -44,21 +42,21 @@ internal class AudioSegmentsServiceImplCpSpec {
     @Test
     fun generateAudioSegmentsFor_BackgroundNoiseLowVolume_File() = runBlocking {
         generateAudioSegments(
-            audioInfoPath = "$audioSegmentsPath/background-noise-low-volume-file-info.json",
+            audioInfoPath = "$audioSegmentsPath/background-noise-low-volume-content-info.json",
             audioFilePath = "$audioSegmentsPath/background-noise-low-volume.wav")
     }
 
     @Test
     fun generateAudioSegmentsFor_StrongBackgroundNoise_File() = runBlocking {
         generateAudioSegments(
-            audioInfoPath = "$audioSegmentsPath/strong-background-noise-file-info.json",
+            audioInfoPath = "$audioSegmentsPath/strong-background-noise-content-info.json",
             audioFilePath = "$audioSegmentsPath/strong-background-noise.wav")
     }
 
     @Test
     fun generateAudioSegmentsFor_WithApplause_File() = runBlocking {
         generateAudioSegments(
-            audioInfoPath = "$audioSegmentsPath/with-applause-file-info.json",
+            audioInfoPath = "$audioSegmentsPath/with-applause-content-info.json",
             audioFilePath = "$audioSegmentsPath/with-applause.wav")
     }
 

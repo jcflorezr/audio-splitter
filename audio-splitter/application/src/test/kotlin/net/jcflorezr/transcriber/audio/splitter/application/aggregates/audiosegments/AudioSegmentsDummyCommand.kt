@@ -1,4 +1,4 @@
-package net.jcflorezr.transcriber.audio.splitter.application.audiosegments
+package net.jcflorezr.transcriber.audio.splitter.application.aggregates.audiosegments
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
@@ -63,12 +63,12 @@ class AudioSegmentsDummyCommand : Command {
 
         assertThat(getMissingExpectedAudioSegmentsErrorMessage(expectedAudioSegments),
             actualAudioSegments.size, Is(equalTo(expectedAudioSegments.size)))
-        assertThat(actualAudioSegments.sortedBy { it.initialPosition }, Is(equalTo(expectedAudioSegments)))
+        assertThat(actualAudioSegments.sortedBy { it.segmentStart }, Is(equalTo(expectedAudioSegments)))
     }
 
     private fun getMissingExpectedAudioSegmentsErrorMessage(expectedAudioSegments: List<AudioSegment>): String {
         val differencesList = expectedAudioSegments - actualAudioSegments
         return "There were ${differencesList.size} audio segments that were not generated. \n" +
-            "Segments locations in seconds: ${differencesList.map { it.initialPositionInSeconds }}"
+            "Segments locations in seconds: ${differencesList.map { it.segmentStartInSeconds }}"
     }
 }

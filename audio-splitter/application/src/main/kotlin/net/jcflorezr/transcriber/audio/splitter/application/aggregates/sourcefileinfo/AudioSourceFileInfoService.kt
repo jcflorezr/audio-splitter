@@ -26,7 +26,7 @@ class AudioSourceFileInfoServiceImpl(
     override suspend fun extractAudioInfoFromSourceFile(audioFileName: String) = coroutineScope<Unit> {
         val audioFile = cloudStorageClient.downloadFileFromStorage(audioFileName)
         val wavFile = withContext(Dispatchers.Default) { audioWavConverter.createAudioWavFile(audioFile) }
-        val audioFileContentInfo = AudioContentInfo.create(audioFile = wavFile ?: audioFile)
+        val audioFileContentInfo = AudioContentInfo.extractFrom(audioFile = wavFile ?: audioFile)
         val audioMetadata = async { audioFileMetadataGenerator.retrieveAudioFileMetadata(audioFile) }
         val audioSourceFileInfo = AudioSourceFileInfo(
             originalAudioFile = audioFile.name,

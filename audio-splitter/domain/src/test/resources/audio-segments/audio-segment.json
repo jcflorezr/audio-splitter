@@ -1,9 +1,9 @@
 {
   "audioFileName": "any-audio-fie-name",
-  "initialPosition": 44100,
-  "initialPositionInSeconds": 2.0,
-  "endPosition": 66150,
-  "endPositionInSeconds": 3.0,
+  "segmentStart": 44100,
+  "segmentStartInSeconds": 2.0,
+  "segmentEnd": 66150,
+  "segmentEndInSeconds": 3.0,
   "audioSegmentRms": {
     "rms": 0.091
   },

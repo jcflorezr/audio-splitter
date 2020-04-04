@@ -55,12 +55,12 @@ class AudioSegmentsServiceImpl(private val command: Command) : AudioSegmentsServ
                 val audioSegmentBytes = async { extractAudioSegmentByteArray(segmentStart, framesBytesArray) }
                 val audioSegmentSignal = async { generateAudioSegmentSignal(segmentStart, framesBytesArray) }
                 val audioSegment = AudioSegment.createNew(
-                    initialPosition = framesStart + (segmentStart * audioSegmentLength),
+                    segmentStart = framesStart + (segmentStart * audioSegmentLength),
                     audioFileName = audioFile.nameWithoutExtension,
                     audioContentInfo = this@processAudioSegment,
                     audioSegmentBytes = audioSegmentBytes.await(),
                     audioSegmentRms = AudioSegmentRms.createNew(audioSegmentSignal.await()))
-                launch { command.execute(audioSegment) }
+                launch { command.execute(aggregateRoot = audioSegment) }
             }
     }
 

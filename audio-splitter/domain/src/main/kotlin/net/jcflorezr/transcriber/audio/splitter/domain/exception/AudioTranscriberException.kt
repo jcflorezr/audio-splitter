@@ -6,16 +6,16 @@ import java.util.*
 import kotlin.collections.LinkedHashMap
 
 @JsonIgnoreProperties(value = ["stackTrace", "localizedMessage"])
-open class AudioSplitterException(val errorCode: String) : RuntimeException()
+open class AudioTranscriberException(val errorCode: String) : RuntimeException()
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 open class InternalServerErrorException(
     errorCode: String = "external_error",
     val exception: Exception
-) : AudioSplitterException(errorCode) {
+) : AudioTranscriberException(errorCode) {
 
     override val message: String? = exception.message ?: exception.localizedMessage
-    private val simplifiedStackTrace: List<SimplifiedStackTraceElement>
+    val simplifiedStackTrace: List<SimplifiedStackTraceElement>
 
     init {
         simplifiedStackTrace = generateSimplifiedStackTrace(exception.stackTrace)
@@ -28,8 +28,6 @@ open class InternalServerErrorException(
             keySelector = { it.className },
             valueTransform = { it.lineNumber }
         ).map { SimplifiedStackTraceElement(it.key, it.value) }
-
-    fun getSimplifiedStackTrace() = simplifiedStackTrace
 
     override fun toString(): String {
         return "InternalServerErrorException(ex=$exception, message=$message, simplifiedStackTrace=$simplifiedStackTrace)"
@@ -46,7 +44,7 @@ open class BadRequestException(
     errorCode: String,
     override val message: String,
     val suggestion: String?
-) : AudioSplitterException(errorCode) {
+) : AudioTranscriberException(errorCode) {
 
     override fun toString() =
         StringJoiner(", ", BadRequestException::class.java.simpleName + "[", "]")

@@ -90,7 +90,7 @@ data class AudioContentInfo private constructor(
         private val SAMPLE_BITS_SUPPORTED = listOf(16, 24, 32)
         private const val AUDIO_SEGMENTS_PER_SECOND = 10
 
-        fun create(audioFile: File): AudioContentInfo {
+        fun extractFrom(audioFile: File): AudioContentInfo {
             val stream = AudioSystem.getAudioInputStream(audioFile)
             val format = stream.format
             val sampleRate = format.sampleRate.roundToInt()

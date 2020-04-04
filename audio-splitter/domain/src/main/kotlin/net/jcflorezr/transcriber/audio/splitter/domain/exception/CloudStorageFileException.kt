@@ -10,9 +10,9 @@ class CloudStorageFileException(
     companion object {
 
         fun fileNotFoundInCloudStorage(filePath: String) =
-                CloudStorageFileException(
-                        errorCode = "file_not_found_in_cloud_storage",
-                        message = "File '$filePath' was not found in the implemented cloud storage.")
+            CloudStorageFileException(
+                errorCode = "file_not_found_in_cloud_storage",
+                message = "File '$filePath' was not found in the implemented cloud storage.")
     }
 }
 
@@ -23,10 +23,9 @@ class TempLocalFileException(
     companion object {
 
         fun tempDownloadedFileNotFound(filePath: String) =
-                TempLocalFileException(
-                        errorCode = "downloaded_file_not_found",
-                        exception =
-                        FileNotFoundException("The downloaded file from bucket was not found in the local temp directory. File path: $filePath")
-                )
+            TempLocalFileException(
+                errorCode = "downloaded_file_not_found",
+                exception =
+                FileNotFoundException("The downloaded file from bucket was not found in the local temp directory. File path: $filePath"))
     }
 }

@@ -10,10 +10,10 @@ import kotlin.math.sqrt
  */
 data class AudioSegment private constructor(
     val audioFileName: String,
-    val initialPosition: Int,
-    val initialPositionInSeconds: Float,
-    val endPosition: Int,
-    val endPositionInSeconds: Float,
+    val segmentStart: Int,
+    val segmentStartInSeconds: Float,
+    val segmentEnd: Int,
+    val segmentEndInSeconds: Float,
     val audioSegmentRms: AudioSegmentRms,
     val audioSegmentBytes: AudioSegmentBytes
 ) : AggregateRoot {
@@ -21,7 +21,7 @@ data class AudioSegment private constructor(
     companion object {
 
         fun createNew(
-            initialPosition: Int,
+            segmentStart: Int,
             audioFileName: String,
             audioContentInfo: AudioContentInfo,
             audioSegmentRms: AudioSegmentRms,
@@ -31,19 +31,19 @@ data class AudioSegment private constructor(
             val framesToRead = audioSegmentBytes.bytes.size / audioContentInfo.frameSize
             return AudioSegment(
                 audioFileName = audioFileName,
-                initialPosition = initialPosition,
-                initialPositionInSeconds = calculateInitialPositionInSeconds(initialPosition, sampleRate),
-                endPosition = initialPosition + framesToRead,
-                endPositionInSeconds = calculateEndPositionInSeconds(initialPosition, framesToRead, sampleRate),
+                segmentStart = segmentStart,
+                segmentStartInSeconds = calculateSegmentStartInSeconds(segmentStart, sampleRate),
+                segmentEnd = segmentStart + framesToRead,
+                segmentEndInSeconds = calculateSegmentEndInSeconds(segmentStart, framesToRead, sampleRate),
                 audioSegmentRms = audioSegmentRms,
                 audioSegmentBytes = audioSegmentBytes)
         }
 
-        private fun calculateInitialPositionInSeconds(initialPosition: Int, sampleRate: Int) =
-            AudioUtils.tenthsSecondsFormat(initialPosition.toFloat() / sampleRate.toFloat()).toFloat()
+        private fun calculateSegmentStartInSeconds(segmentStart: Int, sampleRate: Int) =
+            AudioUtils.tenthsSecondsFormat(segmentStart.toFloat() / sampleRate.toFloat()).toFloat()
 
-        private fun calculateEndPositionInSeconds(initialPosition: Int, framesToRead: Int, sampleRate: Int) =
-            AudioUtils.tenthsSecondsFormat((initialPosition + framesToRead).toFloat() / sampleRate.toFloat()).toFloat()
+        private fun calculateSegmentEndInSeconds(segmentStart: Int, framesToRead: Int, sampleRate: Int) =
+            AudioUtils.tenthsSecondsFormat((segmentStart + framesToRead).toFloat() / sampleRate.toFloat()).toFloat()
     }
 }
 
@@ -85,5 +85,28 @@ data class AudioSegmentRms private constructor(val rms: Double) {
         private fun List<Float>.calculateSegmentRms() =
             AudioUtils.millisecondsFormat(
                 value = sqrt(fold(0.0) { a, b -> a + (b * b) }.toDouble() / size))
+    }
+}
+
+/*
+    Value Object
+ */
+data class BasicAudioSegment private constructor(
+    val audioFileName: String,
+    val segmentStart: Int,
+    val segmentStartInSeconds: Float,
+    val segmentEnd: Int,
+    val segmentEndInSeconds: Float,
+    val audioSegmentRms: Double
+) {
+    companion object {
+        fun fromAudioSegment(audioSegment: AudioSegment) =
+            BasicAudioSegment(
+                audioFileName = audioSegment.audioFileName,
+                segmentStart = audioSegment.segmentStart,
+                segmentStartInSeconds = audioSegment.segmentStartInSeconds,
+                segmentEnd = audioSegment.segmentEnd,
+                segmentEndInSeconds = audioSegment.segmentEndInSeconds,
+                audioSegmentRms = audioSegment.audioSegmentRms.rms)
     }
 }

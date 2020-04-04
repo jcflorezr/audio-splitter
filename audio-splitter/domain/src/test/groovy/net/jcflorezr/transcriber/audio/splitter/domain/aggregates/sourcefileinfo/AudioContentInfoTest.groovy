@@ -1,8 +1,7 @@
-package net.jcflorezr.transcriber.audio.splitter.domain.sourcefile
+package net.jcflorezr.transcriber.audio.splitter.domain.aggregates.sourcefileinfo
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.sourcefileinfo.AudioContentInfo
 import net.jcflorezr.transcriber.audio.splitter.domain.exception.AudioSourceException
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -48,7 +47,7 @@ class AudioContentInfoTest extends Specification {
 
     private static AudioContentInfo extractAudioContentInfo(String audioFileName) {
         String audioFilePath = "$testResourcesPath/$audioFileName"
-        return new AudioContentInfo.Companion().create(new File(audioFilePath))
+        return new AudioContentInfo.Companion().extractFrom(new File(audioFilePath))
     }
 
     private static AudioContentInfo getExpectedAudioContentInfo() {
