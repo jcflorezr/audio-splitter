@@ -22,6 +22,7 @@ internal class AudioClipTest {
     private val audioSegmentsFileName = "active-segments.json"
     private val audioClipsFileName = "audio-clips.json"
     private val activeSegments = getActiveSegments()
+    private val expectedAudioClips = getExpectedAudioClips()
 
     @Test
     fun createNewAudioClip() {
@@ -37,7 +38,6 @@ internal class AudioClipTest {
 
     @Test
     fun assertAudioClips() {
-        val expectedAudioClips = getExpectedAudioClips()
         activeSegments
             .foldIndexed(AudioClip.createNew()) { i, currentClip, activeSegment ->
                 currentClip
@@ -85,6 +85,22 @@ internal class AudioClipTest {
         assertThat(audioClip.tenthsOfSecond, Is(equalTo(2)))
         assertTrue(audioClip.activeSegments.isNotEmpty())
         assertFalse(audioClip.isFlushed())
+    }
+
+    @Test
+    fun testAudioClipFileNamesGenerated() {
+        expectedAudioClips.forEach { audioClip ->
+            val expectedAudioClipName =
+                audioClip.activeSegments.takeIf { it.isEmpty() }?.let { "" }
+                ?: activeSegments.first().segmentStart.toString().replace(".", "_")
+            assertThat(audioClip.audioClipFileName(), Is(equalTo(expectedAudioClipName)))
+        }
+    }
+
+    @Test
+    fun clipNameForEmptyAudioClip() {
+        val clipName = AudioClip.createNew().audioClipFileName()
+        assertThat(clipName, Is(equalTo("")))
     }
 
     private fun getActiveSegments(): List<ActiveSegment> {

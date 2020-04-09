@@ -38,7 +38,7 @@ internal class AudioSegmentTest {
         // When
         val actualAudioSegment = AudioSegment.createNew(
             segmentStart = 44100,
-            audioFileName = "any-audio-fie-name",
+            sourceAudioFileName = "any-audio-fie-name",
             audioSegmentBytes = AudioSegmentBytes.of(bytes = bytes, from = 0, to = bytes.size),
             audioSegmentRms = AudioSegmentRms.createNew(signal = listOf(audioSegmentSignal)),
             audioContentInfo = audioContentInfo)

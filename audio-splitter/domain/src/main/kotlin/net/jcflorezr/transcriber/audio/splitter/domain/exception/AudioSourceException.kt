@@ -34,6 +34,18 @@ class AudioSourceException(
                 errorCode = "audio_source_too_short",
                 message = "The current audio file is less than a second in duration.",
                 suggestion = "Try with a longer audio file")
+
+        fun audioFormatTypeNotSupported(audioType: String, audioTypesSupported: List<String>) =
+            AudioSourceException(
+                errorCode = "audio_format_not_supported",
+                message = "The file format type '$audioType' is not supported.",
+                suggestion = "Audio format types supported: $audioTypesSupported")
+
+        fun audioFileExtensionNotSupported(audioFileExtension: String, audioFileExtensionsSupported: List<String>) =
+            AudioSourceException(
+                errorCode = "audio_file_extension_not_supported",
+                message = "The file extension '$audioFileExtension' is not supported.",
+                suggestion = "Audio file extensions supported: $audioFileExtensionsSupported")
     }
 }
 

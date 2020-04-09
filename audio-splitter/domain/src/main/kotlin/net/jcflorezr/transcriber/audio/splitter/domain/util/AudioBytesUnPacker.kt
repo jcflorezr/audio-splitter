@@ -10,6 +10,9 @@ import kotlin.streams.asSequence
  */
 object AudioBytesUnPacker {
 
+    fun generateAudioSignal(audioContentInfo: AudioContentInfo, bytesBuffer: ByteArray): List<List<Float>> =
+        generateAudioSignal(audioContentInfo, bytesBuffer, 0, bytesBuffer.size / audioContentInfo.frameSize)
+
     fun generateAudioSignal(audioContentInfo: AudioContentInfo, bytesBuffer: ByteArray, from: Int, to: Int): List<List<Float>> =
         IntStream.range(0, audioContentInfo.channels).asSequence()
             .map { channel -> channel * audioContentInfo.sampleSize }
@@ -25,7 +28,7 @@ object AudioBytesUnPacker {
         when (encoding) {
             AudioFormatEncodings.PCM_SIGNED -> {
                 unpackSignedInt(
-                                buf = bytesBuffer, pos = p0 + i * frameSize, bits = sampleSizeInBits, bigEndian = bigEndian)
+                    buf = bytesBuffer, pos = p0 + i * frameSize, bits = sampleSizeInBits, bigEndian = bigEndian)
                 .div(((1 shl sampleSizeInBits - 1) - 1).toFloat())
             }
             AudioFormatEncodings.PCM_FLOAT -> unpackFloat(bytesBuffer, p0 + i * frameSize, bigEndian)

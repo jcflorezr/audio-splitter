@@ -1,5 +1,5 @@
 {
-  "audioFileName": "any-audio-fie-name",
+  "sourceAudioFileName": "any-audio-fie-name",
   "segmentStart": 44100,
   "segmentStartInSeconds": 2.0,
   "segmentEnd": 66150,

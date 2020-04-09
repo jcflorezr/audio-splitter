@@ -47,26 +47,26 @@ internal class AudioClipsInfoServiceImplCpSpec {
 
     @Test
     fun generateAudioClipsFor_BackgroundNoiseLowVolume_Segments() = runBlocking {
-        generateAudioClips(audioFileName = "background-noise-low-volume")
+        generateAudioClips(sourceAudioFileName = "background-noise-low-volume")
     }
 
     @Test
     fun generateAudioClipsFor_StrongBackgroundNoise_Segments() = runBlocking {
-        generateAudioClips(audioFileName = "strong-background-noise")
+        generateAudioClips(sourceAudioFileName = "strong-background-noise")
     }
 
     @Test
     fun generateAudioClipsFor_WithApplause_Segments() = runBlocking {
-        generateAudioClips(audioFileName = "with-applause")
+        generateAudioClips(sourceAudioFileName = "with-applause")
     }
 
-    private suspend fun generateAudioClips(audioFileName: String) = withContext(Dispatchers.IO) {
-        val audioSourceFileInfoPath = "$segmentsSourceFilesPath/$audioFileName-file-info.json"
+    private suspend fun generateAudioClips(sourceAudioFileName: String) = withContext(Dispatchers.IO) {
+        val audioSourceFileInfoPath = "$segmentsSourceFilesPath/$sourceAudioFileName-file-info.json"
         val audioSourceFileInfo = MAPPER.readValue(File(audioSourceFileInfoPath), AudioSourceFileInfo::class.java)
 
-        When(sourceFileInfoRepository.findBy(audioFileName)).thenReturn(audioSourceFileInfo)
+        When(sourceFileInfoRepository.findBy(sourceAudioFileName)).thenReturn(audioSourceFileInfo)
 
-        val audioSegmentsPath = "$segmentsSourceFilesPath/$audioFileName-audio-segments.json"
+        val audioSegmentsPath = "$segmentsSourceFilesPath/$sourceAudioFileName-audio-segments.json"
         val audioClipListType = MAPPER.typeFactory.constructCollectionType(List::class.java, AudioSegment::class.java)
         val audioSegments = (MAPPER.readValue(File(audioSegmentsPath), audioClipListType) as List<AudioSegment>)
             .map { BasicAudioSegment.fromAudioSegment(it) }

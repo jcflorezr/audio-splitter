@@ -18,7 +18,7 @@ class JavaAudioWavConverter(
     private val sampleSizeInBits = 16
 
     override fun createAudioWavFile(originalAudioFile: File): File? =
-        SupportedAudioFormats.getExtension(Tika().detect(originalAudioFile.absolutePath))
+        SupportedAudioFormats.findFileType(Tika().detect(originalAudioFile.absolutePath))
             .takeIf { it !=  SupportedAudioFormats.WAV && it != SupportedAudioFormats.WAVE }
             ?.let { createAudioWavFile(originalAudioFile.nameWithoutExtension, originalAudioFile.absolutePath) }
 

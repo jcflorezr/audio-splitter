@@ -10,7 +10,7 @@ import kotlin.math.max
     Entity
  */
 data class ActiveSegment private constructor(
-    val audioFileName: String,
+    val sourceAudioFileName: String,
     val segmentStart: Float,
     val segmentEnd: Float,
     val duration: Float,
@@ -23,7 +23,7 @@ data class ActiveSegment private constructor(
     companion object {
 
         fun createNew(
-            audioFileName: String,
+            sourceAudioFileName: String,
             segmentStart: Int,
             segmentEnd: Int,
             audioContentInfo: AudioContentInfo
@@ -31,7 +31,7 @@ data class ActiveSegment private constructor(
             val segmentStartInSeconds = audioContentInfo.calculateSegmentPositionInSeconds(segmentStart)
             val segmentEndInSeconds = audioContentInfo.calculateSegmentPositionInSeconds(segmentEnd)
             return ActiveSegment(
-                audioFileName = audioFileName,
+                sourceAudioFileName = sourceAudioFileName,
                 segmentStart = segmentStartInSeconds,
                 segmentEnd = segmentEndInSeconds,
                 duration = audioContentInfo.calculateAudioClipDuration(segmentStartInSeconds, segmentEndInSeconds),

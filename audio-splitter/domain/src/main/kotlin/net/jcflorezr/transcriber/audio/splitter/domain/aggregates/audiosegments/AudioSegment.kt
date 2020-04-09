@@ -9,7 +9,7 @@ import kotlin.math.sqrt
     Entity (Aggregate Root)
  */
 data class AudioSegment private constructor(
-    val audioFileName: String,
+    val sourceAudioFileName: String,
     val segmentStart: Int,
     val segmentStartInSeconds: Float,
     val segmentEnd: Int,
@@ -22,7 +22,7 @@ data class AudioSegment private constructor(
 
         fun createNew(
             segmentStart: Int,
-            audioFileName: String,
+            sourceAudioFileName: String,
             audioContentInfo: AudioContentInfo,
             audioSegmentRms: AudioSegmentRms,
             audioSegmentBytes: AudioSegmentBytes
@@ -30,7 +30,7 @@ data class AudioSegment private constructor(
             val sampleRate = audioContentInfo.sampleRate
             val framesToRead = audioSegmentBytes.bytes.size / audioContentInfo.frameSize
             return AudioSegment(
-                audioFileName = audioFileName,
+                sourceAudioFileName = sourceAudioFileName,
                 segmentStart = segmentStart,
                 segmentStartInSeconds = calculateSegmentStartInSeconds(segmentStart, sampleRate),
                 segmentEnd = segmentStart + framesToRead,
@@ -92,7 +92,7 @@ data class AudioSegmentRms private constructor(val rms: Double) {
     Value Object
  */
 data class BasicAudioSegment private constructor(
-    val audioFileName: String,
+    val sourceAudioFileName: String,
     val segmentStart: Int,
     val segmentStartInSeconds: Float,
     val segmentEnd: Int,
@@ -102,7 +102,7 @@ data class BasicAudioSegment private constructor(
     companion object {
         fun fromAudioSegment(audioSegment: AudioSegment) =
             BasicAudioSegment(
-                audioFileName = audioSegment.audioFileName,
+                sourceAudioFileName = audioSegment.sourceAudioFileName,
                 segmentStart = audioSegment.segmentStart,
                 segmentStartInSeconds = audioSegment.segmentStartInSeconds,
                 segmentEnd = audioSegment.segmentEnd,

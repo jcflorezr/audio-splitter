@@ -8,7 +8,6 @@ import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.channels.actor
 import kotlinx.coroutines.withContext
-import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.audioclips.ActiveSegment
 import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.audioclips.AudioClip
 import net.jcflorezr.transcriber.core.domain.AggregateRoot
 import net.jcflorezr.transcriber.core.domain.Command
@@ -56,7 +55,7 @@ class AudioClipsDummyCommand : Command {
     private suspend fun assertActiveSegmentsReceived() = activeSegmentsActor.send(AssertActiveSegmentReceived)
 
     suspend fun assertAudioClips() = withContext(Dispatchers.IO) {
-        val audioFileName = File(actualAudioClips[0].activeSegments[0].audioFileName).nameWithoutExtension
+        val audioFileName = File(actualAudioClips[0].activeSegments[0].sourceAudioFileName).nameWithoutExtension
         val audioClipsPath = "$sourceFilesPath/$audioFileName-audio-clips.json"
         val audioClipsListType =
             MAPPER.typeFactory.constructCollectionType(List::class.java, AudioClip::class.java)

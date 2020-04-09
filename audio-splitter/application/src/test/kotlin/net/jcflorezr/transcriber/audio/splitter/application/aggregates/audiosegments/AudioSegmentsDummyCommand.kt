@@ -55,7 +55,7 @@ class AudioSegmentsDummyCommand : Command {
     private suspend fun assertAudioSegmentsReceived() = audioSegmentsActor.send(AssertAudioSegmentsReceived)
 
     suspend fun assertAudioSegments() = withContext(Dispatchers.IO) {
-        val audioFileName = File(actualAudioSegments[0].audioFileName).nameWithoutExtension
+        val audioFileName = File(actualAudioSegments[0].sourceAudioFileName).nameWithoutExtension
         val audioSegmentsPath = "$sourceFilesPath/$audioFileName-audio-segments.json"
 
         val audioSegmentsListType = MAPPER.typeFactory.constructCollectionType(List::class.java, AudioSegment::class.java)

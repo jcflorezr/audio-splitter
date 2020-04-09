@@ -28,7 +28,7 @@ class AudioClipsInfoServiceImpl(
                     when {
                         activeSegmentEnd > activeSegmentStart -> {
                             audioClip = audioClip.generateActiveSegmentInfo(
-                                activeSegmentStart, activeSegmentEnd, currentSegment.audioFileName)
+                                activeSegmentStart, activeSegmentEnd, currentSegment.sourceAudioFileName)
                             this.copy(activeSegmentEnd = 0)
                         }
                         segmentWithNoisyBackgroundDetected -> {
@@ -63,7 +63,7 @@ class AudioClipsInfoServiceImpl(
                     when {
                         activeSegmentEnd > activeSegmentStart -> {
                             audioClip = audioClip.generateActiveSegmentInfo(
-                                activeSegmentStart, activeSegmentEnd, currentSegment.audioFileName)
+                                activeSegmentStart, activeSegmentEnd, currentSegment.sourceAudioFileName)
                             this.copy(activeSegmentEnd = 0)
                         }
                         else -> this
@@ -80,7 +80,7 @@ class AudioClipsInfoServiceImpl(
     ): AudioClip {
         val sourceFileInfo = sourceFileInfoRepository.findBy(audioFileName)
         val activeSegment = ActiveSegment.createNew(
-            audioFileName = audioFileName,
+            sourceAudioFileName = audioFileName,
             segmentStart = startActiveSegment,
             segmentEnd = endActiveSegment,
             audioContentInfo = sourceFileInfo.audioContentInfo)

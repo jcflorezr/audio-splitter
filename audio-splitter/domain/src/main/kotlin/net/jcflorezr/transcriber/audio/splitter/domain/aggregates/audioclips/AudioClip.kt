@@ -69,6 +69,11 @@ data class AudioClip private constructor(
         }
     }
 
+    fun audioClipFileName(): String = activeSegments
+        .takeIf { it.isEmpty() }
+        ?.let { "" }
+        ?: activeSegments.first().segmentStart.toString().replace(".", "_")
+
     private fun Float.isEnoughForAudioClipCreation(previousDuration: Float) =
         this > 3 ||
         this > 0.5f && previousDuration > 5 ||
