@@ -1,0 +1,32 @@
+{
+  "sourceAudioFileName":"test-source-audio-file-name",
+  "hours":0,
+  "minutes":0,
+  "seconds":17,
+  "tenthsOfSecond":5,
+  "alternatives":[
+    {
+      "transcription":"Una persona me quitó el cliente en la vida espiritual en la vida material y muchas decepciones.",
+      "confidence":0.8896532,
+      "words":[
+        {"word":"Una","from":0.0,"to":0.6},
+        {"word":"persona","from":0.6,"to":1.1},
+        {"word":"me","from":1.1,"to":2.1},
+        {"word":"quitó","from":2.1,"to":2.4},
+        {"word":"el","from":2.4,"to":2.5},
+        {"word":"cliente","from":2.5,"to":3.1},
+        {"word":"en","from":3.1,"to":3.8},
+        {"word":"la","from":3.8,"to":3.9},
+        {"word":"vida","from":3.9,"to":4.1},
+        {"word":"espiritual","from":4.1,"to":4.3},
+        {"word":"en","from":4.3,"to":4.8},
+        {"word":"la","from":4.8,"to":4.9},
+        {"word":"vida","from":4.9,"to":5.0},
+        {"word":"material","from":5.0,"to":5.2},
+        {"word":"y","from":5.2,"to":5.5},
+        {"word":"muchas","from":5.5,"to":5.8},
+        {"word":"decepciones.","from":5.8,"to":6.1}
+      ]
+    }
+  ]
+}

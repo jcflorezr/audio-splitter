@@ -1,8 +1,8 @@
 package net.jcflorezr.transcriber.audio.splitter.domain.aggregates.sourcefileinfo
 
 import net.jcflorezr.transcriber.audio.splitter.domain.exception.AudioFormatException
-import net.jcflorezr.transcriber.audio.splitter.domain.exception.AudioSourceException
 import net.jcflorezr.transcriber.core.domain.AggregateRoot
+import net.jcflorezr.transcriber.core.exception.AudioSourceException
 import java.io.File
 import java.lang.IllegalArgumentException
 import javax.sound.sampled.AudioFormat
@@ -23,7 +23,7 @@ data class AudioSourceFileInfo(
 /*
     Entity
  */
-data class AudioSourceFileMetadata private constructor(
+data class AudioSourceFileMetadata(
     val audioFileName: String,
     val title: String?,
     val album: String?,
@@ -36,16 +36,16 @@ data class AudioSourceFileMetadata private constructor(
     val channels: String?
 ) {
     data class Builder(
-        var audioFileName: String,
-        var title: String? = null,
-        var album: String? = null,
-        var artist: String? = null,
-        var trackNumber: String? = null,
-        var genre: String? = null,
-        var comments: String? = null,
-        var duration: Int? = null,
-        var sampleRate: String? = null,
-        var channels: String? = null) {
+        private var audioFileName: String,
+        private var title: String? = null,
+        private var album: String? = null,
+        private var artist: String? = null,
+        private var trackNumber: String? = null,
+        private var genre: String? = null,
+        private var comments: String? = null,
+        private var duration: Int? = null,
+        private var sampleRate: String? = null,
+        private var channels: String? = null) {
 
         fun audioFileName(audioFileName: String) = apply { this.audioFileName = audioFileName }
         fun title(title: String) = apply { this.title = title }
@@ -66,7 +66,7 @@ data class AudioSourceFileMetadata private constructor(
 /*
     Entity
  */
-data class AudioContentInfo private constructor(
+data class AudioContentInfo(
     val channels: Int,
     val sampleRate: Int,
     val sampleSizeInBits: Int,

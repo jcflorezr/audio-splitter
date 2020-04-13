@@ -2,7 +2,7 @@ package net.jcflorezr.transcriber.audio.splitter.domain.aggregates.sourcefileinf
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import net.jcflorezr.transcriber.audio.splitter.domain.exception.AudioSourceException
+import net.jcflorezr.transcriber.core.exception.AudioSourceException
 import spock.lang.Specification
 import spock.lang.Unroll
 

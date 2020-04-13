@@ -1,0 +1,43 @@
+{
+  "sourceAudioFileName":"test-source-audio-file-name",
+  "hours":0,
+  "minutes":0,
+  "seconds":31,
+  "tenthsOfSecond":8,
+  "alternatives":[
+    {
+      "transcription":"Jamás nos decepcionamos del señor jamás podremos decir una palabra mala, lo único que nosotros podemos decirle al Señor gracias por tenernos en tu plan y tu propósito.",
+      "confidence":0.92628485,
+      "words":[
+        {"word":"Jamás","from":0.0,"to":0.6},
+        {"word":"nos","from":0.6,"to":0.8},
+        {"word":"decepcionamos","from":0.8,"to":1.4},
+        {"word":"del","from":1.4,"to":1.6},
+        {"word":"señor","from":1.6,"to":2.0},
+        {"word":"jamás","from":2.0,"to":2.8},
+        {"word":"podremos","from":2.8,"to":3.5},
+        {"word":"decir","from":3.5,"to":3.8},
+        {"word":"una","from":3.8,"to":4.0},
+        {"word":"palabra","from":4.0,"to":4.4},
+        {"word":"mala,","from":4.4,"to":4.6},
+        {"word":"lo","from":4.6,"to":5.4},
+        {"word":"único","from":5.4,"to":5.7},
+        {"word":"que","from":5.7,"to":5.8},
+        {"word":"nosotros","from":5.8,"to":6.1},
+        {"word":"podemos","from":6.1,"to":6.2},
+        {"word":"decirle","from":6.2,"to":6.7},
+        {"word":"al","from":6.7,"to":6.7},
+        {"word":"Señor","from":6.7,"to":6.8},
+        {"word":"gracias","from":6.8,"to":7.5},
+        {"word":"por","from":7.5,"to":8.3},
+        {"word":"tenernos","from":8.3,"to":8.7},
+        {"word":"en","from":8.7,"to":8.9},
+        {"word":"tu","from":8.9,"to":9.0},
+        {"word":"plan","from":9.0,"to":9.2},
+        {"word":"y","from":9.2,"to":9.3},
+        {"word":"tu","from":9.3,"to":9.4},
+        {"word":"propósito.","from":9.4,"to":10.0}
+      ]
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-package net.jcflorezr.transcriber.audio.splitter.domain.exception
+package net.jcflorezr.transcriber.core.exception
 
 import java.io.FileNotFoundException
 
@@ -16,16 +16,16 @@ class CloudStorageFileException(
     }
 }
 
-class TempLocalFileException(
+class FileException(
     errorCode: String,
     exception: Exception
 ) : InternalServerErrorException(errorCode = errorCode, exception = exception) {
     companion object {
 
-        fun tempDownloadedFileNotFound(filePath: String) =
-            TempLocalFileException(
-                errorCode = "downloaded_file_not_found",
-                exception =
-                FileNotFoundException("The downloaded file from bucket was not found in the local temp directory. File path: $filePath"))
+        fun fileNotFound(filePath: String) =
+            FileException(
+                errorCode = "file_not_found_in_current_storage",
+                exception = FileNotFoundException(
+                    "The file placed in the current storage (cloud storage or local storeage) was not found. File path: $filePath"))
     }
 }

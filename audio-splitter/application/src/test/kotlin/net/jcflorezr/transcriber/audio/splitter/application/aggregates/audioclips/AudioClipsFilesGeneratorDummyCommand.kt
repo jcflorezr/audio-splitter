@@ -8,7 +8,7 @@ import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.channels.actor
 import kotlinx.coroutines.withContext
-import net.jcflorezr.transcriber.audio.splitter.adapters.util.SupportedAudioFormats
+import net.jcflorezr.transcriber.core.util.SupportedAudioFormats
 import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.audioclips.AudioClip
 import net.jcflorezr.transcriber.core.domain.AggregateRoot
 import net.jcflorezr.transcriber.core.domain.Command

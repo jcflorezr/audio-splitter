@@ -10,6 +10,7 @@ dependencies {
 
     // Domain context
     implementation(project(":audio-splitter:domain"))
+    implementation(project(":core"))
 
     // Spring
     implementation("org.springframework:spring-core:5.2.0.RELEASE")

@@ -1,6 +1,6 @@
-package net.jcflorezr.transcriber.audio.splitter.adapters.util
+package net.jcflorezr.transcriber.core.util
 
-import net.jcflorezr.transcriber.audio.splitter.domain.exception.AudioSourceException
+import net.jcflorezr.transcriber.core.exception.AudioSourceException
 import net.sourceforge.javaflacencoder.FLACFileWriter
 import javax.sound.sampled.AudioFileFormat
 

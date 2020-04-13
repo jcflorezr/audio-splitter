@@ -3,7 +3,7 @@ package net.jcflorezr.transcriber.audio.splitter.application.aggregates.audiocli
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import net.jcflorezr.transcriber.audio.splitter.adapters.util.SupportedAudioFormats
+import net.jcflorezr.transcriber.core.util.SupportedAudioFormats
 import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.audioclips.AudioClip
 import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.sourcefileinfo.AudioContentInfo
 import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.sourcefileinfo.AudioFormatEncodings
@@ -22,14 +22,14 @@ interface AudioClipsFilesGenerator {
 }
 
 class AudioClipsFilesGeneratorImpl(
-    private val command: Command,
     private val audioSegmentsRepository: AudioSegmentsRepository,
     private val sourceFileInfoRepository: SourceFileInfoRepository,
-    private val tempLocalDirectory: String
+    private val tempLocalDirectory: String,
+    private val command: Command
 ) : AudioClipsFilesGenerator {
 
     companion object {
-        private val FLAC_TYPE = SupportedAudioFormats.FLAC.fileType!!
+        private val FLAC_TYPE = SupportedAudioFormats.FLAC.fileType
         private val FLAC_EXTENSION = SupportedAudioFormats.FLAC.extension
     }
 

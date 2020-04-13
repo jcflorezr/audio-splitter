@@ -1,4 +1,4 @@
-package net.jcflorezr.transcriber.audio.splitter.domain.exception
+package net.jcflorezr.transcriber.core.exception
 
 import java.io.IOException
 

@@ -2,7 +2,7 @@ package net.jcflorezr.transcriber.audio.splitter.adapters.sourcefileinfo
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import net.jcflorezr.transcriber.audio.splitter.adapters.util.SupportedAudioFormats
+import net.jcflorezr.transcriber.core.util.SupportedAudioFormats
 import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.sourcefileinfo.AudioSourceFileMetadata
 import spock.lang.Shared
 import spock.lang.Specification

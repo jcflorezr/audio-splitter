@@ -1,7 +1,7 @@
 package net.jcflorezr.transcriber.audio.splitter.adapters.sourcefileinfo
 
-import net.jcflorezr.transcriber.audio.splitter.adapters.util.SupportedAudioFormats
-import net.jcflorezr.transcriber.audio.splitter.domain.exception.AudioSourceException
+import net.jcflorezr.transcriber.core.exception.AudioSourceException
+import net.jcflorezr.transcriber.core.util.SupportedAudioFormats
 import org.apache.tika.Tika
 import spock.lang.Shared
 import spock.lang.Specification

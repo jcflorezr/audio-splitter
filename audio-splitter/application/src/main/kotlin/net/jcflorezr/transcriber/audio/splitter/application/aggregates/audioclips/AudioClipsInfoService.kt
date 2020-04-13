@@ -15,8 +15,8 @@ interface AudioClipsInfoService {
 }
 
 class AudioClipsInfoServiceImpl(
-    private val command: Command,
-    private val sourceFileInfoRepository: SourceFileInfoRepository
+    private val sourceFileInfoRepository: SourceFileInfoRepository,
+    private val command: Command
 ) : AudioClipsInfoService {
 
     override suspend fun generateActiveSegments(audioSegments: List<BasicAudioSegment>) {

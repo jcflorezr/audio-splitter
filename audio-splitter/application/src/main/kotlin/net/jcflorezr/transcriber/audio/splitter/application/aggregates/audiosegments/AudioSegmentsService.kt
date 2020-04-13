@@ -8,10 +8,10 @@ import kotlinx.coroutines.withContext
 import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.audiosegments.AudioSegment
 import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.audiosegments.AudioSegmentBytes
 import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.audiosegments.AudioSegmentRms
-import net.jcflorezr.transcriber.audio.splitter.domain.exception.AudioSegmentException
 import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.sourcefileinfo.AudioContentInfo
 import net.jcflorezr.transcriber.audio.splitter.domain.util.AudioBytesUnPacker
 import net.jcflorezr.transcriber.core.domain.Command
+import net.jcflorezr.transcriber.core.exception.AudioSegmentException
 import java.io.File
 import java.util.stream.IntStream
 import javax.sound.sampled.AudioInputStream

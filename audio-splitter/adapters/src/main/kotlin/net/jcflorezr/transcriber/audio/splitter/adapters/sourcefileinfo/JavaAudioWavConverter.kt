@@ -1,7 +1,7 @@
 package net.jcflorezr.transcriber.audio.splitter.adapters.sourcefileinfo
 
 import mu.KotlinLogging
-import net.jcflorezr.transcriber.audio.splitter.adapters.util.SupportedAudioFormats
+import net.jcflorezr.transcriber.core.util.SupportedAudioFormats
 import net.jcflorezr.transcriber.audio.splitter.domain.ports.aggregates.sourcefileinfo.AudioWavConverter
 import org.apache.tika.Tika
 import java.io.File

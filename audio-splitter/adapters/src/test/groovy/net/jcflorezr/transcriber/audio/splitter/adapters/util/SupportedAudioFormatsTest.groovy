@@ -1,6 +1,7 @@
 package net.jcflorezr.transcriber.audio.splitter.adapters.util
 
-import net.jcflorezr.transcriber.audio.splitter.domain.exception.AudioSourceException
+import net.jcflorezr.transcriber.core.exception.AudioSourceException
+import net.jcflorezr.transcriber.core.util.SupportedAudioFormats
 import spock.lang.Specification
 import spock.lang.Unroll
 

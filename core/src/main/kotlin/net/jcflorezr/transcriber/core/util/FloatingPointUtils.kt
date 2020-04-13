@@ -1,6 +1,6 @@
-package net.jcflorezr.transcriber.audio.splitter.domain.util
+package net.jcflorezr.transcriber.core.util
 
-object AudioUtils {
+object FloatingPointUtils {
 
     private const val oneDigitDecimalFormat = "%.1f"
     private const val threeDigitDecimalFormat = "%.3f"

@@ -18,7 +18,7 @@ open class AudioSourceFileInfoServiceImplCpSpecDI {
 
     @Bean open fun audioSourceFileInfoServiceTest(): AudioSourceFileInfoService =
         AudioSourceFileInfoServiceImpl(
-            cloudStorageClient = googleCloudStorageClientTest(),
+            storageClient = googleCloudStorageClientTest(),
             audioWavConverter = javaAudioWavConverterTest(),
             audioFileMetadataGenerator = jAudioTaggerMetadataGenerator(),
             command = generateAudioFileInfoCommand())

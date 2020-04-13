@@ -16,10 +16,10 @@ open class AudioClipsFilesGeneratorImplCpSpecDI {
 
     @Bean open fun audioClipsFilesGeneratorTest(): AudioClipsFilesGenerator =
         AudioClipsFilesGeneratorImpl(
-            audioClipsFilesGeneratorDummyCommand(),
             audioSegmentsRepositoryTest(),
             sourceFileInfoRepositoryTest(),
-            tempLocalDirectory())
+            tempLocalDirectory(),
+            audioClipsFilesGeneratorDummyCommand())
 
     @Bean open fun audioSegmentsRepositoryTest(): AudioSegmentsRepository = mock(AudioSegmentsRepository::class.java)
 

@@ -1,8 +1,5 @@
 package net.jcflorezr.transcriber.audio.splitter.domain.ports.cloud.storage
 
-import java.io.File
+import net.jcflorezr.transcriber.core.domain.ports.storage.StorageClient
 
-interface CloudStorageClient {
-    suspend fun downloadFileFromStorage(fileName: String): File
-    suspend fun uploadFileToStorage(file: File, transactionId: String)
-}
+interface CloudStorageClient : StorageClient

@@ -1,8 +1,4 @@
-package net.jcflorezr.transcriber.audio.splitter.domain.exception
-
-import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.sourcefileinfo.AudioFormatEncodings
-import java.lang.IllegalArgumentException
-import javax.sound.sampled.AudioFormat
+package net.jcflorezr.transcriber.core.exception
 
 class AudioSourceException(
     message: String,
@@ -46,19 +42,5 @@ class AudioSourceException(
                 errorCode = "audio_file_extension_not_supported",
                 message = "The file extension '$audioFileExtension' is not supported.",
                 suggestion = "Audio file extensions supported: $audioFileExtensionsSupported")
-    }
-}
-
-class AudioFormatException(
-    errorCode: String,
-    exception: Exception
-) : InternalServerErrorException(errorCode = errorCode, exception = exception) {
-    companion object {
-
-        fun unsupportedFormatEncoding(formatEncoding: AudioFormat.Encoding, supportedFormatEncodingsList: Array<AudioFormatEncodings>) =
-            AudioFormatException(
-                errorCode = "audio_format_encoding_not_supported",
-                exception = IllegalArgumentException("The audio with format encoding $formatEncoding is not valid to extract the content info. " +
-                    "Only audio files with encodings $supportedFormatEncodingsList are valid."))
     }
 }

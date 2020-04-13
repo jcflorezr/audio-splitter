@@ -7,8 +7,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import net.jcflorezr.transcriber.audio.splitter.domain.ports.cloud.storage.CloudStorageClient
-import net.jcflorezr.transcriber.audio.splitter.domain.exception.CloudStorageFileException
-import net.jcflorezr.transcriber.audio.splitter.domain.exception.TempLocalFileException
+import net.jcflorezr.transcriber.core.exception.CloudStorageFileException
+import net.jcflorezr.transcriber.core.exception.FileException
 import org.apache.tika.Tika
 import java.io.File
 import java.nio.file.Paths
@@ -22,7 +22,7 @@ class GoogleCloudStorageClient(
 
     private val logger = KotlinLogging.logger { }
 
-    override suspend fun downloadFileFromStorage(fileName: String) = withContext(Dispatchers.IO) {
+    override suspend fun retrieveFileFromStorage(fileName: String) = withContext(Dispatchers.IO) {
         logger.info { "[1][entry-point] Downloading source audio file: ($fileName) from bucket" }
         val blobId = BlobId.of(bucketName, "$bucketDirectory/$fileName")
         val blob = storageClient.get(blobId)
@@ -31,12 +31,12 @@ class GoogleCloudStorageClient(
         blob.downloadTo(Paths.get(pathToDownloadFile))
         val downloadedFile = File(pathToDownloadFile)
         when {
-            !downloadedFile.exists() -> throw TempLocalFileException.tempDownloadedFileNotFound(downloadedFile.absolutePath)
+            !downloadedFile.exists() -> throw FileException.fileNotFound(downloadedFile.absolutePath)
             else -> downloadedFile
         }
     }
 
-    override suspend fun uploadFileToStorage(file: File, transactionId: String) = withContext<Unit>(Dispatchers.IO) {
+    override suspend fun sendFileToStorage(file: File, transactionId: String) = withContext<Unit>(Dispatchers.IO) {
         val audioFileName = file.name
         logger.info { "[$transactionId][6][audio-clip] Uploading Audio File ($audioFileName) to bucket." }
         val enclosingFolderPath = "${transactionId.substringAfter("_")}/$transactionId"
@@ -46,5 +46,4 @@ class GoogleCloudStorageClient(
         storageClient.create(blobInfoForFile, file.readBytes())
         file.delete()
     }
-
 }

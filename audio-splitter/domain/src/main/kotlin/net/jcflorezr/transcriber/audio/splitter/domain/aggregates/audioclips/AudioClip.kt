@@ -1,12 +1,12 @@
 package net.jcflorezr.transcriber.audio.splitter.domain.aggregates.audioclips
 
-import net.jcflorezr.transcriber.audio.splitter.domain.util.AudioUtils
+import net.jcflorezr.transcriber.core.util.FloatingPointUtils
 import net.jcflorezr.transcriber.core.domain.AggregateRoot
 
 /*
     Entity (Aggregate Root)
  */
-data class AudioClip private constructor(
+data class AudioClip(
     val duration: Float,
     val hours: Int,
     val minutes: Int,
@@ -39,7 +39,7 @@ data class AudioClip private constructor(
             minutes = firstSegment.minutes,
             seconds = firstSegment.seconds,
             tenthsOfSecond = firstSegment.tenthsOfSecond,
-            duration = AudioUtils.tenthsSecondsFormat(lastSegment.segmentEnd - firstSegment.segmentStart).toFloat(),
+            duration = FloatingPointUtils.tenthsSecondsFormat(lastSegment.segmentEnd - firstSegment.segmentStart).toFloat(),
             activeSegments = currentActiveSegments,
             previousSegment = null)
     }
@@ -51,10 +51,10 @@ data class AudioClip private constructor(
         }
         val firstSegment = currentActiveSegments.first()
         val lastSegment = currentActiveSegments.last()
-        val gap = AudioUtils.tenthsSecondsFormat(currentSegment.segmentStart - lastSegment.segmentEnd).toFloat()
+        val gap = FloatingPointUtils.tenthsSecondsFormat(currentSegment.segmentStart - lastSegment.segmentEnd).toFloat()
             .takeIf { it > 0 } ?: 0.0f
         val previousDuration =
-            AudioUtils.tenthsSecondsFormat(lastSegment.segmentEnd - firstSegment.segmentStart).toFloat()
+            FloatingPointUtils.tenthsSecondsFormat(lastSegment.segmentEnd - firstSegment.segmentStart).toFloat()
         return when {
             gap.isEnoughForAudioClipCreation(previousDuration) ->
                 AudioClip(

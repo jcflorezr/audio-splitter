@@ -6,8 +6,8 @@ import com.google.cloud.storage.Storage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import net.jcflorezr.transcriber.audio.splitter.adapters.di.GoogleCloudStorageClientTestDI
-import net.jcflorezr.transcriber.audio.splitter.domain.exception.CloudStorageFileException
-import net.jcflorezr.transcriber.audio.splitter.domain.exception.TempLocalFileException
+import net.jcflorezr.transcriber.core.exception.CloudStorageFileException
+import net.jcflorezr.transcriber.core.exception.FileException
 import org.apache.commons.io.FileUtils
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.CoreMatchers.`is` as Is
@@ -61,7 +61,7 @@ internal class GoogleCloudStorageClientTest {
             FileUtils.copyFile(sourceFile, tempFile)
             When(storage.get(BlobId.of(bucketName, "$bucketDirectory/$audioFileName"))).thenReturn(blobMock)
             doNothing().`when`(blobMock).downloadTo(Paths.get(tempFile.absolutePath))
-            val downloadedFileFromStorage = googleCloudStorageClient.downloadFileFromStorage(fileName = audioFileName)
+            val downloadedFileFromStorage = googleCloudStorageClient.retrieveFileFromStorage(fileName = audioFileName)
             assertTrue(downloadedFileFromStorage.exists())
             assertThat(downloadedFileFromStorage.absolutePath, Is(equalTo(tempFile.absolutePath)))
         } finally {
@@ -74,7 +74,7 @@ internal class GoogleCloudStorageClientTest {
         When(storage.get(BlobId.of(bucketName, "$bucketDirectory/$audioFileName"))).thenReturn(null)
         val actualException = assertThrows(CloudStorageFileException::class.java) {
             runBlocking {
-                googleCloudStorageClient.downloadFileFromStorage(fileName = audioFileName)
+                googleCloudStorageClient.retrieveFileFromStorage(fileName = audioFileName)
             }
         }
         val expectedException = CloudStorageFileException.fileNotFoundInCloudStorage(audioFileName)
@@ -88,12 +88,12 @@ internal class GoogleCloudStorageClientTest {
         val blobMock = mock(Blob::class.java)
         When(storage.get(BlobId.of(bucketName, "$bucketDirectory/$audioFileName"))).thenReturn(blobMock)
         doNothing().`when`(blobMock).downloadTo(Paths.get(tempFile.absolutePath))
-        val actualException = assertThrows(TempLocalFileException::class.java) {
+        val actualException = assertThrows(FileException::class.java) {
             runBlocking {
-                googleCloudStorageClient.downloadFileFromStorage(fileName = audioFileName)
+                googleCloudStorageClient.retrieveFileFromStorage(fileName = audioFileName)
             }
         }
-        val expectedException = TempLocalFileException.tempDownloadedFileNotFound(tempFile.absolutePath)
+        val expectedException = FileException.fileNotFound(tempFile.absolutePath)
         assertThat(actualException.errorCode, Is(equalTo(expectedException.errorCode)))
         assertThat(actualException.message, Is(equalTo(expectedException.message)))
     }

@@ -2,14 +2,14 @@ package net.jcflorezr.transcriber.audio.splitter.domain.aggregates.audioclips
 
 import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.audiosegments.BasicAudioSegment
 import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.sourcefileinfo.AudioContentInfo
-import net.jcflorezr.transcriber.audio.splitter.domain.util.AudioUtils
+import net.jcflorezr.transcriber.core.util.FloatingPointUtils
 import kotlin.math.abs
 import kotlin.math.max
 
 /*
     Entity
  */
-data class ActiveSegment private constructor(
+data class ActiveSegment(
     val sourceAudioFileName: String,
     val segmentStart: Float,
     val segmentEnd: Float,
@@ -42,10 +42,10 @@ data class ActiveSegment private constructor(
         }
 
         private fun AudioContentInfo.calculateSegmentPositionInSeconds(segmentPosition: Int) =
-            AudioUtils.tenthsSecondsFormat(segmentPosition.toFloat() / sampleRate.toFloat()).toFloat()
+            FloatingPointUtils.tenthsSecondsFormat(segmentPosition.toFloat() / sampleRate.toFloat()).toFloat()
 
         private fun AudioContentInfo.calculateAudioClipDuration(segmentStart: Float, segmentEnd: Float): Float =
-            AudioUtils.tenthsSecondsFormat((segmentEnd - segmentStart) + (audioSegmentLength / sampleRate)).toFloat()
+            FloatingPointUtils.tenthsSecondsFormat((segmentEnd - segmentStart) + (audioSegmentLength / sampleRate)).toFloat()
 
     }
 }
@@ -98,7 +98,7 @@ data class CurrentSegment(
     }
 
     private fun getSegmentInfo(audioSegment: BasicAudioSegment): Triple<Double, Boolean, Int> {
-        val currentDifference = AudioUtils.millisecondsFormat(value = (previousRms - audioSegment.audioSegmentRms))
+        val currentDifference = FloatingPointUtils.millisecondsFormat(value = (previousRms - audioSegment.audioSegmentRms))
         val isPossibleSilence = abs(currentDifference) <= SILENCE_THRESHOLD
         val segmentLength = audioSegment.segmentEnd - audioSegment.segmentStart
         return Triple(currentDifference, isPossibleSilence, segmentLength)
@@ -147,7 +147,7 @@ data class CurrentSegmentWithNoisyBackground(
             val previousFromIndex = if (fromIndex > 0) { fromIndex - 1 } else { 0 }
             val previousRms = audioSegments[previousFromIndex].audioSegmentRms
             val currentRms = audioSegments[fromIndex].audioSegmentRms
-            val previousDifference = AudioUtils.millisecondsFormat(value = previousRms - currentRms)
+            val previousDifference = FloatingPointUtils.millisecondsFormat(value = previousRms - currentRms)
             return CurrentSegmentWithNoisyBackground(
                 activeCounter = 0,
                 inactiveCounter = 0,
@@ -198,8 +198,8 @@ data class CurrentSegmentWithNoisyBackground(
     private fun getSegmentInfo(audioSegment: BasicAudioSegment, currentIndex: Int): SegmentInfoInNoisyBackground {
         val segmentLength = audioSegment.segmentEnd - audioSegment.segmentStart
         val isLastSegment = currentIndex == segmentLength - 1
-        val currentDifference = AudioUtils.millisecondsFormat(value = (previousRms - audioSegment.audioSegmentRms))
-        val deepDifference = AudioUtils.millisecondsFormat(value = (previousDifference - currentDifference))
+        val currentDifference = FloatingPointUtils.millisecondsFormat(value = (previousRms - audioSegment.audioSegmentRms))
+        val deepDifference = FloatingPointUtils.millisecondsFormat(value = (previousDifference - currentDifference))
         val isPossibleActive = abs(deepDifference) >= ACTIVE_THRESHOLD
         return SegmentInfoInNoisyBackground(segmentLength, isLastSegment, currentDifference, isPossibleActive)
     }

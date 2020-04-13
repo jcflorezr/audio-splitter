@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Configuration
 open class AudioClipsServiceImplCpSpecDI {
 
     @Bean open fun audioClipsInfoServiceTest(): AudioClipsInfoService =
-        AudioClipsInfoServiceImpl(audioClipsDummyCommand(), sourceFileInfoRepositoryTest())
+        AudioClipsInfoServiceImpl(sourceFileInfoRepositoryTest(), audioClipsDummyCommand())
 
     @Bean open fun sourceFileInfoRepositoryTest(): SourceFileInfoRepository = mock(SourceFileInfoRepository::class.java)
 

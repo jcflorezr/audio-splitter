@@ -1,26 +1,26 @@
 package net.jcflorezr.transcriber.audio.splitter.application.aggregates.sourcefileinfo
 
+import java.io.File
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import net.jcflorezr.transcriber.audio.splitter.adapters.util.SupportedAudioFormats
+import net.jcflorezr.transcriber.core.util.SupportedAudioFormats
 import net.jcflorezr.transcriber.audio.splitter.application.di.AudioSourceFileInfoServiceImplCpSpecDI
-import net.jcflorezr.transcriber.audio.splitter.domain.exception.AudioSourceException
-import net.jcflorezr.transcriber.audio.splitter.domain.exception.CloudStorageFileException
-import net.jcflorezr.transcriber.audio.splitter.domain.exception.TempLocalFileException
 import net.jcflorezr.transcriber.audio.splitter.domain.ports.cloud.storage.CloudStorageClient
+import net.jcflorezr.transcriber.core.exception.AudioSourceException
+import net.jcflorezr.transcriber.core.exception.CloudStorageFileException
+import net.jcflorezr.transcriber.core.exception.FileException
 import org.apache.commons.io.FileUtils
 import org.hamcrest.CoreMatchers.equalTo
+import org.hamcrest.CoreMatchers.`is` as Is
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.Mockito.`when` as When
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.junit.jupiter.SpringExtension
-import java.io.File
-import org.hamcrest.CoreMatchers.`is` as Is
-import org.mockito.Mockito.`when` as When
 
 @ExtendWith(SpringExtension::class)
 @ContextConfiguration(classes = [AudioSourceFileInfoServiceImplCpSpecDI::class])
@@ -58,14 +58,14 @@ internal class AudioSourceFileInfoServiceImplCpSpec {
     @Test
     fun downloadedAudioFileWasNotFound() = runBlocking {
         val audioFileName = "any-audio-file-name"
-        When(cloudStorageClient.downloadFileFromStorage(audioFileName))
-            .thenThrow(TempLocalFileException.tempDownloadedFileNotFound(audioFileName))
-        val actualException = Assertions.assertThrows(TempLocalFileException::class.java) {
+        When(cloudStorageClient.retrieveFileFromStorage(audioFileName))
+            .thenThrow(FileException.fileNotFound(audioFileName))
+        val actualException = Assertions.assertThrows(FileException::class.java) {
             runBlocking {
                 audioSourceFileInfoServiceImpl.extractAudioInfoFromSourceFile(audioFileName)
             }
         }
-        val expectedException = TempLocalFileException.tempDownloadedFileNotFound(audioFileName)
+        val expectedException = FileException.fileNotFound(audioFileName)
         assertThat(actualException.errorCode, Is(equalTo(expectedException.errorCode)))
         assertThat(actualException.message, Is(equalTo(expectedException.message)))
     }
@@ -80,7 +80,7 @@ internal class AudioSourceFileInfoServiceImplCpSpec {
 
         try {
             // When
-            When(cloudStorageClient.downloadFileFromStorage(audioFileName)).thenReturn(tempFile)
+            When(cloudStorageClient.retrieveFileFromStorage(audioFileName)).thenReturn(tempFile)
             val actualException = Assertions.assertThrows(AudioSourceException::class.java) {
                 runBlocking {
                     audioSourceFileInfoServiceImpl.extractAudioInfoFromSourceFile(audioFileName)
@@ -100,7 +100,7 @@ internal class AudioSourceFileInfoServiceImplCpSpec {
     @Test
     fun audioFileWasNotFoundInCloudStorage() = runBlocking {
         val audioFileName = "any-audio-file-name-2"
-        When(cloudStorageClient.downloadFileFromStorage(audioFileName))
+        When(cloudStorageClient.retrieveFileFromStorage(audioFileName))
             .thenThrow(CloudStorageFileException.fileNotFoundInCloudStorage(audioFileName))
         val actualException = Assertions.assertThrows(CloudStorageFileException::class.java) {
             runBlocking {
@@ -121,7 +121,7 @@ internal class AudioSourceFileInfoServiceImplCpSpec {
 
         try {
             // When
-            When(cloudStorageClient.downloadFileFromStorage(audioFileName)).thenReturn(tempFile)
+            When(cloudStorageClient.retrieveFileFromStorage(audioFileName)).thenReturn(tempFile)
             audioSourceFileInfoServiceImpl.extractAudioInfoFromSourceFile(audioFileName)
         } finally {
             FileUtils.cleanDirectory(File(tempSourceFilesPath))

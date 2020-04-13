@@ -1,0 +1,24 @@
+[
+  {
+    "transcription":"Pero la vida espiritual en la vida espiritual solo y triunfos Amén hermano, Sólo hay éxito.",
+    "confidence":0.86109114,
+    "words":[
+      {"word":"Pero","from":0.0,"to":0.3},
+      {"word":"la","from":0.3,"to":0.5},
+      {"word":"vida","from":0.5,"to":0.6},
+      {"word":"espiritual","from":0.6,"to":0.9},
+      {"word":"en","from":0.9,"to":2.3},
+      {"word":"la","from":2.3,"to":2.3},
+      {"word":"vida","from":2.3,"to":2.5},
+      {"word":"espiritual","from":2.5,"to":2.7},
+      {"word":"solo","from":2.7,"to":3.1},
+      {"word":"y","from":3.1,"to":3.2},
+      {"word":"triunfos","from":3.2,"to":3.8},
+      {"word":"Amén","from":3.8,"to":4.3},
+      {"word":"hermano,","from":4.3,"to":4.6},
+      {"word":"Sólo","from":4.6,"to":5.4},
+      {"word":"hay","from":5.4,"to":5.4},
+      {"word":"éxito.","from":5.4,"to":6.0}
+    ]
+  }
+]

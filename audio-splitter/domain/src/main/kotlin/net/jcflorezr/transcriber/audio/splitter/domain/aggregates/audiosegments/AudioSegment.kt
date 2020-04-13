@@ -1,14 +1,14 @@
 package net.jcflorezr.transcriber.audio.splitter.domain.aggregates.audiosegments
 
 import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.sourcefileinfo.AudioContentInfo
-import net.jcflorezr.transcriber.audio.splitter.domain.util.AudioUtils
+import net.jcflorezr.transcriber.core.util.FloatingPointUtils
 import net.jcflorezr.transcriber.core.domain.AggregateRoot
 import kotlin.math.sqrt
 
 /*
     Entity (Aggregate Root)
  */
-data class AudioSegment private constructor(
+data class AudioSegment(
     val sourceAudioFileName: String,
     val segmentStart: Int,
     val segmentStartInSeconds: Float,
@@ -40,17 +40,17 @@ data class AudioSegment private constructor(
         }
 
         private fun calculateSegmentStartInSeconds(segmentStart: Int, sampleRate: Int) =
-            AudioUtils.tenthsSecondsFormat(segmentStart.toFloat() / sampleRate.toFloat()).toFloat()
+            FloatingPointUtils.tenthsSecondsFormat(segmentStart.toFloat() / sampleRate.toFloat()).toFloat()
 
         private fun calculateSegmentEndInSeconds(segmentStart: Int, framesToRead: Int, sampleRate: Int) =
-            AudioUtils.tenthsSecondsFormat((segmentStart + framesToRead).toFloat() / sampleRate.toFloat()).toFloat()
+            FloatingPointUtils.tenthsSecondsFormat((segmentStart + framesToRead).toFloat() / sampleRate.toFloat()).toFloat()
     }
 }
 
 /*
     Value Object
  */
-data class AudioSegmentBytes private constructor(val bytes: ByteArray) {
+data class AudioSegmentBytes(val bytes: ByteArray) {
 
     companion object {
 
@@ -76,14 +76,14 @@ data class AudioSegmentBytes private constructor(val bytes: ByteArray) {
 /*
     Value Object
  */
-data class AudioSegmentRms private constructor(val rms: Double) {
+data class AudioSegmentRms(val rms: Double) {
 
     companion object {
         fun createNew(signal: List<List<Float>>) =
             AudioSegmentRms(rms = signal[0].calculateSegmentRms())
 
         private fun List<Float>.calculateSegmentRms() =
-            AudioUtils.millisecondsFormat(
+            FloatingPointUtils.millisecondsFormat(
                 value = sqrt(fold(0.0) { a, b -> a + (b * b) }.toDouble() / size))
     }
 }
@@ -91,7 +91,7 @@ data class AudioSegmentRms private constructor(val rms: Double) {
 /*
     Value Object
  */
-data class BasicAudioSegment private constructor(
+data class BasicAudioSegment(
     val sourceAudioFileName: String,
     val segmentStart: Int,
     val segmentStartInSeconds: Float,
