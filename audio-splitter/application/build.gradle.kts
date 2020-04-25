@@ -6,11 +6,11 @@ dependencies {
     // Kotlin
     implementation(kotlin(module = "stdlib-jdk8", version = "1.3.60"))
     implementation(kotlin(module = "reflect", version = "1.3.60"))
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.5")
 
     // Domain context
-    implementation(project(":audio-splitter:domain"))
-    implementation(project(":audio-splitter:adapters"))
+    implementation(project(":audio-splitter:audio-splitter-domain"))
+    implementation(project(":audio-splitter:audio-splitter-adapters"))
     implementation(project(":core"))
 
     // Spring

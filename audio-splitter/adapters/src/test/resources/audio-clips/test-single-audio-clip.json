@@ -1,0 +1,8 @@
+{
+  "sourceAudioFileName":"strong-background-noise","duration":5.2,"hours":0,"minutes":0,"seconds":0,"tenthsOfSecond":0,"audioClipFileName":"0_0",
+  "activeSegments": [
+    {"sourceAudioFileName":"strong-background-noise","segmentStartInSeconds":0.0,"segmentEndInSeconds":0.3,"duration":0.3,"hours":0,"minutes":0,"seconds":0,"tenthsOfSecond":0},
+    {"sourceAudioFileName":"strong-background-noise","segmentStartInSeconds":1.0,"segmentEndInSeconds":3.8,"duration":2.8,"hours":0,"minutes":0,"seconds":1,"tenthsOfSecond":0},
+    {"sourceAudioFileName":"strong-background-noise","segmentStartInSeconds":3.7,"segmentEndInSeconds":5.2,"duration":1.5,"hours":0,"minutes":0,"seconds":3,"tenthsOfSecond":7}
+  ]
+}

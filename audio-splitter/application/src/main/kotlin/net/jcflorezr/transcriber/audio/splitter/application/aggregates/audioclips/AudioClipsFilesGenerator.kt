@@ -7,25 +7,23 @@ import net.jcflorezr.transcriber.core.util.SupportedAudioFormats
 import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.audioclips.AudioClip
 import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.sourcefileinfo.AudioContentInfo
 import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.sourcefileinfo.AudioFormatEncodings
-import net.jcflorezr.transcriber.audio.splitter.domain.ports.repositories.sourcefileinfo.AudioSegmentsRepository
+import net.jcflorezr.transcriber.audio.splitter.domain.ports.aggregates.audioclips.application.AudioClipsFilesGenerator
+import net.jcflorezr.transcriber.audio.splitter.domain.ports.repositories.audiosegments.AudioSegmentsRepository
 import net.jcflorezr.transcriber.audio.splitter.domain.ports.repositories.sourcefileinfo.SourceFileInfoRepository
 import net.jcflorezr.transcriber.audio.splitter.domain.util.AudioBytesPacker
 import net.jcflorezr.transcriber.audio.splitter.domain.util.AudioBytesUnPacker
 import net.jcflorezr.transcriber.core.domain.Command
+import net.jcflorezr.transcriber.core.domain.aggregates.audioclips.AudioClipFileInfo
 import java.io.File
 import javax.sound.sampled.AudioFormat
 import javax.sound.sampled.AudioInputStream
 import javax.sound.sampled.AudioSystem
 
-interface AudioClipsFilesGenerator {
-    suspend fun generateAudioClipFile(audioClipInfo: AudioClip)
-}
-
 class AudioClipsFilesGeneratorImpl(
     private val audioSegmentsRepository: AudioSegmentsRepository,
     private val sourceFileInfoRepository: SourceFileInfoRepository,
-    private val tempLocalDirectory: String,
-    private val command: Command
+    private val clipsFilesDirectory: String,
+    private val command: Command<AudioClipFileInfo>
 ) : AudioClipsFilesGenerator {
 
     companion object {
@@ -36,27 +34,30 @@ class AudioClipsFilesGeneratorImpl(
     override suspend fun generateAudioClipFile(audioClipInfo: AudioClip) = withContext<Unit>(Dispatchers.IO) {
         val firstSegment = audioClipInfo.activeSegments.first()
         val lastSegment = audioClipInfo.activeSegments.last()
-        val sourceAudioFileName = firstSegment.sourceAudioFileName
+        val sourceAudioFileName = audioClipInfo.sourceAudioFileName
         val audioClipName = audioClipInfo.audioClipFileName()
         val audioContentInfo = sourceFileInfoRepository.findBy(firstSegment.sourceAudioFileName).audioContentInfo
-        audioSegmentsRepository.findBy(
-            sourceAudioFileName = sourceAudioFileName,
-            segmentStartInSeconds = firstSegment.segmentStart,
-            segmentEndInSeconds = lastSegment.segmentEnd)
+        audioSegmentsRepository.findSegmentsRange(
+            sourceAudioFileName, firstSegment.segmentStartInSeconds, lastSegment.segmentEndInSeconds)
         .map { it.audioSegmentBytes.bytes }
         .reduce { currentSegmentBytes, nextSegmentBytes -> currentSegmentBytes + nextSegmentBytes }
         .let { byteArray ->
             val audioClipSignal = AudioBytesUnPacker.generateAudioSignal(audioContentInfo, byteArray)
             val audioClipInputStream = getAudioInputStreamForPackingBytes(audioClipSignal, audioContentInfo)
-            val pathToStoreClipFile = "$tempLocalDirectory/audio-clips/$sourceAudioFileName"
+            val pathToStoreClipFile = "$clipsFilesDirectory/$sourceAudioFileName"
             File(pathToStoreClipFile).mkdirs()
             val audioClipFile = File("$pathToStoreClipFile/$audioClipName.$FLAC_EXTENSION")
             AudioSystem.write(audioClipInputStream, FLAC_TYPE, audioClipFile)
         }
-        launch { command.execute(aggregateRoot = audioClipInfo) }
+        val audioClipFileInfo = audioClipInfo.run {
+            AudioClipFileInfo(sourceAudioFileName, hours, minutes, seconds, tenthsOfSecond, audioClipFileName, FLAC_EXTENSION) }
+        launch { command.execute(aggregateRoot = audioClipFileInfo) }
     }
 
-    private fun getAudioInputStreamForPackingBytes(signal: List<List<Float>>, audioContentInfo: AudioContentInfo): AudioInputStream {
+    private fun getAudioInputStreamForPackingBytes(
+        signal: List<List<Float>>,
+        audioContentInfo: AudioContentInfo
+    ): AudioInputStream {
         val channels = 1
         val signed = audioContentInfo.encoding == AudioFormatEncodings.PCM_SIGNED
         val format =

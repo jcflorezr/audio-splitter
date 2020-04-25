@@ -6,8 +6,10 @@ import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import net.jcflorezr.transcriber.audio.splitter.application.di.AudioTranscriptionServiceImplCpSpecDI
 import net.jcflorezr.transcriber.audio.transcriber.domain.aggregates.audiotranscriptions.Alternative
-import net.jcflorezr.transcriber.audio.transcriber.domain.aggregates.audiotranscriptions.GeneratedAudioClip
+import net.jcflorezr.transcriber.audio.transcriber.domain.ports.aggregates.application.audiotranscriptions.AudioTranscriptionService
 import net.jcflorezr.transcriber.audio.transcriber.domain.ports.cloud.speech.AudioTranscriptionsClient
+import net.jcflorezr.transcriber.core.domain.aggregates.audioclips.AudioClipFileInfo
+import net.jcflorezr.transcriber.core.exception.FileException
 import org.junit.jupiter.api.Test
 
 import org.junit.jupiter.api.extension.ExtendWith
@@ -30,6 +32,8 @@ internal class AudioTranscriptionServiceImplCpSpec {
     private lateinit var audioTranscriptionService: AudioTranscriptionService
     @Autowired
     private lateinit var audioTranscriptionsClient: AudioTranscriptionsClient
+    @Autowired
+    private lateinit var audioTranscriptionServiceImplCpSpecDI: AudioTranscriptionServiceImplCpSpecDI
 
     companion object {
         private val MAPPER = ObjectMapper().registerKotlinModule()
@@ -37,18 +41,23 @@ internal class AudioTranscriptionServiceImplCpSpec {
 
     private val thisClass: Class<AudioTranscriptionServiceImplCpSpec> = this.javaClass
     private val audioClipsTranscriptionsPath: String
-
     init {
         audioClipsTranscriptionsPath = thisClass.getResource("/audio-clips-transcriptions").path
     }
 
     @Test
     fun transcribeAudioClipsContent() = runBlocking {
-        File(audioClipsTranscriptionsPath)
-            .takeIf { it.exists() }
-            ?.listFiles { file -> !file.nameWithoutExtension.contains("aggregate") }
-            ?.asSequence()
-            ?.forEach { generatedAudioClipFile ->
+        val audioClipsFilesPath = audioTranscriptionServiceImplCpSpecDI.clipsDirectory()
+        val filesKeyword = "aggregate"
+
+        val testDirectory = File(audioClipsTranscriptionsPath).takeIf { it.exists() }
+            ?: throw FileException.fileNotFound(audioClipsTranscriptionsPath)
+        val expectedAudioTranscriptionsFiles =
+            testDirectory.listFiles { file -> !file.nameWithoutExtension.contains(filesKeyword) }?.takeIf { it.isNotEmpty() }
+            ?: throw FileNotFoundException("No files with keyword '$filesKeyword' were found in directory '$audioClipsTranscriptionsPath'")
+
+        expectedAudioTranscriptionsFiles.asSequence()
+            .forEach { generatedAudioClipFile ->
                 // Given
                 val dummyGeneratedAudioClip = createDummyGeneratedAudioClip(generatedAudioClipFile)
 
@@ -60,31 +69,33 @@ internal class AudioTranscriptionServiceImplCpSpec {
                     MAPPER.readValue(transcriptionAlternativesFile, transcriptionAlternativesListType)
 
                 // When
-                When(audioTranscriptionsClient.getAudioTranscriptionAlternatives(generatedAudioClipFile.absolutePath))
+                When(audioTranscriptionsClient.getAudioTranscriptionAlternatives(
+                    "$audioClipsFilesPath/${generatedAudioClipFile.name}"))
                     .thenReturn(alternatives)
 
                 // Then
                 audioTranscriptionService.transcribe(dummyGeneratedAudioClip)
-            } ?: throw FileNotFoundException("Directory '$audioClipsTranscriptionsPath' was not found")
+            }
 
         val audioClipsDummyCommand =
             applicationCtx.getBean("audioTranscriptionDummyCommand") as AudioTranscriptionDummyCommand
         audioClipsDummyCommand.assertAudioTranscriptions()
     }
 
-    private fun createDummyGeneratedAudioClip(generatedAudioClipFile: File): GeneratedAudioClip {
+    private fun createDummyGeneratedAudioClip(generatedAudioClipFile: File): AudioClipFileInfo {
         val clipFileName = generatedAudioClipFile.nameWithoutExtension
+        val clipFileExtension = generatedAudioClipFile.extension
         val hours = clipFileName.substringBefore("_").toInt() / 3600
         val minutes = clipFileName.substringBefore("_").toInt() % 3600 / 60
         val seconds = clipFileName.substringBefore("_").toInt() % 60
         val tenths = clipFileName.substringAfter("_").substringBefore("_").toInt()
-        return GeneratedAudioClip.createNew(
+        return AudioClipFileInfo.createNew(
             sourceAudioFileName = "test-source-audio-file-name",
             hours = hours,
             minutes = minutes,
             seconds = seconds,
             tenthsOfSecond = tenths,
             audioClipFileName = clipFileName,
-            audioClipFile = generatedAudioClipFile)
+            audioClipFileExtension = clipFileExtension)
     }
 }

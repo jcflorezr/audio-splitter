@@ -1,3 +1,5 @@
 package net.jcflorezr.transcriber.core.domain
 
-interface Command : Event
+interface Command<T : AggregateRoot>{
+    suspend fun execute(aggregateRoot: T)
+}

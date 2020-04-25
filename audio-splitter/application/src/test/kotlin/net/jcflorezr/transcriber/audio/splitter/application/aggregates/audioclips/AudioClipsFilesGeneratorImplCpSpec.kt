@@ -6,11 +6,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import net.jcflorezr.transcriber.audio.splitter.application.commands.audioclips.AudioClipsFilesGeneratorDummyCommand
 import net.jcflorezr.transcriber.audio.splitter.application.di.AudioClipsFilesGeneratorImplCpSpecDI
 import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.audioclips.AudioClip
 import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.audiosegments.AudioSegment
 import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.sourcefileinfo.AudioSourceFileInfo
-import net.jcflorezr.transcriber.audio.splitter.domain.ports.repositories.sourcefileinfo.AudioSegmentsRepository
+import net.jcflorezr.transcriber.audio.splitter.domain.ports.aggregates.audioclips.application.AudioClipsFilesGenerator
+import net.jcflorezr.transcriber.audio.splitter.domain.ports.repositories.audiosegments.AudioSegmentsRepository
 import net.jcflorezr.transcriber.audio.splitter.domain.ports.repositories.sourcefileinfo.SourceFileInfoRepository
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -83,10 +85,10 @@ internal class AudioClipsFilesGeneratorImplCpSpec {
         audioClips.forEach { audioClipInfo ->
             val firstSegment = audioClipInfo.activeSegments.first()
             val lastSegment = audioClipInfo.activeSegments.last()
-            val from = audioSegments.binarySearchBy(firstSegment.segmentStart) { it.segmentStartInSeconds }
-            val to = audioSegments.binarySearchBy(lastSegment.segmentEnd) { it.segmentStartInSeconds }
+            val from = audioSegments.binarySearchBy(firstSegment.segmentStartInSeconds) { it.segmentStartInSeconds }
+            val to = audioSegments.binarySearchBy(lastSegment.segmentEndInSeconds) { it.segmentStartInSeconds }
                 .let { if (it >= audioSegments.size) { it } else { it + 1 } }
-            When(audioSegmentsRepository.findBy(sourceAudioFileName, firstSegment.segmentStart, lastSegment.segmentEnd))
+            When(audioSegmentsRepository.findSegmentsRange(sourceAudioFileName, firstSegment.segmentStartInSeconds, lastSegment.segmentEndInSeconds))
                 .thenReturn(audioSegments.subList(from, to))
             audioClipsFilesGenerator.generateAudioClipFile(audioClipInfo)
         }

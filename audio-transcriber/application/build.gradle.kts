@@ -9,8 +9,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.0")
 
     // Domain context
-    implementation(project(":audio-transcriber:domain"))
-    implementation(project(":audio-transcriber:adapters"))
+    implementation(project(":audio-transcriber:audio-transcriber-domain"))
+    implementation(project(":audio-transcriber:audio-transcriber-adapters"))
     implementation(project(":core"))
 
     // Spring

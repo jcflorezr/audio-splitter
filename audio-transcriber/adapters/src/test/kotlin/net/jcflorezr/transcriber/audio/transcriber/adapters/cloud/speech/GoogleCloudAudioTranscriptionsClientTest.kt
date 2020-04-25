@@ -5,8 +5,8 @@ import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import java.io.File
 import java.io.FileNotFoundException
 import kotlinx.coroutines.runBlocking
-import net.jcflorezr.transcriber.audio.transcriber.adapters.di.GoogleCloudSpeechClientTestDI
-import net.jcflorezr.transcriber.audio.transcriber.adapters.dto.GoogleCloudTranscriptionAlternativeDto
+import net.jcflorezr.transcriber.audio.transcriber.adapters.di.cloud.speech.GoogleCloudSpeechClientTestDI
+import net.jcflorezr.transcriber.audio.transcriber.adapters.ports.cloud.speech.dto.GoogleCloudTranscriptionAlternativeDto
 import net.jcflorezr.transcriber.audio.transcriber.domain.aggregates.audiotranscriptions.Alternative
 import net.jcflorezr.transcriber.audio.transcriber.domain.ports.cloud.speech.AudioTranscriptionsClient
 import org.hamcrest.CoreMatchers.equalTo

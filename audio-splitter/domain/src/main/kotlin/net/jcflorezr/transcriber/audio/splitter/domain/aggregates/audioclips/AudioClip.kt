@@ -7,18 +7,20 @@ import net.jcflorezr.transcriber.core.domain.AggregateRoot
     Entity (Aggregate Root)
  */
 data class AudioClip(
+    val sourceAudioFileName: String,
     val duration: Float,
     val hours: Int,
     val minutes: Int,
     val seconds: Int,
     val tenthsOfSecond: Int,
+    val audioClipFileName: String,
     val activeSegments: List<ActiveSegment>,
-    private val previousSegment: ActiveSegment?
+    private val previousSegment: ActiveSegment? = null
 ) : AggregateRoot {
 
     companion object {
-        fun createNew() = AudioClip(hours = 0, minutes = 0, seconds = 0, tenthsOfSecond = 0, duration = 0.0f,
-            activeSegments = listOf(), previousSegment = null)
+        fun createNew() = AudioClip(sourceAudioFileName = "", duration = 0.0f, hours = 0, minutes = 0, seconds = 0,
+            tenthsOfSecond = 0, audioClipFileName = "", activeSegments = listOf(), previousSegment = null)
     }
 
     fun reset() = this.copy(hours = 0, minutes = 0, seconds = 0, tenthsOfSecond = 0, duration = 0.0f,
@@ -39,7 +41,8 @@ data class AudioClip(
             minutes = firstSegment.minutes,
             seconds = firstSegment.seconds,
             tenthsOfSecond = firstSegment.tenthsOfSecond,
-            duration = FloatingPointUtils.tenthsSecondsFormat(lastSegment.segmentEnd - firstSegment.segmentStart).toFloat(),
+            duration = FloatingPointUtils.tenthsSecondsFormat(
+                lastSegment.segmentEndInSeconds - firstSegment.segmentStartInSeconds).toFloat(),
             activeSegments = currentActiveSegments,
             previousSegment = null)
     }
@@ -51,20 +54,22 @@ data class AudioClip(
         }
         val firstSegment = currentActiveSegments.first()
         val lastSegment = currentActiveSegments.last()
-        val gap = FloatingPointUtils.tenthsSecondsFormat(currentSegment.segmentStart - lastSegment.segmentEnd).toFloat()
+        val gap = FloatingPointUtils.tenthsSecondsFormat(currentSegment.segmentStartInSeconds - lastSegment.segmentEndInSeconds).toFloat()
             .takeIf { it > 0 } ?: 0.0f
         val previousDuration =
-            FloatingPointUtils.tenthsSecondsFormat(lastSegment.segmentEnd - firstSegment.segmentStart).toFloat()
+            FloatingPointUtils.tenthsSecondsFormat(lastSegment.segmentEndInSeconds - firstSegment.segmentStartInSeconds).toFloat()
         return when {
             gap.isEnoughForAudioClipCreation(previousDuration) ->
                 AudioClip(
+                    sourceAudioFileName = firstSegment.sourceAudioFileName,
                     hours = firstSegment.hours,
                     minutes = firstSegment.minutes,
                     seconds = firstSegment.seconds,
                     tenthsOfSecond = firstSegment.tenthsOfSecond,
                     duration = previousDuration,
                     activeSegments = currentActiveSegments,
-                    previousSegment = currentSegment)
+                    previousSegment = currentSegment,
+                    audioClipFileName = audioClipFileName().takeIf { it.isNotBlank() } ?: firstSegment.audioClipFileName())
             else -> this.copy(activeSegments = currentActiveSegments, previousSegment = currentSegment)
         }
     }
@@ -72,7 +77,9 @@ data class AudioClip(
     fun audioClipFileName(): String = activeSegments
         .takeIf { it.isEmpty() }
         ?.let { "" }
-        ?: activeSegments.first().segmentStart.toString().replace(".", "_")
+        ?: activeSegments.first().audioClipFileName()
+
+    private fun ActiveSegment.audioClipFileName() = segmentStartInSeconds.toString().replace(".", "_")
 
     private fun Float.isEnoughForAudioClipCreation(previousDuration: Float) =
         this > 3 ||

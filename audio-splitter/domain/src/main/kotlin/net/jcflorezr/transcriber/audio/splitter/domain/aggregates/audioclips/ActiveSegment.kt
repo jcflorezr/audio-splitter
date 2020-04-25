@@ -11,8 +11,8 @@ import kotlin.math.max
  */
 data class ActiveSegment(
     val sourceAudioFileName: String,
-    val segmentStart: Float,
-    val segmentEnd: Float,
+    val segmentStartInSeconds: Float,
+    val segmentEndInSeconds: Float,
     val duration: Float,
     val hours: Int,
     val minutes: Int,
@@ -32,8 +32,8 @@ data class ActiveSegment(
             val segmentEndInSeconds = audioContentInfo.calculateSegmentPositionInSeconds(segmentEnd)
             return ActiveSegment(
                 sourceAudioFileName = sourceAudioFileName,
-                segmentStart = segmentStartInSeconds,
-                segmentEnd = segmentEndInSeconds,
+                segmentStartInSeconds = segmentStartInSeconds,
+                segmentEndInSeconds = segmentEndInSeconds,
                 duration = audioContentInfo.calculateAudioClipDuration(segmentStartInSeconds, segmentEndInSeconds),
                 hours = segmentStartInSeconds.toInt() / 3600,
                 minutes = segmentStartInSeconds.toInt() % 3600 / 60,

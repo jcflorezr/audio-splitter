@@ -4,7 +4,7 @@ import com.google.cloud.speech.v1.SpeechClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
-import net.jcflorezr.transcriber.audio.transcriber.adapters.dto.GoogleCloudTranscriptionAlternativeDto
+import net.jcflorezr.transcriber.audio.transcriber.adapters.ports.cloud.speech.dto.GoogleCloudTranscriptionAlternativeDto
 import java.util.concurrent.TimeUnit
 
 sealed class GoogleSpeechApiClient : AutoCloseable {
@@ -28,7 +28,7 @@ sealed class GoogleSpeechApiClient : AutoCloseable {
                 .resultsList
                 .flatMap { it.alternativesList }
                 .asSequence()
-                .map { alternative -> GoogleCloudTranscriptionAlternativeDto.from(alternative) }
+                .mapIndexed { index, alternative -> GoogleCloudTranscriptionAlternativeDto.from(index, alternative) }
 
         override fun close() = getSpeechApiClient().close()
     }
@@ -53,7 +53,7 @@ sealed class GoogleSpeechApiClient : AutoCloseable {
                 .resultsList
                 .flatMap { it.alternativesList }
                 .asSequence()
-                .map { alternative -> GoogleCloudTranscriptionAlternativeDto.from(alternative) }
+                .mapIndexed { index, alternative -> GoogleCloudTranscriptionAlternativeDto.from(index, alternative) }
         }
 
         override fun close() = getSpeechApiClient().close()

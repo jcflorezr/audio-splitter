@@ -1,6 +1,7 @@
 package net.jcflorezr.transcriber.audio.splitter.domain.aggregates.audiosegments
 
 import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.sourcefileinfo.AudioContentInfo
+import net.jcflorezr.transcriber.audio.splitter.domain.util.AudioBytesUnPacker
 import net.jcflorezr.transcriber.core.util.FloatingPointUtils
 import net.jcflorezr.transcriber.core.domain.AggregateRoot
 import kotlin.math.sqrt
@@ -44,7 +45,29 @@ data class AudioSegment(
 
         private fun calculateSegmentEndInSeconds(segmentStart: Int, framesToRead: Int, sampleRate: Int) =
             FloatingPointUtils.tenthsSecondsFormat((segmentStart + framesToRead).toFloat() / sampleRate.toFloat()).toFloat()
+
+        fun extractAudioSegmentByteArray(
+            segmentStart: Int,
+            byteArray: ByteArray,
+            audioContentInfo: AudioContentInfo
+        ) = AudioSegmentBytes.of(
+                bytes = byteArray,
+                from = segmentStart * audioContentInfo.audioSegmentLengthInBytes,
+                to = (segmentStart * audioContentInfo.audioSegmentLengthInBytes) + audioContentInfo.audioSegmentLengthInBytes)
+
+        fun generateAudioSegmentSignal(
+            segmentStart: Int,
+            byteArray: ByteArray,
+            audioContentInfo: AudioContentInfo
+        ) = AudioBytesUnPacker.generateAudioSignal(
+                audioContentInfo = audioContentInfo,
+                bytesBuffer = byteArray,
+                from = segmentStart * audioContentInfo.audioSegmentLength,
+                to = (segmentStart * audioContentInfo.audioSegmentLength) + audioContentInfo.audioSegmentLength)
     }
+
+    fun toBasicAudioSegment() = BasicAudioSegment(sourceAudioFileName, segmentStart, segmentStartInSeconds,
+        segmentEnd, segmentEndInSeconds, audioSegmentRms.rms)
 }
 
 /*
@@ -89,7 +112,13 @@ data class AudioSegmentRms(val rms: Double) {
 }
 
 /*
-    Value Object
+    Aggregate Root
+ */
+
+data class BasicAudioSegments(val basicAudioSegments: List<BasicAudioSegment>) : AggregateRoot
+
+/*
+    Entity
  */
 data class BasicAudioSegment(
     val sourceAudioFileName: String,

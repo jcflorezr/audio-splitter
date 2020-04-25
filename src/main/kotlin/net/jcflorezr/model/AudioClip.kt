@@ -34,7 +34,7 @@ data class AudioClipInfoEntity(
     val minutes: Int,
     @PrimaryKeyColumn(name = "seconds", ordinal = 3, type = PrimaryKeyType.CLUSTERED)
     val seconds: Int,
-    @PrimaryKeyColumn(name = "tenths", ordinal = 4, type = PrimaryKeyType.CLUSTERED)
+    @PrimaryKeyColumn(name = "tenths_of_second", ordinal = 4, type = PrimaryKeyType.CLUSTERED)
     val tenthsOfSecond: Int,
     @Column("clip_name") val audioClipName: String,
     @Column("initial_position") val initialPosition: Int,

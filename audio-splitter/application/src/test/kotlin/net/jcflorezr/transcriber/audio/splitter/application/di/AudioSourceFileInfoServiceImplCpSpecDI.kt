@@ -1,13 +1,14 @@
 package net.jcflorezr.transcriber.audio.splitter.application.di
 
-import net.jcflorezr.transcriber.audio.splitter.adapters.sourcefileinfo.JAudioTaggerMetadataGenerator
-import net.jcflorezr.transcriber.audio.splitter.adapters.sourcefileinfo.JavaAudioWavConverter
-import net.jcflorezr.transcriber.audio.splitter.application.aggregates.sourcefileinfo.AudioSourceFileInfoDummyCommand
-import net.jcflorezr.transcriber.audio.splitter.application.aggregates.sourcefileinfo.AudioSourceFileInfoService
+import net.jcflorezr.transcriber.audio.splitter.adapters.ports.sourcefileinfo.JAudioTaggerMetadataGenerator
+import net.jcflorezr.transcriber.audio.splitter.adapters.ports.sourcefileinfo.JavaAudioWavConverter
+import net.jcflorezr.transcriber.audio.splitter.application.commands.sourcefileinfo.AudioSourceFileInfoDummyCommand
 import net.jcflorezr.transcriber.audio.splitter.application.aggregates.sourcefileinfo.AudioSourceFileInfoServiceImpl
+import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.sourcefileinfo.AudioSourceFileInfo
 import net.jcflorezr.transcriber.audio.splitter.domain.ports.cloud.storage.CloudStorageClient
-import net.jcflorezr.transcriber.audio.splitter.domain.ports.aggregates.sourcefileinfo.AudioFileMetadataGenerator
-import net.jcflorezr.transcriber.audio.splitter.domain.ports.aggregates.sourcefileinfo.AudioWavConverter
+import net.jcflorezr.transcriber.audio.splitter.domain.ports.aggregates.sourcefileinfo.adapters.AudioFileMetadataGenerator
+import net.jcflorezr.transcriber.audio.splitter.domain.ports.aggregates.sourcefileinfo.adapters.AudioWavConverter
+import net.jcflorezr.transcriber.audio.splitter.domain.ports.aggregates.sourcefileinfo.application.AudioSourceFileInfoService
 import net.jcflorezr.transcriber.core.domain.Command
 import org.mockito.Mockito.mock
 import org.springframework.context.annotation.Bean
@@ -33,7 +34,7 @@ open class AudioSourceFileInfoServiceImplCpSpecDI {
         JavaAudioWavConverter(tempLocalDirectory = tempLocalDirectory())
 
     private val thisClass: Class<AudioSourceFileInfoServiceImplCpSpecDI> = this.javaClass
-    private fun tempLocalDirectory() = thisClass.getResource("/temp-converted-files").path
+    private fun tempLocalDirectory() = thisClass.getResource("/temp-converted-files/source-file-info").path
 
     // AudioFileMetadataGenerator
 
@@ -41,5 +42,5 @@ open class AudioSourceFileInfoServiceImplCpSpecDI {
         JAudioTaggerMetadataGenerator()
 
     // Command
-    private fun generateAudioFileInfoCommand(): Command = AudioSourceFileInfoDummyCommand()
+    private fun generateAudioFileInfoCommand(): Command<AudioSourceFileInfo> = AudioSourceFileInfoDummyCommand()
 }

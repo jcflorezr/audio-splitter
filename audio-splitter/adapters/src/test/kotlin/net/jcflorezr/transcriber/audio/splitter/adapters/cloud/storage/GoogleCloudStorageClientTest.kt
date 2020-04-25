@@ -5,7 +5,7 @@ import com.google.cloud.storage.BlobId
 import com.google.cloud.storage.Storage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
-import net.jcflorezr.transcriber.audio.splitter.adapters.di.GoogleCloudStorageClientTestDI
+import net.jcflorezr.transcriber.audio.splitter.adapters.di.cloud.storage.GoogleCloudStorageClientTestDI
 import net.jcflorezr.transcriber.core.exception.CloudStorageFileException
 import net.jcflorezr.transcriber.core.exception.FileException
 import org.apache.commons.io.FileUtils

@@ -2,13 +2,15 @@ package net.jcflorezr.transcriber.audio.transcriber.adapters.dto
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import net.jcflorezr.transcriber.audio.transcriber.adapters.ports.cloud.speech.dto.GoogleCloudTranscriptionAlternativeDto
 import java.io.File
 import java.io.FileNotFoundException
-import junit.framework.Assert.assertTrue
 import net.jcflorezr.transcriber.audio.transcriber.domain.aggregates.audiotranscriptions.Alternative
+import net.jcflorezr.transcriber.core.exception.FileException
 import org.hamcrest.CoreMatchers.`is` as Is
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 internal class GoogleCloudAlternativeAlternativeDtoTest {
@@ -48,10 +50,9 @@ internal class GoogleCloudAlternativeAlternativeDtoTest {
                 MAPPER.readValue(transcriptionAlternativesEntityFile, transcriptionAlternativesEntityListType)
 
             assertThat(alternativesDto.size, Is(equalTo(expectedAlternatives.size)))
-            alternativesDto.forEach { alternativeDto ->
-                assertTrue(expectedAlternatives.contains(alternativeDto.toEntity()))
+            alternativesDto.forEachIndexed { index, alternativeDto ->
+                assertThat(alternativeDto.toEntity(), Is(equalTo(expectedAlternatives[index])))
             }
-        }
-        ?: throw FileNotFoundException("Directory '$audioClipsFilesPath' was not found")
+        } ?: throw FileException.fileNotFound(audioClipsFilesPath)
     }
 }

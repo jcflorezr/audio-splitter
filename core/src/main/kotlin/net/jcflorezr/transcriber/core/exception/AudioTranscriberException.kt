@@ -6,13 +6,13 @@ import java.util.*
 import kotlin.collections.LinkedHashMap
 
 @JsonIgnoreProperties(value = ["stackTrace", "localizedMessage"])
-open class AudioTranscriberException(val errorCode: String) : RuntimeException()
+open class TranscriberException(val errorCode: String) : RuntimeException()
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 open class InternalServerErrorException(
-    errorCode: String = "external_error",
+    errorCode: String = "internal_error",
     val exception: Exception
-) : AudioTranscriberException(errorCode) {
+) : TranscriberException(errorCode) {
 
     override val message: String? = exception.message ?: exception.localizedMessage
     val simplifiedStackTrace: List<SimplifiedStackTraceElement>
@@ -44,12 +44,25 @@ open class BadRequestException(
     errorCode: String,
     override val message: String,
     val suggestion: String?
-) : AudioTranscriberException(errorCode) {
+) : TranscriberException(errorCode) {
 
     override fun toString() =
         StringJoiner(", ", BadRequestException::class.java.simpleName + "[", "]")
             .add("errorCode='$errorCode'")
             .add("message=$message")
             .add("suggestion=$suggestion")
+            .toString()
+}
+
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+open class NotFoundException(
+    errorCode: String,
+    override val message: String
+) : TranscriberException(errorCode) {
+
+    override fun toString() =
+        StringJoiner(", ", NotFoundException::class.java.simpleName + "[", "]")
+            .add("errorCode='$errorCode'")
+            .add("message=$message")
             .toString()
 }

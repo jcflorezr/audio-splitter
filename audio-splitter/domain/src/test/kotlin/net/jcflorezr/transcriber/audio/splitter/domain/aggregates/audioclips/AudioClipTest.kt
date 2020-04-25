@@ -92,7 +92,7 @@ internal class AudioClipTest {
         expectedAudioClips.forEach { audioClip ->
             val expectedAudioClipName =
                 audioClip.activeSegments.takeIf { it.isEmpty() }?.let { "" }
-                ?: activeSegments.first().segmentStart.toString().replace(".", "_")
+                ?: activeSegments.first().segmentStartInSeconds.toString().replace(".", "_")
             assertThat(audioClip.audioClipFileName(), Is(equalTo(expectedAudioClipName)))
         }
     }

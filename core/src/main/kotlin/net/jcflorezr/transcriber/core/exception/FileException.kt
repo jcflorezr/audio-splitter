@@ -26,6 +26,6 @@ class FileException(
             FileException(
                 errorCode = "file_not_found_in_current_storage",
                 exception = FileNotFoundException(
-                    "The file placed in the current storage (cloud storage or local storeage) was not found. File path: $filePath"))
+                    "The file placed in the current storage (cloud storage or local storage) was not found. File path: $filePath"))
     }
 }

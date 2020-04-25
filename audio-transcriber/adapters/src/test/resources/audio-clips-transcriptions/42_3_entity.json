@@ -1,11 +1,12 @@
 [
   {
+    "position":1,
     "transcription":"Gloria nuestro Dios",
     "confidence":0.93030167,
     "words":[
-      {"word":"Gloria","from":0.0,"to":0.5},
-      {"word":"nuestro","from":0.5,"to":0.8},
-      {"word":"Dios","from":0.8,"to":0.9}
+      {"position":1,"word":"Gloria","from":0.0,"to":0.5},
+      {"position":2,"word":"nuestro","from":0.5,"to":0.8},
+      {"position":3,"word":"Dios","from":0.8,"to":0.9}
     ]
   }
 ]

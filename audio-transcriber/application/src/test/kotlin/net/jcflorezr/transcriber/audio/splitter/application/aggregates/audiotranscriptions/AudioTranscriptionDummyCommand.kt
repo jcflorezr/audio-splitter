@@ -11,8 +11,8 @@ import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.channels.actor
 import kotlinx.coroutines.withContext
 import net.jcflorezr.transcriber.audio.transcriber.domain.aggregates.audiotranscriptions.AudioTranscription
-import net.jcflorezr.transcriber.core.domain.AggregateRoot
 import net.jcflorezr.transcriber.core.domain.Command
+import net.jcflorezr.transcriber.core.exception.FileException
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.CoreMatchers.`is` as Is
 import org.hamcrest.MatcherAssert.assertThat
@@ -22,7 +22,7 @@ data class StoreAudioTranscriptionReceived(val audioTranscription: AudioTranscri
 object AssertAudioTranscriptionReceived : AudioTranscriptionReceivedMsg()
 
 @ObsoleteCoroutinesApi
-class AudioTranscriptionDummyCommand : Command {
+class AudioTranscriptionDummyCommand : Command<AudioTranscription> {
 
     companion object {
         private val MAPPER = ObjectMapper().registerKotlinModule()
@@ -39,9 +39,8 @@ class AudioTranscriptionDummyCommand : Command {
         transcriptionsFilesPath = thisClass.getResource("/audio-clips-transcriptions").path
     }
 
-    override suspend fun execute(aggregateRoot: AggregateRoot) {
-        val audioClip = aggregateRoot as AudioTranscription
-        activeSegmentsActor.send(StoreAudioTranscriptionReceived(audioClip))
+    override suspend fun execute(audioTranscription: AudioTranscription) {
+        activeSegmentsActor.send(StoreAudioTranscriptionReceived(audioTranscription))
     }
 
     private fun CoroutineScope.activeSegmentsActor() = actor<AudioTranscriptionReceivedMsg> {
@@ -56,20 +55,24 @@ class AudioTranscriptionDummyCommand : Command {
     private suspend fun assertActiveSegmentsReceived() = activeSegmentsActor.send(AssertAudioTranscriptionReceived)
 
     suspend fun assertAudioTranscriptions() = withContext(Dispatchers.IO) {
+        val filesKeyword = "aggregate"
+        val testDirectory = File(transcriptionsFilesPath).takeIf { it.exists() }
+            ?: throw FileException.fileNotFound(transcriptionsFilesPath)
+        val expectedAudioTranscriptionsFiles =
+            testDirectory.listFiles { file -> file.nameWithoutExtension.contains(filesKeyword) }?.takeIf { it.isNotEmpty() }
+            ?: throw FileNotFoundException("No files with keyword '$filesKeyword' were found in directory '$transcriptionsFilesPath'")
 
-        val expectedAudioTranscriptions = File(transcriptionsFilesPath)
-            .takeIf { it.exists() }
-            ?.listFiles { file -> file.nameWithoutExtension.contains("aggregate") }
-            ?.map { transcriptionFile -> MAPPER.readValue(transcriptionFile, AudioTranscription::class.java) }
-            ?.sortedWith(compareBy( { it.hours }, { it.minutes }, { it.seconds }, { it.tenthsOfSecond }) )
-            ?: throw FileNotFoundException("Directory '$transcriptionsFilesPath' was not found")
+        val expectedAudioTranscriptions = expectedAudioTranscriptionsFiles
+            .map { transcriptionFile -> MAPPER.readValue(transcriptionFile, AudioTranscription::class.java) }
+            .sortedWith(compareBy( { it.hours }, { it.minutes }, { it.seconds }, { it.tenthsOfSecond }) )
 
         assertThat(getMissingExpectedAudioTranscriptionsErrorMessage(expectedAudioTranscriptions),
             actualAudioTranscriptions.size, Is(equalTo(expectedAudioTranscriptions.size)))
-        assertThat(
-            actualAudioTranscriptions
-                .sortedWith(compareBy( { it.hours }, { it.minutes }, { it.seconds }, { it.tenthsOfSecond }) ),
-            Is(equalTo(expectedAudioTranscriptions)))
+        actualAudioTranscriptions
+            .sortedWith(compareBy( { it.hours }, { it.minutes }, { it.seconds }, { it.tenthsOfSecond }) )
+            .forEachIndexed { index, actualAudioTranscription ->
+                assertThat(actualAudioTranscription, Is(equalTo(expectedAudioTranscriptions[index])))
+            }
     }
 
     private fun getMissingExpectedAudioTranscriptionsErrorMessage(

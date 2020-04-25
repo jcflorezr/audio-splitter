@@ -7,5 +7,7 @@ enum class AudioFormatEncodings {
 
     companion object {
         fun getEncoding(encoding: AudioFormat.Encoding) = valueOf(encoding.toString())
+
+        fun getEncoding(encoding: String) = valueOf(encoding)
     }
 }

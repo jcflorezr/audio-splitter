@@ -24,8 +24,8 @@ class ActiveSegmentTest extends Specification {
 
         then:
         verifyAll {
-            actualActiveSegment.segmentStart == startInSeconds.toFloat()
-            actualActiveSegment.segmentEnd == endInSeconds.toFloat()
+            actualActiveSegment.segmentStartInSeconds == startInSeconds.toFloat()
+            actualActiveSegment.segmentEndInSeconds == endInSeconds.toFloat()
             actualActiveSegment.hours == hours
             actualActiveSegment.minutes == minutes
             actualActiveSegment.seconds == seconds

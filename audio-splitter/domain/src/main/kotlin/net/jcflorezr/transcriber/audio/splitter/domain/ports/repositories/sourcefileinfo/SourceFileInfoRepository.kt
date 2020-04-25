@@ -5,4 +5,6 @@ import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.sourcefileinfo
 interface SourceFileInfoRepository {
 
     suspend fun findBy(audioFileName: String): AudioSourceFileInfo
+
+    suspend fun save(audioSourceFileInfo: AudioSourceFileInfo)
 }

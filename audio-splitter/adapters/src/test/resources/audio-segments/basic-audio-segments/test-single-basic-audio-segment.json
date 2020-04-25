@@ -1,0 +1,8 @@
+{
+  "sourceAudioFileName": "background-noise-low-volume-1",
+  "segmentStart": 68355,
+  "segmentStartInSeconds": 3.1,
+  "segmentEnd": 70560,
+  "segmentEndInSeconds": 3.2,
+  "audioSegmentRms": 0.03
+}

@@ -6,6 +6,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import net.jcflorezr.transcriber.core.util.SupportedAudioFormats
 import net.jcflorezr.transcriber.audio.splitter.application.di.AudioSourceFileInfoServiceImplCpSpecDI
+import net.jcflorezr.transcriber.audio.splitter.domain.ports.aggregates.sourcefileinfo.application.AudioSourceFileInfoService
 import net.jcflorezr.transcriber.audio.splitter.domain.ports.cloud.storage.CloudStorageClient
 import net.jcflorezr.transcriber.core.exception.AudioSourceException
 import net.jcflorezr.transcriber.core.exception.CloudStorageFileException
@@ -37,7 +38,7 @@ internal class AudioSourceFileInfoServiceImplCpSpec {
 
     init {
         sourceFilesPath = thisClass.getResource("/source-file-info").path
-        tempSourceFilesPath = thisClass.getResource("/temp-converted-files").path
+        tempSourceFilesPath = thisClass.getResource("/temp-converted-files/source-file-info").path
     }
 
     @Test

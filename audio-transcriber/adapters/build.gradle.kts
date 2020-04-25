@@ -6,15 +6,20 @@ plugins {
 dependencies {
     implementation(kotlin(module = "stdlib-jdk8", version = "1.3.60"))
     implementation(kotlin(module = "reflect", version = "1.3.60"))
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.5")
 
     // Domain context
-    implementation(project(":audio-transcriber:domain"))
+    implementation(project(":audio-transcriber:audio-transcriber-domain"))
     implementation(project(":core"))
 
     // Spring
     implementation("org.springframework:spring-core:5.2.0.RELEASE")
     implementation("org.springframework:spring-context:5.2.0.RELEASE")
+
+    // Cassandra
+    implementation("org.springframework.data:spring-data-cassandra:2.2.6.RELEASE")
+    implementation("com.datastax.cassandra:cassandra-driver-core:3.7.2")
+    implementation("com.codahale.metrics:metrics-core:3.0.2")
 
     // Cloud
     implementation("com.google.cloud:google-cloud-storage:1.66.0")
@@ -37,4 +42,6 @@ dependencies {
     testImplementation("org.springframework:spring-test:5.2.0.RELEASE")
     testImplementation("org.codehaus.groovy:groovy-all:2.5.7")
     testImplementation("org.spockframework:spock-core:1.3-groovy-2.5")
+    testImplementation("org.testcontainers:cassandra:1.14.0")
+    testImplementation(project(":core", "testArtifacts"))
 }
