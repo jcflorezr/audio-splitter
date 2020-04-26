@@ -2,7 +2,7 @@ package net.jcflorezr.transcriber.core.exception
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonInclude
-import java.util.*
+import java.util.StringJoiner
 import kotlin.collections.LinkedHashMap
 
 @JsonIgnoreProperties(value = ["stackTrace", "localizedMessage"])

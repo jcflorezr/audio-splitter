@@ -2,6 +2,7 @@ package net.jcflorezr.transcriber.audio.splitter.application.aggregates.audiocli
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import java.io.File
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.runBlocking
@@ -16,13 +17,12 @@ import net.jcflorezr.transcriber.audio.splitter.domain.ports.repositories.audios
 import net.jcflorezr.transcriber.audio.splitter.domain.ports.repositories.sourcefileinfo.SourceFileInfoRepository
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.Mockito.`when` as When
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.ApplicationContext
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.junit.jupiter.SpringExtension
-import java.io.File
-import org.mockito.Mockito.`when` as When
 
 @ObsoleteCoroutinesApi
 @ExtendWith(SpringExtension::class)

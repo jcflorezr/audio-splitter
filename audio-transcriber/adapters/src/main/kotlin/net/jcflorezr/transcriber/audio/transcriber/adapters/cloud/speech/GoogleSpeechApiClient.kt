@@ -1,11 +1,11 @@
 package net.jcflorezr.transcriber.audio.transcriber.adapters.cloud.speech
 
 import com.google.cloud.speech.v1.SpeechClient
+import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import net.jcflorezr.transcriber.audio.transcriber.adapters.ports.cloud.speech.dto.GoogleCloudTranscriptionAlternativeDto
-import java.util.concurrent.TimeUnit
 
 sealed class GoogleSpeechApiClient : AutoCloseable {
 

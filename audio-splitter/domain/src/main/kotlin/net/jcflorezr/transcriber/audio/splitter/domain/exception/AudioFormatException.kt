@@ -1,8 +1,8 @@
 package net.jcflorezr.transcriber.audio.splitter.domain.exception
 
+import javax.sound.sampled.AudioFormat
 import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.sourcefileinfo.AudioFormatEncodings
 import net.jcflorezr.transcriber.core.exception.InternalServerErrorException
-import javax.sound.sampled.AudioFormat
 
 class AudioFormatException(
     errorCode: String,

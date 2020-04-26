@@ -1,5 +1,7 @@
 package net.jcflorezr.transcriber.audio.splitter.adapters.di.dao
 
+import java.io.File
+import java.nio.file.Files
 import net.jcflorezr.transcriber.core.config.TestCassandraConfig
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Bean
@@ -9,8 +11,6 @@ import org.springframework.data.cassandra.core.CassandraAdminOperations
 import org.springframework.data.cassandra.core.CassandraAdminTemplate
 import org.springframework.data.cassandra.core.CassandraOperations
 import org.springframework.data.cassandra.core.CassandraTemplate
-import java.io.File
-import java.nio.file.Files
 
 @Configuration
 open class AudioSplitterTestCassandraConfig : TestCassandraConfig() {

@@ -1,5 +1,6 @@
 package net.jcflorezr.transcriber.audio.splitter.application.aggregates.audiotranscriptions
 
+import java.io.File
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import net.jcflorezr.transcriber.audio.transcriber.domain.aggregates.audiotranscriptions.AudioTranscription
@@ -7,7 +8,6 @@ import net.jcflorezr.transcriber.audio.transcriber.domain.ports.aggregates.appli
 import net.jcflorezr.transcriber.audio.transcriber.domain.ports.cloud.speech.AudioTranscriptionsClient
 import net.jcflorezr.transcriber.core.domain.Command
 import net.jcflorezr.transcriber.core.domain.aggregates.audioclips.AudioClipFileInfo
-import java.io.File
 
 class AudioTranscriptionsServiceImpl(
     private val audioTranscriptionsClient: AudioTranscriptionsClient,

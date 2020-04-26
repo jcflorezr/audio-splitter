@@ -3,12 +3,12 @@ package net.jcflorezr.transcriber.audio.splitter.application.commands.sourcefile
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import java.io.File
 import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.sourcefileinfo.AudioSourceFileInfo
 import net.jcflorezr.transcriber.core.domain.Command
-import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.CoreMatchers.`is` as Is
+import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
-import java.io.File
 
 class AudioSourceFileInfoDummyCommand : Command<AudioSourceFileInfo> {
 

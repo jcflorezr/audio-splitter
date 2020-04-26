@@ -1,14 +1,14 @@
 package net.jcflorezr.transcriber.audio.splitter.adapters.ports.sourcefileinfo
 
+import java.io.File
 import mu.KotlinLogging
-import net.jcflorezr.transcriber.audio.splitter.domain.ports.aggregates.sourcefileinfo.adapters.AudioFileMetadataGenerator
 import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.sourcefileinfo.AudioSourceFileMetadata
+import net.jcflorezr.transcriber.audio.splitter.domain.ports.aggregates.sourcefileinfo.adapters.AudioFileMetadataGenerator
 import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.audio.mp3.MP3File
 import org.jaudiotagger.tag.FieldKey
 import org.jaudiotagger.tag.id3.ID3v1Tag
 import org.jaudiotagger.tag.id3.ID3v24Frames
-import java.io.File
 
 class JAudioTaggerMetadataGenerator : AudioFileMetadataGenerator {
 

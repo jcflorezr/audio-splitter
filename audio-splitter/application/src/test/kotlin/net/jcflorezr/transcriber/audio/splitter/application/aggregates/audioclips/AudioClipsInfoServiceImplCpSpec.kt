@@ -2,6 +2,7 @@ package net.jcflorezr.transcriber.audio.splitter.application.aggregates.audiocli
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import java.io.File
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.runBlocking
@@ -21,7 +22,6 @@ import org.springframework.context.ApplicationContext
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.junit.jupiter.SpringExtension
-import java.io.File
 
 @ObsoleteCoroutinesApi
 @ExtendWith(SpringExtension::class)

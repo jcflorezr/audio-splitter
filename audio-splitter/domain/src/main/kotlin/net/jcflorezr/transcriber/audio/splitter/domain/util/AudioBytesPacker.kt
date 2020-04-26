@@ -1,12 +1,12 @@
 package net.jcflorezr.transcriber.audio.splitter.domain.util
 
-import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.sourcefileinfo.AudioContentInfo
-import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.sourcefileinfo.AudioFormatEncodings
 import java.io.InputStream
 import javax.sound.sampled.AudioFormat
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
+import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.sourcefileinfo.AudioContentInfo
+import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.sourcefileinfo.AudioFormatEncodings
 
 class AudioBytesPacker(
     private val format: AudioFormat,

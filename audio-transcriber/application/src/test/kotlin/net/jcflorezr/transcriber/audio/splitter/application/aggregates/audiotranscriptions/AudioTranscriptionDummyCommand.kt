@@ -13,8 +13,8 @@ import kotlinx.coroutines.withContext
 import net.jcflorezr.transcriber.audio.transcriber.domain.aggregates.audiotranscriptions.AudioTranscription
 import net.jcflorezr.transcriber.core.domain.Command
 import net.jcflorezr.transcriber.core.exception.FileException
-import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.CoreMatchers.`is` as Is
+import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 
 sealed class AudioTranscriptionReceivedMsg

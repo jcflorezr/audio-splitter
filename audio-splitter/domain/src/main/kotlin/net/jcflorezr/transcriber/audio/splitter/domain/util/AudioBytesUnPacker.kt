@@ -1,9 +1,9 @@
 package net.jcflorezr.transcriber.audio.splitter.domain.util
 
-import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.sourcefileinfo.AudioContentInfo
-import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.sourcefileinfo.AudioFormatEncodings
 import java.util.stream.IntStream
 import kotlin.streams.asSequence
+import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.sourcefileinfo.AudioContentInfo
+import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.sourcefileinfo.AudioFormatEncodings
 
 /**
  * A utility routine to unpack the signal of a Java Sound audio stream.

@@ -2,12 +2,15 @@ package net.jcflorezr.transcriber.audio.transcriber.adapters.dao.audiotranscript
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import java.io.File
+import java.io.FileNotFoundException
+import javax.annotation.PostConstruct
 import net.jcflorezr.transcriber.audio.transcriber.adapters.di.dao.audiotranscriptions.AudioTranscriptionsCassandraDaoTestDI
 import net.jcflorezr.transcriber.audio.transcriber.domain.aggregates.audiotranscriptions.AudioTranscription
 import net.jcflorezr.transcriber.core.exception.FileException
 import net.jcflorezr.transcriber.core.exception.PersistenceException
-import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.CoreMatchers.`is` as Is
+import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
@@ -15,9 +18,6 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.junit.jupiter.SpringExtension
-import java.io.File
-import java.io.FileNotFoundException
-import javax.annotation.PostConstruct
 
 @ExtendWith(SpringExtension::class)
 @ContextConfiguration(classes = [AudioTranscriptionsCassandraDaoTestDI::class])

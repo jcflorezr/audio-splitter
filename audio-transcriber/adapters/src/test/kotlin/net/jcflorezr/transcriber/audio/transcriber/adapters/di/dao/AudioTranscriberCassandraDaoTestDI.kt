@@ -1,5 +1,6 @@
 package net.jcflorezr.transcriber.audio.transcriber.adapters.di.dao
 
+import java.util.HashMap
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Configuration
@@ -7,7 +8,6 @@ import org.springframework.context.annotation.Import
 import org.springframework.data.cassandra.core.CassandraAdminOperations
 import org.springframework.data.cassandra.core.CassandraOperations
 import org.springframework.data.cassandra.core.cql.CqlIdentifier
-import java.util.HashMap
 
 @Configuration
 @Import(value = [AudioTranscriberTestCassandraConfig::class])

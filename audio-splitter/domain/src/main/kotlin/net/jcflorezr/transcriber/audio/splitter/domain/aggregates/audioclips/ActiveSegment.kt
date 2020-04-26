@@ -1,10 +1,10 @@
 package net.jcflorezr.transcriber.audio.splitter.domain.aggregates.audioclips
 
+import kotlin.math.abs
+import kotlin.math.max
 import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.audiosegments.BasicAudioSegment
 import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.sourcefileinfo.AudioContentInfo
 import net.jcflorezr.transcriber.core.util.FloatingPointUtils
-import kotlin.math.abs
-import kotlin.math.max
 
 /*
     Entity

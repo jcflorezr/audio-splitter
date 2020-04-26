@@ -1,14 +1,14 @@
 package net.jcflorezr.transcriber.audio.splitter.adapters.ports.sourcefileinfo
 
-import mu.KotlinLogging
-import net.jcflorezr.transcriber.core.util.SupportedAudioFormats
-import net.jcflorezr.transcriber.audio.splitter.domain.ports.aggregates.sourcefileinfo.adapters.AudioWavConverter
-import org.apache.tika.Tika
 import java.io.File
 import javax.sound.sampled.AudioFileFormat
 import javax.sound.sampled.AudioFormat
 import javax.sound.sampled.AudioFormat.Encoding.PCM_SIGNED
 import javax.sound.sampled.AudioSystem
+import mu.KotlinLogging
+import net.jcflorezr.transcriber.audio.splitter.domain.ports.aggregates.sourcefileinfo.adapters.AudioWavConverter
+import net.jcflorezr.transcriber.core.util.SupportedAudioFormats
+import org.apache.tika.Tika
 
 class JavaAudioWavConverter(
     private val tempLocalDirectory: String

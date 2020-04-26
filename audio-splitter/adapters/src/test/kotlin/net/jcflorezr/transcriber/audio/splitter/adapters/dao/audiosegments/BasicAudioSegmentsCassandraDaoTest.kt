@@ -2,19 +2,19 @@ package net.jcflorezr.transcriber.audio.splitter.adapters.dao.audiosegments
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import java.io.File
+import javax.annotation.PostConstruct
 import net.jcflorezr.transcriber.audio.splitter.adapters.di.dao.audiosegments.BasicAudioSegmentsCassandraDaoTestDI
 import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.audiosegments.AudioSegment
 import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.audiosegments.BasicAudioSegment
-import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.CoreMatchers.`is` as Is
+import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.junit.jupiter.SpringExtension
-import java.io.File
-import javax.annotation.PostConstruct
 
 @ExtendWith(SpringExtension::class)
 @ContextConfiguration(classes = [BasicAudioSegmentsCassandraDaoTestDI::class])

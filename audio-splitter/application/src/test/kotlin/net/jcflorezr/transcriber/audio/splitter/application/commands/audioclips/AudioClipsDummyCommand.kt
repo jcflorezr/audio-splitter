@@ -2,6 +2,7 @@ package net.jcflorezr.transcriber.audio.splitter.application.commands.audioclips
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import java.io.File
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ObsoleteCoroutinesApi
@@ -13,7 +14,6 @@ import net.jcflorezr.transcriber.core.domain.Command
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.core.Is
-import java.io.File
 
 sealed class ActiveSegmentReceivedMsg
 data class StoreActiveSegmentReceived(val audioClip: AudioClip) : ActiveSegmentReceivedMsg()

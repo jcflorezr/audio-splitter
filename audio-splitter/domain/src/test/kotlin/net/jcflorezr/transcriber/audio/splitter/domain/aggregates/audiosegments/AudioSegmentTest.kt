@@ -3,13 +3,12 @@ package net.jcflorezr.transcriber.audio.splitter.domain.aggregates.audiosegments
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import java.io.File
 import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.sourcefileinfo.AudioContentInfo
+import org.hamcrest.CoreMatchers.`is` as Is
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.jupiter.api.Test
-import org.hamcrest.CoreMatchers.`is` as Is
-
-import java.io.File
 
 internal class AudioSegmentTest {
 

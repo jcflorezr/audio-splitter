@@ -1,5 +1,10 @@
 package net.jcflorezr.transcriber.audio.splitter.application.aggregates.audiosegments
 
+import java.io.File
+import java.util.stream.IntStream
+import javax.sound.sampled.AudioInputStream
+import javax.sound.sampled.AudioSystem
+import kotlin.streams.asSequence
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -11,11 +16,6 @@ import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.sourcefileinfo
 import net.jcflorezr.transcriber.audio.splitter.domain.ports.aggregates.audiosegments.application.AudioSegmentsService
 import net.jcflorezr.transcriber.core.domain.Command
 import net.jcflorezr.transcriber.core.exception.AudioSegmentException
-import java.io.File
-import java.util.stream.IntStream
-import javax.sound.sampled.AudioInputStream
-import javax.sound.sampled.AudioSystem
-import kotlin.streams.asSequence
 
 class AudioSegmentsServiceImpl(
     private val command: Command<AudioSegment>

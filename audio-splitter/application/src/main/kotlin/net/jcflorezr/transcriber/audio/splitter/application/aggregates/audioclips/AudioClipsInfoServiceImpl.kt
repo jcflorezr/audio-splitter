@@ -76,11 +76,8 @@ class AudioClipsInfoServiceImpl(
         audioFileName: String
     ): AudioClip {
         val sourceFileInfo = sourceFileInfoRepository.findBy(audioFileName)
-        val activeSegment = ActiveSegment.createNew(
-            sourceAudioFileName = audioFileName,
-            segmentStart = startActiveSegment,
-            segmentEnd = endActiveSegment,
-            audioContentInfo = sourceFileInfo.audioContentInfo)
+        val activeSegment =
+            ActiveSegment.createNew(audioFileName, startActiveSegment, endActiveSegment, sourceFileInfo.audioContentInfo)
         val audioClip = processActiveSegment(activeSegment)
         return when {
             audioClip.duration > 0 -> {

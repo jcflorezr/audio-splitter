@@ -1,14 +1,14 @@
 package net.jcflorezr.transcriber.audio.splitter.domain.aggregates.sourcefileinfo
 
-import net.jcflorezr.transcriber.audio.splitter.domain.exception.AudioFormatException
-import net.jcflorezr.transcriber.core.domain.AggregateRoot
-import net.jcflorezr.transcriber.core.exception.AudioSourceException
 import java.io.File
 import java.lang.IllegalArgumentException
 import javax.sound.sampled.AudioFormat
 import javax.sound.sampled.AudioInputStream
 import javax.sound.sampled.AudioSystem
 import kotlin.math.roundToInt
+import net.jcflorezr.transcriber.audio.splitter.domain.exception.AudioFormatException
+import net.jcflorezr.transcriber.core.domain.AggregateRoot
+import net.jcflorezr.transcriber.core.exception.AudioSourceException
 
 /*
     Aggregate Root

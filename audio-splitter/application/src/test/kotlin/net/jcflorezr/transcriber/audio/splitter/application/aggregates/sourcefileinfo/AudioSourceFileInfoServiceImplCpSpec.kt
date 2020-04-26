@@ -4,16 +4,16 @@ import java.io.File
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import net.jcflorezr.transcriber.core.util.SupportedAudioFormats
 import net.jcflorezr.transcriber.audio.splitter.application.di.AudioSourceFileInfoServiceImplCpSpecDI
 import net.jcflorezr.transcriber.audio.splitter.domain.ports.aggregates.sourcefileinfo.application.AudioSourceFileInfoService
 import net.jcflorezr.transcriber.audio.splitter.domain.ports.cloud.storage.CloudStorageClient
 import net.jcflorezr.transcriber.core.exception.AudioSourceException
 import net.jcflorezr.transcriber.core.exception.CloudStorageFileException
 import net.jcflorezr.transcriber.core.exception.FileException
+import net.jcflorezr.transcriber.core.util.SupportedAudioFormats
 import org.apache.commons.io.FileUtils
-import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.CoreMatchers.`is` as Is
+import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test

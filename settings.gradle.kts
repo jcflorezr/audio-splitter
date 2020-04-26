@@ -13,4 +13,3 @@ include(":audio-transcriber:adapters")
 project(":audio-transcriber:adapters").name = "audio-transcriber-adapters"
 include(":audio-transcriber:application")
 project(":audio-transcriber:application").name = "audio-transcriber-application"
-

@@ -1,10 +1,10 @@
 package net.jcflorezr.transcriber.audio.splitter.domain.aggregates.audiosegments
 
+import kotlin.math.sqrt
 import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.sourcefileinfo.AudioContentInfo
 import net.jcflorezr.transcriber.audio.splitter.domain.util.AudioBytesUnPacker
-import net.jcflorezr.transcriber.core.util.FloatingPointUtils
 import net.jcflorezr.transcriber.core.domain.AggregateRoot
-import kotlin.math.sqrt
+import net.jcflorezr.transcriber.core.util.FloatingPointUtils
 
 /*
     Entity (Aggregate Root)

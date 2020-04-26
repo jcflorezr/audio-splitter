@@ -3,6 +3,8 @@ package net.jcflorezr.transcriber.audio.splitter.adapters.cloud.storage
 import com.google.cloud.storage.BlobId
 import com.google.cloud.storage.BlobInfo
 import com.google.cloud.storage.Storage
+import java.io.File
+import java.nio.file.Paths
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import mu.KotlinLogging
@@ -10,8 +12,6 @@ import net.jcflorezr.transcriber.audio.splitter.domain.ports.cloud.storage.Cloud
 import net.jcflorezr.transcriber.core.exception.CloudStorageFileException
 import net.jcflorezr.transcriber.core.exception.FileException
 import org.apache.tika.Tika
-import java.io.File
-import java.nio.file.Paths
 
 class GoogleCloudStorageClient(
     private val bucketName: String,

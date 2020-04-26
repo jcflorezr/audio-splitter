@@ -1,9 +1,12 @@
 package net.jcflorezr.transcriber.audio.splitter.application.aggregates.audioclips
 
+import java.io.File
+import javax.sound.sampled.AudioFormat
+import javax.sound.sampled.AudioInputStream
+import javax.sound.sampled.AudioSystem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import net.jcflorezr.transcriber.core.util.SupportedAudioFormats
 import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.audioclips.AudioClip
 import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.sourcefileinfo.AudioContentInfo
 import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.sourcefileinfo.AudioFormatEncodings
@@ -14,10 +17,7 @@ import net.jcflorezr.transcriber.audio.splitter.domain.util.AudioBytesPacker
 import net.jcflorezr.transcriber.audio.splitter.domain.util.AudioBytesUnPacker
 import net.jcflorezr.transcriber.core.domain.Command
 import net.jcflorezr.transcriber.core.domain.aggregates.audioclips.AudioClipFileInfo
-import java.io.File
-import javax.sound.sampled.AudioFormat
-import javax.sound.sampled.AudioInputStream
-import javax.sound.sampled.AudioSystem
+import net.jcflorezr.transcriber.core.util.SupportedAudioFormats
 
 class AudioClipsFilesGeneratorImpl(
     private val audioSegmentsRepository: AudioSegmentsRepository,

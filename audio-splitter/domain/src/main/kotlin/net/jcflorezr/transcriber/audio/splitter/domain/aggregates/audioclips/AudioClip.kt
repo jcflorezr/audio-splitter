@@ -1,7 +1,7 @@
 package net.jcflorezr.transcriber.audio.splitter.domain.aggregates.audioclips
 
-import net.jcflorezr.transcriber.core.util.FloatingPointUtils
 import net.jcflorezr.transcriber.core.domain.AggregateRoot
+import net.jcflorezr.transcriber.core.util.FloatingPointUtils
 
 /*
     Entity (Aggregate Root)

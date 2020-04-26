@@ -1,5 +1,6 @@
 package net.jcflorezr.transcriber.audio.splitter.adapters.dao.audiosegments
 
+import java.nio.ByteBuffer
 import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.audiosegments.AudioSegment
 import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.audiosegments.AudioSegmentBytes
 import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.audiosegments.AudioSegmentRms
@@ -7,7 +8,6 @@ import org.springframework.data.cassandra.core.cql.PrimaryKeyType
 import org.springframework.data.cassandra.core.mapping.Column
 import org.springframework.data.cassandra.core.mapping.PrimaryKeyColumn
 import org.springframework.data.cassandra.core.mapping.Table
-import java.nio.ByteBuffer
 
 @Table(value = "audio_segment")
 data class AudioSegmentCassandraRecord(

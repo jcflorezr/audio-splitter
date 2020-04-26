@@ -1,8 +1,8 @@
 package net.jcflorezr.transcriber.core.util
 
+import javax.sound.sampled.AudioFileFormat
 import net.jcflorezr.transcriber.core.exception.AudioSourceException
 import net.sourceforge.javaflacencoder.FLACFileWriter
-import javax.sound.sampled.AudioFileFormat
 
 enum class SupportedAudioFormats(
     val mimeType: String,

@@ -2,14 +2,13 @@ package net.jcflorezr.transcriber.audio.transcriber.adapters.dao.audiotranscript
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
-import net.jcflorezr.transcriber.audio.transcriber.domain.aggregates.audiotranscriptions.AudioTranscription
-import org.hamcrest.CoreMatchers.equalTo
-import org.hamcrest.CoreMatchers.`is` as Is
-import org.hamcrest.MatcherAssert.assertThat
-import org.junit.jupiter.api.Test
-
 import java.io.File
 import java.io.FileNotFoundException
+import net.jcflorezr.transcriber.audio.transcriber.domain.aggregates.audiotranscriptions.AudioTranscription
+import org.hamcrest.CoreMatchers.`is` as Is
+import org.hamcrest.CoreMatchers.equalTo
+import org.hamcrest.MatcherAssert.assertThat
+import org.junit.jupiter.api.Test
 
 internal class AudioTranscriptionCassandraRecordTest {
 

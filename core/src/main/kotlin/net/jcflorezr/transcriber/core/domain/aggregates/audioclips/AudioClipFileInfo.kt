@@ -17,8 +17,13 @@ data class AudioClipFileInfo(
 
     companion object {
         fun createNew(
-            sourceAudioFileName: String, hours: Int, minutes: Int, seconds: Int, tenthsOfSecond: Int,
-            audioClipFileName: String, audioClipFileExtension: String
+            sourceAudioFileName: String,
+            hours: Int,
+            minutes: Int,
+            seconds: Int,
+            tenthsOfSecond: Int,
+            audioClipFileName: String,
+            audioClipFileExtension: String
         ) = AudioClipFileInfo(
             sourceAudioFileName, hours, minutes, seconds, tenthsOfSecond, audioClipFileName, audioClipFileExtension)
     }

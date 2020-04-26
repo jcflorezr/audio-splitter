@@ -2,6 +2,8 @@ package net.jcflorezr.transcriber.audio.splitter.application.commands.audioclips
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import java.io.File
+import java.io.FileInputStream
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ObsoleteCoroutinesApi
@@ -11,12 +13,10 @@ import kotlinx.coroutines.withContext
 import net.jcflorezr.transcriber.core.domain.Command
 import net.jcflorezr.transcriber.core.domain.aggregates.audioclips.AudioClipFileInfo
 import org.apache.commons.io.IOUtils
-import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.CoreMatchers.`is` as Is
+import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.jupiter.api.Assertions.assertTrue
-import java.io.File
-import java.io.FileInputStream
 
 sealed class AudioClipFileGeneratedMsg
 data class StoreAudioClipFileGenerated(val audioClipFileInfo: AudioClipFileInfo) : AudioClipFileGeneratedMsg()

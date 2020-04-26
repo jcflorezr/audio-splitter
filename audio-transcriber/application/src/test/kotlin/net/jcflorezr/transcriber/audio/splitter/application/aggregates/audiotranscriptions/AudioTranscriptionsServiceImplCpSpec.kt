@@ -2,6 +2,8 @@ package net.jcflorezr.transcriber.audio.splitter.application.aggregates.audiotra
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import java.io.File
+import java.io.FileNotFoundException
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import net.jcflorezr.transcriber.audio.splitter.application.di.AudioTranscriptionServiceImplCpSpecDI
@@ -11,15 +13,12 @@ import net.jcflorezr.transcriber.audio.transcriber.domain.ports.cloud.speech.Aud
 import net.jcflorezr.transcriber.core.domain.aggregates.audioclips.AudioClipFileInfo
 import net.jcflorezr.transcriber.core.exception.FileException
 import org.junit.jupiter.api.Test
-
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mockito.`when` as When
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.ApplicationContext
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.junit.jupiter.SpringExtension
-import java.io.File
-import java.io.FileNotFoundException
 
 @ObsoleteCoroutinesApi
 @ExtendWith(SpringExtension::class)
