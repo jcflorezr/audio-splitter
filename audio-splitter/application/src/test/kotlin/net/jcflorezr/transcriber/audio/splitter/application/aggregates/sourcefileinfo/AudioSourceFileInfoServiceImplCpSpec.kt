@@ -95,7 +95,6 @@ internal class AudioSourceFileInfoServiceImplCpSpec {
         } finally {
             FileUtils.cleanDirectory(File(tempSourceFilesPath))
         }
-
     }
 
     @Test

@@ -26,8 +26,8 @@ class AudioSegmentsDummyCommand : Command<AudioSegment> {
         private val MAPPER = ObjectMapper().registerKotlinModule()
     }
 
-    private val audioSegmentsActor : SendChannel<AudioSegmentReceivedMsg>
-        = CoroutineScope(Dispatchers.Default).audioSegmentsActor()
+    private val audioSegmentsActor: SendChannel<AudioSegmentReceivedMsg> =
+        CoroutineScope(Dispatchers.Default).audioSegmentsActor()
 
     private val actualAudioSegments = mutableListOf<AudioSegment>()
     private val thisClass: Class<AudioSegmentsDummyCommand> = this.javaClass
@@ -61,7 +61,7 @@ class AudioSegmentsDummyCommand : Command<AudioSegment> {
 
         assertThat(getMissingExpectedAudioSegmentsErrorMessage(expectedAudioSegments),
             actualAudioSegments.size, Is(equalTo(expectedAudioSegments.size)))
-        actualAudioSegments.sortedBy { it.segmentStart }.forEachIndexed{ index, actualAudioSegment ->
+        actualAudioSegments.sortedBy { it.segmentStart }.forEachIndexed { index, actualAudioSegment ->
             assertThat(actualAudioSegment, Is(equalTo(expectedAudioSegments[index])))
         }
     }

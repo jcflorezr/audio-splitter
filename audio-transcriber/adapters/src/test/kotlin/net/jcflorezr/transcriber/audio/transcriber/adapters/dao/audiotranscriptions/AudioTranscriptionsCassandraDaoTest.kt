@@ -63,12 +63,12 @@ internal class AudioTranscriptionsCassandraDaoTest {
                     audioTranscriptionsCassandraDao.findBy(sourceAudioFileName, hours, minutes, seconds, tenthsOfSecond)
                 }.translate()
             }
-            .sortedWith(compareBy( { it.hours }, { it.minutes }, { it.seconds }, { it.tenthsOfSecond }) )
+            .sortedWith(compareBy({ it.hours }, { it.minutes }, { it.seconds }, { it.tenthsOfSecond }))
             .let { expectedAudioTranscriptions ->
                 audioTranscriptionsCassandraDao.findBy(expectedAudioTranscriptions.first().sourceAudioFileName)
                     .map { it.translate() }
                     .toList()
-                    .sortedWith(compareBy( { it.hours }, { it.minutes }, { it.seconds }, { it.tenthsOfSecond }) )
+                    .sortedWith(compareBy({ it.hours }, { it.minutes }, { it.seconds }, { it.tenthsOfSecond }))
                     .also { assertThat(it.size, Is(equalTo(expectedAudioTranscriptions.size))) }
                     .forEachIndexed { index, actualAudioTranscription ->
                         assertThat(actualAudioTranscription, Is(equalTo(expectedAudioTranscriptions[index])))

@@ -28,7 +28,6 @@ open class AudioTranscriberTestCassandraConfig : TestCassandraConfig() {
         Files.readAllLines(
             File("$startUpScriptsFilePath/audio-transcriber-database-init-script.cql").toPath(), Charsets.UTF_8)
 
-
     @Bean("audioTranscriberTestCassandraSession")
     override fun session(): CassandraSessionFactoryBean {
         val session: CassandraSessionFactoryBean = super.session()

@@ -7,8 +7,7 @@ class AudioTranscriptionException(message: String) : RuntimeException(message) {
 
     companion object {
 
-        fun duplicateAlternativesPositions(
-            audioClipFileInfo: AudioClipFileInfo, duplicatePositions: Set<Int>) = audioClipFileInfo.run {
+        fun duplicateAlternativesPositions(audioClipFileInfo: AudioClipFileInfo, duplicatePositions: Set<Int>) = audioClipFileInfo.run {
             InternalServerErrorException(
                 errorCode = "duplicate_alternatives_positions_in_transcription",
                 exception = AudioTranscriptionException(

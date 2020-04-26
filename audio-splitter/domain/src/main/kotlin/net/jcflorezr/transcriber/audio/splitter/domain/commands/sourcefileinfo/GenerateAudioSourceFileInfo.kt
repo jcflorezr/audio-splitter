@@ -4,7 +4,6 @@ import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.sourcefileinfo
 import net.jcflorezr.transcriber.audio.splitter.domain.events.sourcefileinfo.AudioSourceFileInfoGenerated
 import net.jcflorezr.transcriber.audio.splitter.domain.ports.repositories.sourcefileinfo.SourceFileInfoRepository
 import net.jcflorezr.transcriber.core.domain.Command
-import net.jcflorezr.transcriber.core.domain.Event
 import net.jcflorezr.transcriber.core.domain.EventDispatcher
 
 class GenerateAudioSourceFileInfo(

@@ -27,7 +27,6 @@ data class AudioClipInfoCassandraRecord(
         .translate(activeSegments = activeSegmentsCassandraRecords.map { it.translate() }.toList())
 }
 
-
 @Table(value = "audio_clip_info")
 data class AudioClipCassandraRecord(
     @PrimaryKey val primaryKey: AudioClipPrimaryKey,

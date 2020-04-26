@@ -19,7 +19,7 @@ class JavaAudioWavConverter(
 
     override fun createAudioWavFile(originalAudioFile: File): File? =
         SupportedAudioFormats.findFileType(Tika().detect(originalAudioFile.absolutePath))
-            .takeIf { it !=  SupportedAudioFormats.WAV && it != SupportedAudioFormats.WAVE }
+            .takeIf { it != SupportedAudioFormats.WAV && it != SupportedAudioFormats.WAVE }
             ?.let { createAudioWavFile(originalAudioFile.nameWithoutExtension, originalAudioFile.absolutePath) }
 
     private fun createAudioWavFile(audioFileName: String, audioFileLocation: String): File {

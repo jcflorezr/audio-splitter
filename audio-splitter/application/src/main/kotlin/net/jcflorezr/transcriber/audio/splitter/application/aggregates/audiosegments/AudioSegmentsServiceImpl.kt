@@ -31,7 +31,7 @@ class AudioSegmentsServiceImpl(
         generateSequence(0) { framesStart ->
             val requiredFrames = calculateCurrentRequiredFrames(framesStart)
             val (frameBytesRead, framesBytesArray) = stream.readBytes(
-                initialPosition = framesStart, frameSize =  frameSize, bytesArrayLength =  requiredFrames * frameSize)
+                initialPosition = framesStart, frameSize = frameSize, bytesArrayLength = requiredFrames * frameSize)
             launch {
                 processAudioSegment(framesStart, framesBytesArray, audioFile, this@processAudioFrame)
             }

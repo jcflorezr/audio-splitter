@@ -18,18 +18,14 @@ class AudioClipsCassandraDao(
         }
     }
 
-    fun findBy(
-        audioFileName: String, hours: Int, minutes: Int, seconds: Int, tenthsOfSecond: Int
-    ): AudioClipInfoCassandraRecord =
+    fun findBy(audioFileName: String, hours: Int, minutes: Int, seconds: Int, tenthsOfSecond: Int): AudioClipInfoCassandraRecord =
         findAudioClipInfoBy(audioFileName, hours, minutes, seconds, tenthsOfSecond).let { audioClipRecord ->
             AudioClipInfoCassandraRecord(
                 audioClipCassandraRecord = audioClipRecord,
                 activeSegmentsCassandraRecords = findAudioClipActiveSegmentsBy(audioClipRecord))
         }
 
-    private fun findAudioClipInfoBy(
-        audioFileName: String, hours: Int, minutes: Int, seconds: Int, tenthsOfSecond: Int
-    ): AudioClipCassandraRecord =
+    private fun findAudioClipInfoBy(audioFileName: String, hours: Int, minutes: Int, seconds: Int, tenthsOfSecond: Int): AudioClipCassandraRecord =
         QueryBuilder
             .select()
             .from(AudioClipCassandraRecord.TABLE_NAME)

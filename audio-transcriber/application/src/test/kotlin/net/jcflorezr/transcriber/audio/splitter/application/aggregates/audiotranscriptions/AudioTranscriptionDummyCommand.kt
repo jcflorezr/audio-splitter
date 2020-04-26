@@ -28,8 +28,8 @@ class AudioTranscriptionDummyCommand : Command<AudioTranscription> {
         private val MAPPER = ObjectMapper().registerKotlinModule()
     }
 
-    private val activeSegmentsActor : SendChannel<AudioTranscriptionReceivedMsg>
-        = CoroutineScope(Dispatchers.Default).activeSegmentsActor()
+    private val activeSegmentsActor: SendChannel<AudioTranscriptionReceivedMsg> =
+        CoroutineScope(Dispatchers.Default).activeSegmentsActor()
 
     private val actualAudioTranscriptions = mutableListOf<AudioTranscription>()
     private val thisClass: Class<AudioTranscriptionDummyCommand> = this.javaClass
@@ -39,8 +39,8 @@ class AudioTranscriptionDummyCommand : Command<AudioTranscription> {
         transcriptionsFilesPath = thisClass.getResource("/audio-clips-transcriptions").path
     }
 
-    override suspend fun execute(audioTranscription: AudioTranscription) {
-        activeSegmentsActor.send(StoreAudioTranscriptionReceived(audioTranscription))
+    override suspend fun execute(aggregateRoot: AudioTranscription) {
+        activeSegmentsActor.send(StoreAudioTranscriptionReceived(aggregateRoot))
     }
 
     private fun CoroutineScope.activeSegmentsActor() = actor<AudioTranscriptionReceivedMsg> {
@@ -64,12 +64,12 @@ class AudioTranscriptionDummyCommand : Command<AudioTranscription> {
 
         val expectedAudioTranscriptions = expectedAudioTranscriptionsFiles
             .map { transcriptionFile -> MAPPER.readValue(transcriptionFile, AudioTranscription::class.java) }
-            .sortedWith(compareBy( { it.hours }, { it.minutes }, { it.seconds }, { it.tenthsOfSecond }) )
+            .sortedWith(compareBy({ it.hours }, { it.minutes }, { it.seconds }, { it.tenthsOfSecond }))
 
         assertThat(getMissingExpectedAudioTranscriptionsErrorMessage(expectedAudioTranscriptions),
             actualAudioTranscriptions.size, Is(equalTo(expectedAudioTranscriptions.size)))
         actualAudioTranscriptions
-            .sortedWith(compareBy( { it.hours }, { it.minutes }, { it.seconds }, { it.tenthsOfSecond }) )
+            .sortedWith(compareBy({ it.hours }, { it.minutes }, { it.seconds }, { it.tenthsOfSecond }))
             .forEachIndexed { index, actualAudioTranscription ->
                 assertThat(actualAudioTranscription, Is(equalTo(expectedAudioTranscriptions[index])))
             }

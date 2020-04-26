@@ -29,7 +29,6 @@ open class AudioSplitterTestCassandraConfig : TestCassandraConfig() {
             File("$startUpScriptsFilePath/audio-splitter-database-init-script.cql").toPath(),
             Charsets.UTF_8)
 
-
     @Bean("audioSplitterTestCassandraSession")
     override fun session(): CassandraSessionFactoryBean {
         val session: CassandraSessionFactoryBean = super.session()

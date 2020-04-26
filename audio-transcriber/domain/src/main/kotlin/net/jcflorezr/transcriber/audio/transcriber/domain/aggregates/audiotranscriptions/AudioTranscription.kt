@@ -66,7 +66,7 @@ data class Alternative private constructor(
             ?.takeIf { duplicates -> duplicates.keys.isNotEmpty() }
             ?.also { duplicates -> throw AudioTranscriptionException.duplicateAlternativeWordsPositions(
                 audioClipFileInfo = audioClipFileInfo,
-                alternativePosition =  this.position,
+                alternativePosition = this.position,
                 duplicatePositions = duplicates.keys) }
     }
 }

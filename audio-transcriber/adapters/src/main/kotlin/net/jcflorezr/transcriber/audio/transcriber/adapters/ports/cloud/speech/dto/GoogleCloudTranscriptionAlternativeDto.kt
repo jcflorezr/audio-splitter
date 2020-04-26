@@ -76,10 +76,12 @@ data class WordInfo(
     val position: Int,
     val word: String,
     val startTime: Time?,
-    val endTime: Time?)
+    val endTime: Time?
+)
 
 data class Time(
     val seconds: Long,
     val tenths: Int,
     val millis: Int,
-    val nanos: Int)
+    val nanos: Int
+)

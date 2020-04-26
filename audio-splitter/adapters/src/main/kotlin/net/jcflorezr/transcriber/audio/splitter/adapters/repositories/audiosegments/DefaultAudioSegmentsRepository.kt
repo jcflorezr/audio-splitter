@@ -13,8 +13,7 @@ class DefaultAudioSegmentsRepository(
     override suspend fun findBy(sourceAudioFileName: String, segmentStartInSeconds: Float): AudioSegment =
         audioSegmentsCassandraDao.findBy(sourceAudioFileName, segmentStartInSeconds).translate()
 
-    override suspend fun findSegmentsRange(
-            sourceAudioFileName: String, segmentStartInSeconds: Float, segmentEndInSeconds: Float) =
+    override suspend fun findSegmentsRange(sourceAudioFileName: String, segmentStartInSeconds: Float, segmentEndInSeconds: Float) =
         audioSegmentsCassandraDao.findRange(sourceAudioFileName, segmentStartInSeconds, segmentEndInSeconds)
             .map { it.translate() }
             .toList()

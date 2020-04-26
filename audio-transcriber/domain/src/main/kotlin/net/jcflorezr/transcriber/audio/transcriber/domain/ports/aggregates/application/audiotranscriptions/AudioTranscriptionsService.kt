@@ -2,6 +2,6 @@ package net.jcflorezr.transcriber.audio.transcriber.domain.ports.aggregates.appl
 
 import net.jcflorezr.transcriber.core.domain.aggregates.audioclips.AudioClipFileInfo
 
-interface AudioTranscriptionService {
+interface AudioTranscriptionsService {
     suspend fun transcribe(audioClipFileInfo: AudioClipFileInfo)
 }

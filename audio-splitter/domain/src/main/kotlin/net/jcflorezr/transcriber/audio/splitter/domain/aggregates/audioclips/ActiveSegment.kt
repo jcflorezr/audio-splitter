@@ -46,7 +46,6 @@ data class ActiveSegment(
 
         private fun AudioContentInfo.calculateAudioClipDuration(segmentStart: Float, segmentEnd: Float): Float =
             FloatingPointUtils.tenthsSecondsFormat((segmentEnd - segmentStart) + (audioSegmentLength / sampleRate)).toFloat()
-
     }
 }
 
@@ -107,8 +106,7 @@ data class CurrentSegment(
     private fun getCurrentCounters(isPossibleSilence: Boolean): Pair<Int, Int> {
         val currentSilenceCounter = if (isPossibleSilence) { silenceCounter + 1 } else { 0 }
         val currentActiveCounter =
-            if (!isPossibleSilence || (isPossibleSilence && currentSilenceCounter < 2))
-                { activeCounter + 1 } else { activeCounter }
+            if (!isPossibleSilence || (isPossibleSilence && currentSilenceCounter < 2)) { activeCounter + 1 } else { activeCounter }
         return currentSilenceCounter to currentActiveCounter
     }
 
@@ -218,7 +216,8 @@ private data class Conditions(
     val isActiveSegmentStart: Boolean,
     val activeSegmentDetected: Boolean,
     val isSegmentWithNoisyBackground: Boolean,
-    val isPossibleActiveSegmentStart: Boolean)
+    val isPossibleActiveSegmentStart: Boolean
+)
 
 /*
     Value Object
@@ -227,4 +226,5 @@ private data class SegmentInfoInNoisyBackground(
     val segmentLength: Int,
     val isLastSegment: Boolean,
     val currentDifference: Double,
-    val isPossibleActive: Boolean)
+    val isPossibleActive: Boolean
+)

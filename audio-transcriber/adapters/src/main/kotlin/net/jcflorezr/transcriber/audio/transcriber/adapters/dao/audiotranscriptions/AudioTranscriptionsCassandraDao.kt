@@ -21,8 +21,7 @@ class AudioTranscriptionsCassandraDao(
         }
     }
 
-    fun findBy(audioFileName: String, hours: Int, minutes: Int, seconds: Int, tenthsOfSecond: Int
-    ): AudioTranscriptionCassandraRecord =
+    fun findBy(audioFileName: String, hours: Int, minutes: Int, seconds: Int, tenthsOfSecond: Int): AudioTranscriptionCassandraRecord =
         findAudioTranscriptionBy(audioFileName, hours, minutes, seconds, tenthsOfSecond)
             .let { transcriptionRecord ->
                 findTranscriptionAlternativesBy(transcriptionRecord).asSequence()
@@ -33,9 +32,7 @@ class AudioTranscriptionsCassandraDao(
                     .let { alternatives -> AudioTranscriptionCassandraRecord(transcriptionRecord, alternatives) }
             }
 
-    private fun findAudioTranscriptionBy(
-        audioFileName: String, hours: Int, minutes: Int, seconds: Int, tenthsOfSecond: Int
-    ): TranscriptionCassandraRecord =
+    private fun findAudioTranscriptionBy(audioFileName: String, hours: Int, minutes: Int, seconds: Int, tenthsOfSecond: Int): TranscriptionCassandraRecord =
         QueryBuilder
             .select()
             .from(TranscriptionCassandraRecord.TABLE_NAME)

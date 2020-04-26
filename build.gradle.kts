@@ -1,51 +1,13 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-buildscript {
-    @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
-    var kotlinVersion: String by extra
-    @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
-    var springVersion: String by extra
-    @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
-    var springDataVersion: String by extra
-    @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
-    var jacksonVersion: String by extra
-    @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
-    var testContainersVersion: String by extra
-    @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
-    var swaggerVersion: String by extra
-
-    @Suppress("UNUSED_VALUE")
-    kotlinVersion = "1.3.10"
-    @Suppress("UNUSED_VALUE")
-    springVersion = "5.1.0.RELEASE"
-    @Suppress("UNUSED_VALUE")
-    springDataVersion = "2.1.3.RELEASE"
-    @Suppress("UNUSED_VALUE")
-    jacksonVersion = "2.9.8"
-    @Suppress("UNUSED_VALUE")
-    testContainersVersion = "1.10.6"
-    @Suppress("UNUSED_VALUE")
-    swaggerVersion = "2.9.2"
-}
-
-val kotlinVersion: String by extra
-val springVersion: String by extra
-val springDataVersion: String by extra
-val jacksonVersion: String by extra
-val testContainersVersion: String by extra
-val swaggerVersion: String by extra
-
 plugins {
     kotlin("jvm") version "1.3.60"
     war
-    kotlin("plugin.spring") version "1.3.60"
-    id("org.jlleitschuh.gradle.ktlint") version "7.2.1"
-    id("com.palantir.docker") version "0.21.0"
 }
 
 allprojects {
 
-    group = "net.jcflorezr.audio.splitter"
+    group = "net.jcflorezr"
     project.version = "0.2-SNAPSHOT"
 
     tasks.withType<KotlinCompile> {
@@ -62,58 +24,3 @@ allprojects {
     }
 }
 
-dependencies {
-
-    // Kotlin
-    implementation(kotlin(module = "stdlib-jdk8", version = kotlinVersion))
-    implementation(kotlin(module = "reflect", version = kotlinVersion))
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.0")
-
-    // Spring
-    implementation("org.springframework:spring-core:$springVersion")
-    implementation("org.springframework:spring-web:$springVersion")
-    implementation("org.springframework:spring-webmvc:$springVersion")
-
-    // Web
-    implementation("javax.servlet:javax.servlet-api:3.1.0")
-
-    // Redis
-    implementation("org.springframework.data:spring-data-redis:$springDataVersion")
-    implementation("redis.clients:jedis:2.9.0")
-
-    // Cassandra
-    implementation("org.springframework.data:spring-data-cassandra:$springDataVersion")
-    implementation("com.datastax.cassandra:cassandra-driver-core:3.6.0")
-    implementation("com.codahale.metrics:metrics-core:3.0.2")
-
-    // Swagger
-    implementation("io.springfox:springfox-swagger2:$swaggerVersion")
-    implementation("io.springfox:springfox-swagger-ui:$swaggerVersion")
-
-    // Kafka
-    implementation("org.apache.kafka:kafka_2.12:2.2.0")
-
-    // Util
-    implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
-    implementation("com.fasterxml.uuid:java-uuid-generator:3.1.4")
-    implementation("commons-io:commons-io:2.5")
-    implementation("org.apache.commons:commons-lang3:3.0")
-    implementation("org.apache.tika:tika-parsers:1.20")
-    implementation("net.sourceforge.javaflacencoder:java-flac-encoder:0.3.7")
-    implementation("com.googlecode.soundlibs:vorbisspi:1.0.3.3")
-    implementation("com.googlecode.soundlibs:mp3spi:1.9.5.4")
-    implementation("org.jflac:jflac-codec:1.5.2")
-    implementation("io.github.microutils:kotlin-logging:1.6.25")
-    implementation("ch.qos.logback:logback-classic:1.2.3")
-    implementation("net.jthink:jaudiotagger:2.2.5")
-    implementation("com.google.cloud:google-cloud-storage:1.66.0")
-
-    // Testing
-    testImplementation("org.springframework:spring-test:$springVersion")
-    testImplementation("com.jayway.jsonpath:json-path:2.4.0")
-    testImplementation("junit:junit:4.12")
-    testImplementation("org.mockito:mockito-core:2.24.5")
-    testImplementation("org.testcontainers:testcontainers:$testContainersVersion")
-    testImplementation("org.testcontainers:cassandra:$testContainersVersion")
-}

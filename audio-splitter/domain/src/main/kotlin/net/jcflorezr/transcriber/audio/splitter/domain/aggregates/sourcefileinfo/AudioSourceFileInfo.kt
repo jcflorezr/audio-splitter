@@ -45,7 +45,8 @@ data class AudioSourceFileMetadata(
         private var comments: String? = null,
         private var duration: Int? = null,
         private var sampleRate: String? = null,
-        private var channels: String? = null) {
+        private var channels: String? = null
+    ) {
 
         fun audioFileName(audioFileName: String) = apply { this.audioFileName = audioFileName }
         fun title(title: String) = apply { this.title = title }
@@ -171,7 +172,7 @@ data class AudioContentInfo(
         framesPerSecond.takeIf { framesStart < totalFramesBySeconds } ?: remainingFrames
 
     fun calculateNextIteration(framesStart: Int, frameBytesRead: Int) =
-        when(val framesRead = frameBytesRead / frameSize) {
+        when (val framesRead = frameBytesRead / frameSize) {
             framesPerSecond -> framesStart + framesRead
             remainingFrames -> exactTotalFrames
             else -> totalFramesBySeconds

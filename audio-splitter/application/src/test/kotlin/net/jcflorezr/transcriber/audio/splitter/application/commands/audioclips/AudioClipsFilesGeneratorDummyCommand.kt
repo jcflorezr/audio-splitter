@@ -31,8 +31,8 @@ class AudioClipsFilesGeneratorDummyCommand(
         private val MAPPER = ObjectMapper().registerKotlinModule()
     }
 
-    private val activeSegmentsActor : SendChannel<AudioClipFileGeneratedMsg>
-        = CoroutineScope(Dispatchers.Default).activeSegmentsActor()
+    private val activeSegmentsActor: SendChannel<AudioClipFileGeneratedMsg> =
+        CoroutineScope(Dispatchers.Default).activeSegmentsActor()
 
     private val actualAudioClipsFilesInfo = mutableListOf<AudioClipFileInfo>()
     private val thisClass: Class<AudioClipsFilesGeneratorDummyCommand> = this.javaClass
@@ -85,9 +85,9 @@ class AudioClipsFilesGeneratorDummyCommand(
 
         assertThat(getMissingExpectedAudioClipsErrorMessage(expectedAudioClipsFilesInfo),
             actualAudioClipsFilesInfo.size, Is(equalTo(expectedAudioClipsFilesInfo.size)))
-        actualAudioClipsFilesInfo.sortedWith(compareBy( { it.hours }, { it.minutes }, { it.seconds }, { it.tenthsOfSecond }) )
+        actualAudioClipsFilesInfo.sortedWith(compareBy({ it.hours }, { it.minutes }, { it.seconds }, { it.tenthsOfSecond }))
         .forEachIndexed { index, actualAudioClipFileInfo ->
-            assertThat(actualAudioClipFileInfo ,Is(equalTo(expectedAudioClipsFilesInfo[index])))
+            assertThat(actualAudioClipFileInfo, Is(equalTo(expectedAudioClipsFilesInfo[index])))
         }
     }
 

@@ -50,7 +50,7 @@ data class AudioClip(
     fun processActiveSegment(currentSegment: ActiveSegment): AudioClip {
         val currentActiveSegments = previousSegment?.let { activeSegments + it } ?: activeSegments
         if (currentActiveSegments.isEmpty()) {
-             return this.copy(previousSegment = currentSegment)
+            return this.copy(previousSegment = currentSegment)
         }
         val firstSegment = currentActiveSegments.first()
         val lastSegment = currentActiveSegments.last()
