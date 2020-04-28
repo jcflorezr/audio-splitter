@@ -16,9 +16,13 @@ val cassandraDriverVersion: String by project
 val codaHaleMetricsVersion: String by project
 val testContainersVersion: String by project
 val kotlinCoroutinesVersion: String by project
+val commonsIOVersion: String by project
+val groovyVersion: String by project
+val spockVersion: String by project
 
 plugins {
     kotlin("jvm") version "1.3.70"
+    `groovy-base`
     war
     id("org.jmailen.kotlinter") version "2.3.2"
 }
@@ -41,6 +45,9 @@ allprojects {
     }
 }
 
+/*
+    Dependencies which are common in all sub projects
+ */
 subprojects {
     apply(plugin = "org.jetbrains.kotlin.jvm")
     apply(plugin = "org.jmailen.kotlinter")
@@ -73,29 +80,31 @@ subprojects {
     }
 }
 
+/*
+    Dependencies which are common in some of the sub projects
+ */
 project.allprojects
-    .filter { it.name.contains("adapters") || it.name.contains("application") }
     .forEach { currentProject ->
-        project(currentProject.path) {
-            dependencies {
-                // Kotlin
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion")
 
-                // Spring
-                implementation("org.springframework:spring-core:$springVersion")
-                implementation("org.springframework:spring-context:$springVersion")
+        currentProject.takeIf { it.name.contains("adapters") || it.name.contains("application") }?.also {
+            project(currentProject.path) {
+                dependencies {
+                    // Kotlin
+                    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion")
 
-                // Logging
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-slf4j:$slf4jKotlinCoroutinesVersion")
+                    // Spring
+                    implementation("org.springframework:spring-core:$springVersion")
+                    implementation("org.springframework:spring-context:$springVersion")
 
-                // Test
-                testImplementation("org.mockito:mockito-core:$mockitoVersion")
-                testImplementation("org.springframework:spring-test:$springVersion")
-            }
+                    // Logging
+                    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-slf4j:$slf4jKotlinCoroutinesVersion")
 
-            currentProject
-                .takeIf { it.name.contains("adapter") }
-                ?.also { adaptersProject ->
+                    // Test
+                    testImplementation("org.mockito:mockito-core:$mockitoVersion")
+                    testImplementation("org.springframework:spring-test:$springVersion")
+                }
+
+                currentProject.takeIf { it.name.contains("adapter") }?.also { adaptersProject ->
                     project(adaptersProject.path) {
                         dependencies {
                             // Cassandra
@@ -105,8 +114,73 @@ project.allprojects
 
                             // Test
                             testImplementation("org.testcontainers:cassandra:$testContainersVersion")
+                            testImplementation(project(":core", "testArtifacts"))
                         }
                     }
                 }
+            }
+        }
+
+        currentProject.takeIf { it.name.contains("adapters") || it.name.contains("domain") }?.also {
+            project(currentProject.path) {
+                apply(plugin = "org.gradle.groovy-base")
+
+                dependencies {
+                    // Test
+                    testRuntimeOnly("org.junit.vintage:junit-vintage-engine:$jUnitVersion")
+                    testImplementation("org.codehaus.groovy:groovy-all:$groovyVersion")
+                    testImplementation("org.spockframework:spock-core:$spockVersion")
+                }
+            }
         }
     }
+
+/*
+    Dependencies among the modules of the domain, this is how the Domain Context is assembled
+ */
+
+// Audio Splitter
+
+project(":audio-splitter:audio-splitter-domain") {
+    dependencies {
+        implementation(project(":core"))
+    }
+}
+
+project(":audio-splitter:audio-splitter-adapters") {
+    dependencies {
+        implementation(project(":audio-splitter:audio-splitter-domain"))
+        implementation(project(":core"))
+    }
+}
+
+project(":audio-splitter:audio-splitter-application") {
+    dependencies {
+        implementation(project(":audio-splitter:audio-splitter-domain"))
+        implementation(project(":audio-splitter:audio-splitter-adapters"))
+        implementation(project(":core"))
+    }
+}
+
+// Audio Transcriber
+
+project(":audio-transcriber:audio-transcriber-domain") {
+    dependencies {
+        implementation(project(":core"))
+    }
+}
+
+project(":audio-transcriber:audio-transcriber-adapters") {
+    dependencies {
+        implementation(project(":audio-transcriber:audio-transcriber-domain"))
+        implementation(project(":core"))
+    }
+}
+
+project(":audio-transcriber:audio-transcriber-application") {
+    dependencies {
+        implementation(project(":audio-transcriber:audio-transcriber-domain"))
+        implementation(project(":audio-transcriber:audio-transcriber-adapters"))
+        implementation(project(":core"))
+    }
+}

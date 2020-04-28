@@ -1,12 +1,4 @@
-plugins {
-    `groovy-base`
-}
-
 dependencies {
-    // Domain context
-    implementation(project(":audio-splitter:audio-splitter-domain"))
-    implementation(project(":core"))
-
     // Cloud
     implementation("com.google.cloud:google-cloud-storage:1.66.0")
 
@@ -22,10 +14,4 @@ dependencies {
 
     // Util
     implementation("commons-io:commons-io:2.5")
-
-    // Test
-    testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.4.2")
-    testImplementation("org.codehaus.groovy:groovy-all:2.5.7")
-    testImplementation("org.spockframework:spock-core:1.3-groovy-2.5")
-    testImplementation(project(":core", "testArtifacts"))
 }
