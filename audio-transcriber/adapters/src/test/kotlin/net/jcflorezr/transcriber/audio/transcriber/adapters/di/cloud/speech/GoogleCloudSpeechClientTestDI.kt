@@ -8,8 +8,10 @@ import net.jcflorezr.transcriber.audio.transcriber.domain.ports.cloud.speech.Aud
 import org.mockito.Mockito.mock
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Lazy
 
 @Configuration
+@Lazy
 open class GoogleCloudSpeechClientTestDI {
 
     @Bean open fun googleCloudAudioTranscriptionsClientTest(): AudioTranscriptionsClient =

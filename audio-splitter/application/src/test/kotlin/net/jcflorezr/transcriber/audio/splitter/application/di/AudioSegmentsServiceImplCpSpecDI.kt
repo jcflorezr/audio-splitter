@@ -8,9 +8,11 @@ import net.jcflorezr.transcriber.audio.splitter.domain.ports.aggregates.audioseg
 import net.jcflorezr.transcriber.core.domain.Command
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Lazy
 
 @ObsoleteCoroutinesApi
 @Configuration
+@Lazy
 open class AudioSegmentsServiceImplCpSpecDI {
 
     @Bean open fun audioPartsServiceTest(): AudioSegmentsService =

@@ -1,5 +1,8 @@
 package net.jcflorezr.transcriber.core.config
 
+import com.github.dockerjava.core.DefaultDockerClientConfig
+import com.github.dockerjava.core.DockerClientImpl
+import com.github.dockerjava.okhttp.OkHttpDockerCmdExecFactory
 import org.springframework.data.cassandra.config.AbstractCassandraConfiguration
 import org.springframework.data.cassandra.config.SchemaAction
 import org.testcontainers.containers.CassandraContainer
@@ -7,15 +10,32 @@ import org.testcontainers.containers.CassandraContainer
 abstract class TestCassandraConfig : AbstractCassandraConfiguration() {
 
     companion object {
-        private val CASSANDRA_CONTAINER: TestCassandraContainer = TestCassandraContainer("cassandra:3.11.2")
-        init {
-            CASSANDRA_CONTAINER.start()
+
+        private const val EXPECTED_EXISTING_CONTAINER_NAME = "/test-transcriber-cassandra"
+
+        private val portAndIpAddressTuple = getCassandraContainer() ?: createNewCassandraContainer()
+
+        private fun getCassandraContainer(): Pair<String, Int>? {
+            val dockerConfig = DefaultDockerClientConfig.createDefaultConfigBuilder().build()
+            val dockerClient = DockerClientImpl.getInstance(dockerConfig)
+                .withDockerCmdExecFactory(OkHttpDockerCmdExecFactory())
+            return dockerClient.listContainersCmd().exec().asSequence()
+                .find { it.names.contains(EXPECTED_EXISTING_CONTAINER_NAME) }
+                ?.let {
+                    Pair(it.networkSettings?.networks?.get("bridge")?.ipAddress ?: "localhost",
+                        it.ports.first().publicPort ?: 9042)
+                }
         }
+
+        private fun createNewCassandraContainer(): Pair<String, Int> =
+            TestCassandraContainer("cassandra:3.11.2")
+                .also { it.start() }
+                .run { containerIpAddress to firstMappedPort }
     }
 
-    override fun getContactPoints(): String = CASSANDRA_CONTAINER.containerIpAddress
+    override fun getContactPoints(): String = portAndIpAddressTuple.first
 
-    override fun getPort(): Int = CASSANDRA_CONTAINER.firstMappedPort
+    override fun getPort(): Int = portAndIpAddressTuple.second
 
     override fun getSchemaAction(): SchemaAction = SchemaAction.CREATE_IF_NOT_EXISTS
 }

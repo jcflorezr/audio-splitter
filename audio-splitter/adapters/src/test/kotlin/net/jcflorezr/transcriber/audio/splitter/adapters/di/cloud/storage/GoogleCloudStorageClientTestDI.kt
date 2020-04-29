@@ -5,8 +5,10 @@ import net.jcflorezr.transcriber.audio.splitter.adapters.cloud.storage.GoogleClo
 import org.mockito.Mockito.mock
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Lazy
 
 @Configuration
+@Lazy
 open class GoogleCloudStorageClientTestDI {
 
     private val thisClass: Class<GoogleCloudStorageClientTestDI> = this.javaClass

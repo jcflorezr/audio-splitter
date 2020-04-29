@@ -8,9 +8,11 @@ import net.jcflorezr.transcriber.audio.splitter.domain.ports.repositories.source
 import org.mockito.Mockito.mock
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Lazy
 
 @ObsoleteCoroutinesApi
 @Configuration
+@Lazy
 open class AudioClipsServiceImplCpSpecDI {
 
     @Bean open fun audioClipsInfoServiceTest(): AudioClipsInfoService =

@@ -1,6 +1,6 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val kotlinVersion: String by project
 val jacksonVersion: String by project
@@ -15,6 +15,7 @@ val slf4jKotlinCoroutinesVersion: String by project
 val cassandraDriverVersion: String by project
 val codaHaleMetricsVersion: String by project
 val testContainersVersion: String by project
+val dockerJavaClientVersion: String by project
 val kotlinCoroutinesVersion: String by project
 val commonsIOVersion: String by project
 val groovyVersion: String by project
@@ -45,13 +46,23 @@ allprojects {
     }
 }
 
-/*
-    Dependencies which are common in all sub projects
- */
 subprojects {
+
     apply(plugin = "org.jetbrains.kotlin.jvm")
     apply(plugin = "org.jmailen.kotlinter")
 
+    tasks.withType<Test> {
+        useJUnitPlatform()
+        testLogging {
+            events = setOf(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
+            exceptionFormat = TestExceptionFormat.FULL
+            showStandardStreams = true
+        }
+    }
+
+    /*
+        Dependencies which are common in all sub projects
+    */
     dependencies {
         // Kotlin
         implementation(kotlin(module = "stdlib-jdk8", version = kotlinVersion))
@@ -67,73 +78,89 @@ subprojects {
 
         // Test
         testImplementation("org.junit.jupiter:junit-jupiter-api:$jUnitVersion")
-        testRuntime("org.junit.jupiter:junit-jupiter-engine:$jUnitVersion")
+        testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$jUnitVersion")
         testImplementation("org.hamcrest:hamcrest-core:$hamcrestVersion")
     }
 
-    tasks.withType<Test> {
-        useJUnitPlatform()
-        testLogging {
-            events = setOf(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
-            exceptionFormat = TestExceptionFormat.FULL
-        }
-    }
-}
+    /*
+        Dependencies which are common between 'adapters' and 'application' sub projects
+     */
+    isAdaptersOrApplicationProject()?.apply {
+        project(path) {
 
-/*
-    Dependencies which are common in some of the sub projects
- */
-project.allprojects
-    .forEach { currentProject ->
-
-        currentProject.takeIf { it.name.contains("adapters") || it.name.contains("application") }?.also {
-            project(currentProject.path) {
-                dependencies {
-                    // Kotlin
-                    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion")
-
-                    // Spring
-                    implementation("org.springframework:spring-core:$springVersion")
-                    implementation("org.springframework:spring-context:$springVersion")
-
-                    // Logging
-                    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-slf4j:$slf4jKotlinCoroutinesVersion")
-
-                    // Test
-                    testImplementation("org.mockito:mockito-core:$mockitoVersion")
-                    testImplementation("org.springframework:spring-test:$springVersion")
+            sourceSets {
+                create("integrationTest") {
+                    compileClasspath += sourceSets.main.get().output
+                    runtimeClasspath += sourceSets.main.get().output
                 }
+            }.also {
+                configurations["integrationTestImplementation"].extendsFrom(configurations.testImplementation.get())
+            }
 
-                currentProject.takeIf { it.name.contains("adapter") }?.also { adaptersProject ->
-                    project(adaptersProject.path) {
-                        dependencies {
-                            // Cassandra
-                            implementation("org.springframework.data:spring-data-cassandra:$springDataVersion")
-                            implementation("com.datastax.cassandra:cassandra-driver-core:$cassandraDriverVersion")
-                            implementation("com.codahale.metrics:metrics-core:$codaHaleMetricsVersion")
+            val integrationTest = task<Test>("integrationTest") {
+                description = "Runs the integration tests"
+                group = "verification"
+                testClassesDirs = sourceSets["integrationTest"].output.classesDirs
+                classpath = sourceSets["integrationTest"].runtimeClasspath
+                mustRunAfter(tasks["test"])
+            }
 
-                            // Test
-                            testImplementation("org.testcontainers:cassandra:$testContainersVersion")
-                            testImplementation(project(":core", "testArtifacts"))
-                        }
+            tasks.check { dependsOn(integrationTest) }
+
+            dependencies {
+                // Kotlin
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion")
+
+                // Spring
+                implementation("org.springframework:spring-core:$springVersion")
+                implementation("org.springframework:spring-context:$springVersion")
+
+                // Logging
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-slf4j:$slf4jKotlinCoroutinesVersion")
+
+                // Test
+                testImplementation("org.mockito:mockito-core:$mockitoVersion")
+                testImplementation("org.springframework:spring-test:$springVersion")
+
+                // Integration Test
+                testImplementation(project(":core", "testArtifacts"))
+            }
+
+            isAdaptersProject()?.apply {
+                project(path) {
+                    dependencies {
+                        // Cassandra
+                        implementation("org.springframework.data:spring-data-cassandra:$springDataVersion")
+                        implementation("com.datastax.cassandra:cassandra-driver-core:$cassandraDriverVersion")
+                        implementation("com.codahale.metrics:metrics-core:$codaHaleMetricsVersion")
                     }
                 }
             }
         }
+    }
 
-        currentProject.takeIf { it.name.contains("adapters") || it.name.contains("domain") }?.also {
-            project(currentProject.path) {
-                apply(plugin = "org.gradle.groovy-base")
-
-                dependencies {
-                    // Test
-                    testRuntimeOnly("org.junit.vintage:junit-vintage-engine:$jUnitVersion")
-                    testImplementation("org.codehaus.groovy:groovy-all:$groovyVersion")
-                    testImplementation("org.spockframework:spock-core:$spockVersion")
-                }
+    containsIntegrationTestsModule()?.apply {
+        project(path) {
+            dependencies {
+                testImplementation("org.springframework.data:spring-data-cassandra:$springDataVersion")
+                testImplementation("org.testcontainers:cassandra:$testContainersVersion")
             }
         }
     }
+
+    isAdaptersOrDomainProject()?.apply {
+        project(path) {
+            apply(plugin = "org.gradle.groovy-base")
+
+            dependencies {
+                // Test
+                testRuntimeOnly("org.junit.vintage:junit-vintage-engine:$jUnitVersion")
+                testImplementation("org.codehaus.groovy:groovy-all:$groovyVersion")
+                testImplementation("org.spockframework:spock-core:$spockVersion")
+            }
+        }
+    }
+}
 
 /*
     Dependencies among the modules of the domain, this is how the Domain Context is assembled
@@ -184,3 +211,24 @@ project(":audio-transcriber:audio-transcriber-application") {
         implementation(project(":core"))
     }
 }
+
+/*
+    Helper functions
+ */
+
+fun Project.isAdaptersProject(): Project? = name.takeIf { it.contains("adapters") }?.run { this@isAdaptersProject }
+fun Project.isApplicationProject(): Project? = name.takeIf { it.contains("application") }?.run { this@isApplicationProject }
+fun Project.isDomainProject(): Project? = name.takeIf { it.contains("domain") }?.run { this@isDomainProject }
+fun Project.isCoreProject(): Project? = name.takeIf { it.contains("core") }?.run { this@isCoreProject }
+
+fun Project.containsIntegrationTestsModule(): Project? = run {
+    isAdaptersProject() ?: isDomainProject() ?: isCoreProject()
+}?.run { this@containsIntegrationTestsModule }
+
+fun Project.isAdaptersOrApplicationProject(): Project? = run {
+    isAdaptersProject() ?: isApplicationProject()
+}?.run { this@isAdaptersOrApplicationProject }
+
+fun Project.isAdaptersOrDomainProject(): Project? = run {
+    isAdaptersProject() ?: isDomainProject()
+}?.run { this@isAdaptersOrDomainProject }

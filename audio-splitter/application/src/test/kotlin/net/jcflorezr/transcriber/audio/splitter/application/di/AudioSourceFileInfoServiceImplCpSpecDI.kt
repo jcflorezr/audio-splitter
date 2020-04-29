@@ -13,8 +13,10 @@ import net.jcflorezr.transcriber.core.domain.Command
 import org.mockito.Mockito.mock
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Lazy
 
 @Configuration
+@Lazy
 open class AudioSourceFileInfoServiceImplCpSpecDI {
 
     @Bean open fun audioSourceFileInfoServiceTest(): AudioSourceFileInfoService =

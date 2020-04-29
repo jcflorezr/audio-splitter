@@ -6,6 +6,7 @@ import net.jcflorezr.transcriber.core.config.TestCassandraConfig
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Lazy
 import org.springframework.data.cassandra.config.CassandraSessionFactoryBean
 import org.springframework.data.cassandra.core.CassandraAdminOperations
 import org.springframework.data.cassandra.core.CassandraAdminTemplate
@@ -13,6 +14,7 @@ import org.springframework.data.cassandra.core.CassandraOperations
 import org.springframework.data.cassandra.core.CassandraTemplate
 
 @Configuration
+@Lazy
 open class AudioTranscriberTestCassandraConfig : TestCassandraConfig() {
 
     private val thisClass: Class<AudioTranscriberTestCassandraConfig> = this.javaClass

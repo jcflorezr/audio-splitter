@@ -5,11 +5,13 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
+import org.springframework.context.annotation.Lazy
 import org.springframework.data.cassandra.core.CassandraAdminOperations
 import org.springframework.data.cassandra.core.CassandraOperations
 import org.springframework.data.cassandra.core.cql.CqlIdentifier
 
 @Configuration
+@Lazy
 @Import(value = [AudioSplitterTestCassandraConfig::class])
 open class AudioSplitterCassandraDaoTestDI {
 

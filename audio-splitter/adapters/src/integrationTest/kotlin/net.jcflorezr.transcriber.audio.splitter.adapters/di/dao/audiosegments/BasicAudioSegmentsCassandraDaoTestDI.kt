@@ -5,8 +5,10 @@ import net.jcflorezr.transcriber.audio.splitter.adapters.dao.audiosegments.Basic
 import net.jcflorezr.transcriber.audio.splitter.adapters.di.dao.AudioSplitterCassandraDaoTestDI
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Lazy
 
 @Configuration
+@Lazy
 open class BasicAudioSegmentsCassandraDaoTestDI : AudioSplitterCassandraDaoTestDI() {
 
     @Bean
