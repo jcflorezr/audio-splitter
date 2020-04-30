@@ -1,0 +1,39 @@
+{
+  "sourceAudioFileName":"test-source-audio-file-name",
+  "hours":0,
+  "minutes":0,
+  "seconds":8,
+  "tenthsOfSecond":0,
+  "alternatives":[
+    {
+      "position":1,
+      "transcription":"Buscar de Dios porque muchas veces en los negocios hay tristezas y decepciones engañaron en un negocio perdí una licitación perdido un negocio",
+      "confidence":0.9034283,
+      "words":[
+        {"position":1,"word":"Buscar","from":0.0,"to":0.6},
+        {"position":2,"word":"de","from":0.6,"to":0.7},
+        {"position":3,"word":"Dios","from":0.7,"to":0.9},
+        {"position":4,"word":"porque","from":0.9,"to":1.7},
+        {"position":5,"word":"muchas","from":1.7,"to":2.0},
+        {"position":6,"word":"veces","from":2.0,"to":2.0},
+        {"position":7,"word":"en","from":2.0,"to":2.3},
+        {"position":8,"word":"los","from":2.3,"to":2.4},
+        {"position":9,"word":"negocios","from":2.4,"to":2.9},
+        {"position":10,"word":"hay","from":2.9,"to":3.5},
+        {"position":11,"word":"tristezas","from":3.5,"to":4.1},
+        {"position":12,"word":"y","from":4.1,"to":4.1},
+        {"position":13,"word":"decepciones","from":4.1,"to":4.4},
+        {"position":14,"word":"engañaron","from":4.4,"to":5.6},
+        {"position":15,"word":"en","from":5.6,"to":5.7},
+        {"position":16,"word":"un","from":5.7,"to":5.9},
+        {"position":17,"word":"negocio","from":5.9,"to":6.3},
+        {"position":18,"word":"perdí","from":6.3,"to":7.0},
+        {"position":19,"word":"una","from":7.0,"to":7.2},
+        {"position":20,"word":"licitación","from":7.2,"to":7.8},
+        {"position":21,"word":"perdido","from":7.8,"to":8.3},
+        {"position":22,"word":"un","from":8.3,"to":8.3},
+        {"position":23,"word":"negocio","from":8.3,"to":8.7}
+      ]
+    }
+  ]
+}

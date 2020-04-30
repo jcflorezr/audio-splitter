@@ -1,0 +1,26 @@
+[
+  {
+    "position":1,
+    "transcription":"Gloria nuestro Dios",
+    "confidence":0.93030167,
+    "words":[
+      {
+        "position":1,
+        "word":"Gloria",
+        "startTime":{"seconds":0,"tenths":0,"millis":0,"nanos":0},
+        "endTime":{"seconds":0,"tenths":5,"millis":500,"nanos":500000000}
+      },
+      {
+        "position":2,
+        "word":"nuestro",
+        "startTime":{"seconds":0,"tenths":5,"millis":500,"nanos":500000000},
+        "endTime":{"seconds":0,"tenths":8,"millis":800,"nanos":800000000}
+      },
+      {
+        "position":3,
+        "word":"Dios",
+        "startTime":{"seconds":0,"tenths":8,"millis":800,"nanos":800000000},
+        "endTime":{"seconds":0,"tenths":9,"millis":900,"nanos":900000000}}
+    ]
+  }
+]

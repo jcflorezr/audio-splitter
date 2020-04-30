@@ -1,0 +1,44 @@
+{
+  "sourceAudioFileName":"test-source-audio-file-name",
+  "hours":0,
+  "minutes":0,
+  "seconds":31,
+  "tenthsOfSecond":8,
+  "alternatives":[
+    {
+      "position":1,
+      "transcription":"Jamás nos decepcionamos del señor jamás podremos decir una palabra mala, lo único que nosotros podemos decirle al Señor gracias por tenernos en tu plan y tu propósito.",
+      "confidence":0.92628485,
+      "words":[
+        {"position":1,"word":"Jamás","from":0.0,"to":0.6},
+        {"position":2,"word":"nos","from":0.6,"to":0.8},
+        {"position":3,"word":"decepcionamos","from":0.8,"to":1.4},
+        {"position":4,"word":"del","from":1.4,"to":1.6},
+        {"position":5,"word":"señor","from":1.6,"to":2.0},
+        {"position":6,"word":"jamás","from":2.0,"to":2.8},
+        {"position":7,"word":"podremos","from":2.8,"to":3.5},
+        {"position":8,"word":"decir","from":3.5,"to":3.8},
+        {"position":9,"word":"una","from":3.8,"to":4.0},
+        {"position":10,"word":"palabra","from":4.0,"to":4.4},
+        {"position":11,"word":"mala,","from":4.4,"to":4.6},
+        {"position":12,"word":"lo","from":4.6,"to":5.4},
+        {"position":13,"word":"único","from":5.4,"to":5.7},
+        {"position":14,"word":"que","from":5.7,"to":5.8},
+        {"position":15,"word":"nosotros","from":5.8,"to":6.1},
+        {"position":16,"word":"podemos","from":6.1,"to":6.2},
+        {"position":17,"word":"decirle","from":6.2,"to":6.7},
+        {"position":18,"word":"al","from":6.7,"to":6.7},
+        {"position":19,"word":"Señor","from":6.7,"to":6.8},
+        {"position":20,"word":"gracias","from":6.8,"to":7.5},
+        {"position":21,"word":"por","from":7.5,"to":8.3},
+        {"position":22,"word":"tenernos","from":8.3,"to":8.7},
+        {"position":23,"word":"en","from":8.7,"to":8.9},
+        {"position":24,"word":"tu","from":8.9,"to":9.0},
+        {"position":25,"word":"plan","from":9.0,"to":9.2},
+        {"position":26,"word":"y","from":9.2,"to":9.3},
+        {"position":27,"word":"tu","from":9.3,"to":9.4},
+        {"position":28,"word":"propósito.","from":9.4,"to":10.0}
+      ]
+    }
+  ]
+}
