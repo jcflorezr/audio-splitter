@@ -25,7 +25,7 @@ plugins {
     kotlin("jvm") version "1.3.70"
     `groovy-base`
     war
-    id("org.jmailen.kotlinter") version "2.3.2"
+    id("org.jlleitschuh.gradle.ktlint") version "9.2.1"
 }
 
 allprojects {
@@ -44,12 +44,16 @@ allprojects {
         mavenCentral()
         maven(url = "http://dl.bintray.com/ijabz/maven")
     }
+
+    afterEvaluate {
+        tasks["ktlintKotlinScriptCheck"].dependsOn(tasks["ktlintKotlinScriptFormat"])
+    }
 }
 
 subprojects {
 
     apply(plugin = "org.jetbrains.kotlin.jvm")
-    apply(plugin = "org.jmailen.kotlinter")
+    apply(plugin = "org.jlleitschuh.gradle.ktlint")
 
     tasks.withType<Test> {
         useJUnitPlatform()
@@ -159,6 +163,13 @@ subprojects {
                 testImplementation("org.spockframework:spock-core:$spockVersion")
             }
         }
+    }
+
+    afterEvaluate {
+        tasks["ktlintMainSourceSetCheck"].dependsOn(tasks["ktlintMainSourceSetFormat"])
+        tasks["ktlintTestSourceSetCheck"].dependsOn(tasks["ktlintTestSourceSetFormat"])
+        tasks.findByPath("$path:ktlintIntegrationTestSourceSetCheck")
+            ?.dependsOn(tasks["ktlintIntegrationTestSourceSetFormat"])
     }
 }
 
