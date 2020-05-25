@@ -13,7 +13,6 @@ class GenerateAudioSourceFileInfo(
 
     override suspend fun execute(aggregateRoot: AudioSourceFileInfo) {
         sourceFileInfoRepository.save(audioSourceFileInfo = aggregateRoot)
-        sourceFileInfoRepository.findBy(audioFileName = aggregateRoot.originalAudioFile)
         eventDispatcher.publish(AudioSourceFileInfoGenerated(aggregateRoot))
     }
 }

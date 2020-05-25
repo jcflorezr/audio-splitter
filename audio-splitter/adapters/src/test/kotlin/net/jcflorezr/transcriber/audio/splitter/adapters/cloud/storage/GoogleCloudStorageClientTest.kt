@@ -11,9 +11,9 @@ import net.jcflorezr.transcriber.audio.splitter.adapters.di.cloud.storage.Google
 import net.jcflorezr.transcriber.core.exception.CloudStorageFileException
 import net.jcflorezr.transcriber.core.exception.FileException
 import org.apache.commons.io.FileUtils
-import org.hamcrest.CoreMatchers.`is` as Is
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
+import org.hamcrest.core.Is
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test

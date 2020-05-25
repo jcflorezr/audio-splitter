@@ -89,5 +89,7 @@ class AudioClipsInfoServiceImpl(
     }
 
     private suspend fun processLastClip(audioClip: AudioClip) =
-        coroutineScope { launch { command.execute(aggregateRoot = audioClip.finish()) } }
+        coroutineScope { launch { println("-----> last audioClip: $audioClip")
+            command.execute(aggregateRoot = audioClip.finish())
+        } }
 }

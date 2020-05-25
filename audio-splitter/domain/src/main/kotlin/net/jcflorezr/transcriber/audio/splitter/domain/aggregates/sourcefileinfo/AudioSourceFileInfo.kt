@@ -18,7 +18,28 @@ data class AudioSourceFileInfo(
     val audioContentInfo: AudioContentInfo,
     val metadata: AudioSourceFileMetadata,
     val convertedAudioFile: String? = null
-) : AggregateRoot
+) : AggregateRoot {
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as AudioSourceFileInfo
+
+        if (originalAudioFile != other.originalAudioFile) return false
+        if (audioContentInfo != other.audioContentInfo) return false
+        if (metadata != other.metadata) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = originalAudioFile.hashCode()
+        result = 31 * result + audioContentInfo.hashCode()
+        result = 31 * result + metadata.hashCode()
+        return result
+    }
+}
 
 /*
     Entity
@@ -167,17 +188,4 @@ data class AudioContentInfo(
         ) = (numOfAudioSegments / AUDIO_SEGMENTS_PER_SECOND) * sampleRate to
             remainingAudioSegments * (sampleRate / AUDIO_SEGMENTS_PER_SECOND)
     }
-
-    fun calculateCurrentRequiredFrames(framesStart: Int) =
-        framesPerSecond.takeIf { framesStart < totalFramesBySeconds } ?: remainingFrames
-
-    fun calculateNextIteration(framesStart: Int, frameBytesRead: Int) =
-        when (val framesRead = frameBytesRead / frameSize) {
-            framesPerSecond -> framesStart + framesRead
-            remainingFrames -> exactTotalFrames
-            else -> totalFramesBySeconds
-        }
-
-    fun calculateCurrentNumOfAudioSegments(framesStart: Int) =
-        audioSegmentsPerSecond.takeIf { framesStart < totalFramesBySeconds } ?: remainingAudioSegments
 }

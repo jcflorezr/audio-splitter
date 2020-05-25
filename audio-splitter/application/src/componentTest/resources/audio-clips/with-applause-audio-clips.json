@@ -1,0 +1,42 @@
+[
+  {
+    "sourceAudioFileName":"with-applause","duration":2.2,"hours":0,"minutes":0,"seconds":0,"tenthsOfSecond":1,"audioClipFileName":"0_1",
+    "activeSegments": [
+      {"sourceAudioFileName":"with-applause","segmentStartInSeconds":0.1,"segmentEndInSeconds":2.3,"duration":2.2,"hours":0,"minutes":0,"seconds":0,"tenthsOfSecond":1}
+    ]
+  },
+  {
+    "sourceAudioFileName":"with-applause","duration":3.1,"hours":0,"minutes":0,"seconds":6,"tenthsOfSecond":3,"audioClipFileName":"6_3",
+    "activeSegments": [
+      {"sourceAudioFileName":"with-applause","segmentStartInSeconds":6.3,"segmentEndInSeconds":7.3,"duration":1.0,"hours":0,"minutes":0,"seconds":6,"tenthsOfSecond":3},
+      {"sourceAudioFileName":"with-applause","segmentStartInSeconds":7.8,"segmentEndInSeconds":9.4,"duration":1.6,"hours":0,"minutes":0,"seconds":7,"tenthsOfSecond":8}
+    ]
+  },
+  {
+    "sourceAudioFileName":"with-applause","duration":4.2,"hours":0,"minutes":0,"seconds":16,"tenthsOfSecond":6,"audioClipFileName":"16_6",
+    "activeSegments": [
+      {"sourceAudioFileName":"with-applause","segmentStartInSeconds":16.6,"segmentEndInSeconds":18.6,"duration":2.0,"hours":0,"minutes":0,"seconds":16,"tenthsOfSecond":6},
+      {"sourceAudioFileName":"with-applause","segmentStartInSeconds":19.2,"segmentEndInSeconds":20.8,"duration":1.6,"hours":0,"minutes":0,"seconds":19,"tenthsOfSecond":2}
+    ]
+  },
+  {
+    "sourceAudioFileName":"with-applause","duration":9.7,"hours":0,"minutes":0,"seconds":21,"tenthsOfSecond":3,"audioClipFileName":"21_3",
+    "activeSegments": [
+      {"sourceAudioFileName":"with-applause","segmentStartInSeconds":21.3,"segmentEndInSeconds":29.2,"duration":7.9,"hours":0,"minutes":0,"seconds":21,"tenthsOfSecond":3},
+      {"sourceAudioFileName":"with-applause","segmentStartInSeconds":29.1,"segmentEndInSeconds":31.0,"duration":1.9,"hours":0,"minutes":0,"seconds":29,"tenthsOfSecond":1}
+    ]
+  },
+  {
+    "sourceAudioFileName":"with-applause","duration":8.4,"hours":0,"minutes":0,"seconds":31,"tenthsOfSecond":3,"audioClipFileName":"31_3",
+    "activeSegments": [
+      {"sourceAudioFileName":"with-applause","segmentStartInSeconds":31.3,"segmentEndInSeconds":35.6,"duration":4.3,"hours":0,"minutes":0,"seconds":31,"tenthsOfSecond":3},
+      {"sourceAudioFileName":"with-applause","segmentStartInSeconds":37.7,"segmentEndInSeconds":39.7,"duration":2.0,"hours":0,"minutes":0,"seconds":37,"tenthsOfSecond":7}
+    ]
+  },
+  {
+    "sourceAudioFileName":"with-applause","duration":0.5,"hours":0,"minutes":0,"seconds":40,"tenthsOfSecond":4,"audioClipFileName":"40_4",
+    "activeSegments": [
+      {"sourceAudioFileName":"with-applause","segmentStartInSeconds":40.4,"segmentEndInSeconds":40.9,"duration":0.5,"hours":0,"minutes":0,"seconds":40,"tenthsOfSecond":4}
+    ]
+  }
+]

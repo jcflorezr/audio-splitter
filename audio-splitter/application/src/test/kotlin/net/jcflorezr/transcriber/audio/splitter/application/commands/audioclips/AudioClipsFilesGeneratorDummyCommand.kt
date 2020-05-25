@@ -13,14 +13,13 @@ import kotlinx.coroutines.withContext
 import net.jcflorezr.transcriber.core.domain.Command
 import net.jcflorezr.transcriber.core.domain.aggregates.audioclips.AudioClipFileInfo
 import org.apache.commons.io.IOUtils
-import org.hamcrest.CoreMatchers.`is` as Is
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
+import org.hamcrest.core.Is
 import org.junit.jupiter.api.Assertions.assertTrue
 
 sealed class AudioClipFileGeneratedMsg
 data class StoreAudioClipFileGenerated(val audioClipFileInfo: AudioClipFileInfo) : AudioClipFileGeneratedMsg()
-object AssertAudioClipFileGenerated : AudioClipFileGeneratedMsg()
 
 @ObsoleteCoroutinesApi
 class AudioClipsFilesGeneratorDummyCommand(
@@ -50,12 +49,9 @@ class AudioClipsFilesGeneratorDummyCommand(
         for (msg in channel) {
             when (msg) {
                 is StoreAudioClipFileGenerated -> actualAudioClipsFilesInfo.add(msg.audioClipFileInfo)
-                is AssertAudioClipFileGenerated -> assertAudioClipFileGenerated()
             }
         }
     }
-
-    private suspend fun assertAudioClipFileGenerated() = activeSegmentsActor.send(AssertAudioClipFileGenerated)
 
     suspend fun assertAudioClipsGenerated() = withContext(Dispatchers.IO) {
         assertProcessedAudioClipsFiles()

@@ -4,9 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import java.io.File
 import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.audioclips.AudioClip
-import org.hamcrest.CoreMatchers.`is` as Is
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
+import org.hamcrest.core.Is
 import org.junit.jupiter.api.Test
 
 internal class AudioClipCassandraRecordTest {
@@ -15,11 +15,10 @@ internal class AudioClipCassandraRecordTest {
         private val MAPPER = ObjectMapper().registerKotlinModule()
     }
 
-    private val thisClass: Class<AudioClipCassandraRecordTest> = this.javaClass
-    private val testResourcesPath: String = thisClass.getResource("/audio-clips").path
+    private val testResourcesPath: String = this.javaClass.getResource("/audio-clips").path
 
     @Test
-    fun fromEntityToRecord_And_FromRecordToEntity() {
+    fun `from entity to record and then from record to entity`() {
         val expectedAudioClip =
             MAPPER.readValue(File("$testResourcesPath/test-single-audio-clip.json"), AudioClip::class.java)
         val actualAudioClip = AudioClipInfoCassandraRecord.fromEntity(expectedAudioClip).translate()

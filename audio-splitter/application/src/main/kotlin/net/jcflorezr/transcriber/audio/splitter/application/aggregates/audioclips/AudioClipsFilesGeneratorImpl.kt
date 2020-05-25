@@ -32,42 +32,33 @@ class AudioClipsFilesGeneratorImpl(
     }
 
     override suspend fun generateAudioClipFile(audioClipInfo: AudioClip) = withContext<Unit>(Dispatchers.IO) {
-        val firstSegment = audioClipInfo.activeSegments.first()
-        val lastSegment = audioClipInfo.activeSegments.last()
-        val sourceAudioFileName = audioClipInfo.sourceAudioFileName
-        val audioClipName = audioClipInfo.audioClipFileName()
-        val audioContentInfo = sourceFileInfoRepository.findBy(firstSegment.sourceAudioFileName).audioContentInfo
-        audioSegmentsRepository.findSegmentsRange(
-            sourceAudioFileName, firstSegment.segmentStartInSeconds, lastSegment.segmentEndInSeconds)
-        .map { it.audioSegmentBytes.bytes }
-        .reduce { currentSegmentBytes, nextSegmentBytes -> currentSegmentBytes + nextSegmentBytes }
-        .let { byteArray ->
-            val audioClipSignal = AudioBytesUnPacker.generateAudioSignal(audioContentInfo, byteArray)
-            val audioClipInputStream = getAudioInputStreamForPackingBytes(audioClipSignal, audioContentInfo)
-            val pathToStoreClipFile = "$clipsFilesDirectory/$sourceAudioFileName"
-            File(pathToStoreClipFile).mkdirs()
-            val audioClipFile = File("$pathToStoreClipFile/$audioClipName.$FLAC_EXTENSION")
-            AudioSystem.write(audioClipInputStream, FLAC_TYPE, audioClipFile)
+        audioClipInfo.run {
+            val firstSegment = activeSegments.first()
+            val lastSegment = activeSegments.last()
+            val audioContentInfo = sourceFileInfoRepository.findBy(firstSegment.sourceAudioFileName).audioContentInfo
+            audioSegmentsRepository.findSegmentsRange(
+                    sourceAudioFileName, firstSegment.segmentStartInSeconds, lastSegment.segmentEndInSeconds)
+                .map { it.audioSegmentBytes.bytes }
+                .reduce { currentSegmentBytes, nextSegmentBytes -> currentSegmentBytes + nextSegmentBytes }
+                .let { byteArray ->
+                    val audioClipSignal = AudioBytesUnPacker.generateAudioSignal(audioContentInfo, byteArray)
+                    val audioClipInputStream = audioContentInfo.getAudioInputStreamForPackingBytes(audioClipSignal)
+                    val pathToStoreClipFile = "$clipsFilesDirectory/$sourceAudioFileName"
+                    File(pathToStoreClipFile).mkdirs()
+                    val audioClipFile = File("$pathToStoreClipFile/${audioClipFileName()}.$FLAC_EXTENSION")
+                    AudioSystem.write(audioClipInputStream, FLAC_TYPE, audioClipFile)
+                }
+            val audioClipFileInfo =
+                AudioClipFileInfo(sourceAudioFileName, hours, minutes, seconds, tenthsOfSecond, audioClipFileName, FLAC_EXTENSION)
+            launch { command.execute(aggregateRoot = audioClipFileInfo) }
         }
-        val audioClipFileInfo = audioClipInfo.run {
-            AudioClipFileInfo(sourceAudioFileName, hours, minutes, seconds, tenthsOfSecond, audioClipFileName, FLAC_EXTENSION) }
-        launch { command.execute(aggregateRoot = audioClipFileInfo) }
     }
 
-    private fun getAudioInputStreamForPackingBytes(
-        signal: List<List<Float>>,
-        audioContentInfo: AudioContentInfo
-    ): AudioInputStream {
-        val channels = 1
-        val signed = audioContentInfo.encoding == AudioFormatEncodings.PCM_SIGNED
-        val format =
-            AudioFormat(
-                audioContentInfo.sampleRate.toFloat(),
-                audioContentInfo.sampleSizeInBits,
-                channels,
-                signed,
-                audioContentInfo.bigEndian)
-        val inputStream = AudioBytesPacker(format, signal, audioContentInfo)
+    private fun AudioContentInfo.getAudioInputStreamForPackingBytes(signal: List<List<Float>>): AudioInputStream {
+        val channels = 1 // Always mono
+        val isSigned = encoding == AudioFormatEncodings.PCM_SIGNED
+        val format = AudioFormat(sampleRate.toFloat(), sampleSizeInBits, channels, isSigned, bigEndian)
+        val inputStream = AudioBytesPacker(format, signal, this)
         return AudioInputStream(inputStream, format, signal[0].size.toLong())
     }
 }

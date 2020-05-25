@@ -1,5 +1,5 @@
 package net.jcflorezr.transcriber.core.domain
 
-interface EventHandler<T : Event<out AggregateRoot>> {
+interface EventHandler<in T : Event<AggregateRoot>> {
     suspend fun execute(event: T)
 }

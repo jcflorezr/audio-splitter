@@ -1,59 +1,51 @@
 package net.jcflorezr.transcriber.audio.transcriber.adapters.dao.audiotranscriptions
 
+import com.datastax.driver.core.Row
+import com.datastax.driver.mapping.annotations.ClusteringColumn
+import com.datastax.driver.mapping.annotations.Column
+import com.datastax.driver.mapping.annotations.PartitionKey
+import com.datastax.driver.mapping.annotations.Table
 import net.jcflorezr.transcriber.audio.transcriber.domain.aggregates.audiotranscriptions.Alternative
 import net.jcflorezr.transcriber.audio.transcriber.domain.aggregates.audiotranscriptions.AudioTranscription
 import net.jcflorezr.transcriber.audio.transcriber.domain.aggregates.audiotranscriptions.WordInfo
-import org.springframework.data.cassandra.core.cql.PrimaryKeyType
-import org.springframework.data.cassandra.core.mapping.Column
-import org.springframework.data.cassandra.core.mapping.PrimaryKey
-import org.springframework.data.cassandra.core.mapping.PrimaryKeyClass
-import org.springframework.data.cassandra.core.mapping.PrimaryKeyColumn
-import org.springframework.data.cassandra.core.mapping.Table
 
 data class AudioTranscriptionCassandraRecord(
     val transcriptionCassandraRecord: TranscriptionCassandraRecord,
-    val alternativesCassandraRecordWrapper: Sequence<AlternativeCassandraRecordWrapper>
+    val alternativesCassandraRecord: List<AlternativeCassandraRecord>,
+    val wordsCassandraRecord: List<WordCassandraRecord>
 ) {
     companion object {
 
         fun fromEntity(audioTranscription: AudioTranscription): AudioTranscriptionCassandraRecord {
             val transcriptionRecord = TranscriptionCassandraRecord.fromEntity(audioTranscription)
-            val alternativesRecords = audioTranscription.alternatives.asSequence()
+            val (alternativesRecords, wordsRecords) = audioTranscription.alternatives
                 .map { alternative ->
-                    AlternativeCassandraRecordWrapper.fromEntity(transcriptionRecord, alternative)
+                    val currentAlternativeRecord = AlternativeCassandraRecord.fromEntity(transcriptionRecord, alternative)
+                    val currentAlternativeWordsRecords = alternative.words
+                        ?.map { w -> WordCassandraRecord.fromEntity(currentAlternativeRecord, w) }
+                        ?: emptyList()
+                    currentAlternativeRecord to currentAlternativeWordsRecords
+                }.let { alternativesRecords ->
+                    alternativesRecords.map { it.first } to alternativesRecords.flatMap { it.second }
                 }
-            return AudioTranscriptionCassandraRecord(transcriptionRecord, alternativesRecords)
+            return AudioTranscriptionCassandraRecord(transcriptionRecord, alternativesRecords, wordsRecords)
         }
     }
 
-    fun translate() = transcriptionCassandraRecord.translate(alternativesCassandraRecordWrapper)
-}
-
-data class AlternativeCassandraRecordWrapper(
-    val alternativeCassandraRecord: AlternativeCassandraRecord,
-    val wordsCassandraRecord: Sequence<WordCassandraRecord>
-) {
-    companion object {
-
-        fun fromEntity(
-            transcriptionCassandraRecord: TranscriptionCassandraRecord,
-            alternative: Alternative
-        ): AlternativeCassandraRecordWrapper {
-            val alternativeRecord = AlternativeCassandraRecord.fromEntity(
-                AlternativePrimaryKey.createNew(transcriptionCassandraRecord.primaryKey, alternative.position), alternative)
-            val wordRecord =
-                alternative.words?.asSequence()
-                    ?.map { word -> WordCassandraRecord.fromEntity(
-                        WordPrimaryKey.createNew(alternativeRecord.primaryKey, word.position), word) }
-                    ?: emptySequence()
-            return AlternativeCassandraRecordWrapper(alternativeRecord, wordRecord)
-        }
+    fun translate(): AudioTranscription {
+        val words = wordsCassandraRecord.map { it.translate() }
+        val alternatives = alternativesCassandraRecord.map { it.translate(words) }
+        return transcriptionCassandraRecord.translate(alternatives)
     }
 }
 
-@Table(value = "audio_transcription")
+@Table(name = "audio_transcription")
 data class TranscriptionCassandraRecord(
-    @PrimaryKey val primaryKey: TranscriptionPrimaryKey
+    @PartitionKey(0) @Column(name = "audio_file_name") val audioFileName: String,
+    @ClusteringColumn(0) @Column(name = "hours") val hours: Int,
+    @ClusteringColumn(1) @Column(name = "minutes") val minutes: Int,
+    @ClusteringColumn(2) @Column(name = "seconds") val seconds: Int,
+    @ClusteringColumn(3) @Column(name = "tenths_of_second") val tenthsOfSecond: Int
 ) {
     companion object {
         const val TABLE_NAME = "audio_transcription"
@@ -64,24 +56,33 @@ data class TranscriptionCassandraRecord(
         const val TENTHS_COLUMN = "tenths_of_second"
 
         fun fromEntity(audioTranscription: AudioTranscription) = audioTranscription.run {
-            TranscriptionCassandraRecord(
-                TranscriptionPrimaryKey(sourceAudioFileName, hours, minutes, seconds, tenthsOfSecond))
+            TranscriptionCassandraRecord(sourceAudioFileName, hours, minutes, seconds, tenthsOfSecond)
         }
+
+        fun fromCassandraRow(row: Row) =
+            TranscriptionCassandraRecord(
+                audioFileName = row.getString(AUDIO_FILE_NAME_COLUMN),
+                hours = row.getInt(HOURS_COLUMN),
+                minutes = row.getInt(MINUTES_COLUMN),
+                seconds = row.getInt(SECONDS_COLUMN),
+                tenthsOfSecond = row.getInt(TENTHS_COLUMN)
+            )
     }
 
-    fun translate(alternativesRecords: Sequence<AlternativeCassandraRecordWrapper>) = primaryKey.run {
-        val alternatives = alternativesRecords
-            .map { record -> record.alternativeCassandraRecord.translate(record.wordsCassandraRecord) }
-            .toList()
-        AudioTranscription(audioFileName, hours, minutes, seconds, tenthsOfSecond, alternatives)
-    }
+    fun translate(alternativesRecords: List<Alternative>) =
+        AudioTranscription(audioFileName, hours, minutes, seconds, tenthsOfSecond, alternativesRecords)
 }
 
-@Table(value = "audio_transcription_alternative")
+@Table(name = "audio_transcription_alternative")
 data class AlternativeCassandraRecord(
-    @PrimaryKey val primaryKey: AlternativePrimaryKey,
-    @Column("transcription") val transcription: String,
-    @Column("confidence") val confidence: Float?
+    @PartitionKey(0) @Column(name = "audio_file_name") val audioFileName: String,
+    @ClusteringColumn(0) @Column(name = "hours") val hours: Int,
+    @ClusteringColumn(1) @Column(name = "minutes") val minutes: Int,
+    @ClusteringColumn(2) @Column(name = "seconds") val seconds: Int,
+    @ClusteringColumn(3) @Column(name = "tenths_of_second") val tenthsOfSecond: Int,
+    @ClusteringColumn(4) @Column(name = "alternative_position") val alternativePosition: Int,
+    @Column(name = "transcription") val transcription: String,
+    @Column(name = "confidence") val confidence: Float?
 ) {
     companion object {
         const val TABLE_NAME = "audio_transcription_alternative"
@@ -91,26 +92,53 @@ data class AlternativeCassandraRecord(
         const val SECONDS_COLUMN = "seconds"
         const val TENTHS_COLUMN = "tenths_of_second"
         const val ALTERNATIVE_POSITION_COLUMN = "alternative_position"
+        const val TRANSCRIPTION_COLUMN = "transcription"
+        const val CONFIDENCE_COLUMN = "confidence"
 
-        fun fromEntity(alternativePrimaryKey: AlternativePrimaryKey, alternative: Alternative) = alternative.run {
-            AlternativeCassandraRecord(alternativePrimaryKey, transcription, confidence)
-        }
+        fun fromEntity(transcriptionCassandraRecord: TranscriptionCassandraRecord, alternative: Alternative) =
+            AlternativeCassandraRecord(
+                transcriptionCassandraRecord.audioFileName,
+                transcriptionCassandraRecord.hours,
+                transcriptionCassandraRecord.minutes,
+                transcriptionCassandraRecord.seconds,
+                transcriptionCassandraRecord.tenthsOfSecond,
+                alternative.position,
+                alternative.transcription,
+                alternative.confidence
+            )
+
+        fun fromCassandraRow(row: Row) =
+            AlternativeCassandraRecord(
+                audioFileName = row.getString(AUDIO_FILE_NAME_COLUMN),
+                hours = row.getInt(HOURS_COLUMN),
+                minutes = row.getInt(MINUTES_COLUMN),
+                seconds = row.getInt(SECONDS_COLUMN),
+                tenthsOfSecond = row.getInt(TENTHS_COLUMN),
+                alternativePosition = row.getInt(ALTERNATIVE_POSITION_COLUMN),
+                transcription = row.getString(TRANSCRIPTION_COLUMN),
+                confidence = row.getFloat(CONFIDENCE_COLUMN)
+            )
     }
 
-    fun translate(
-        wordsRecords: Sequence<WordCassandraRecord>
-    ) = Alternative.Builder(primaryKey.alternativePosition, transcription)
+    fun translate(wordsRecords: List<WordInfo>) =
+        Alternative.Builder(alternativePosition, transcription)
             .confidence(confidence)
-            .words(wordsRecords.map { it.translate() }.toList())
+            .words(wordsRecords)
             .build()
 }
 
-@Table(value = "audio_transcription_alternative_word")
+@Table(name = "audio_transcription_alternative_word")
 data class WordCassandraRecord(
-    @PrimaryKey val primaryKey: WordPrimaryKey,
-    @Column("word") val word: String,
-    @Column("from_time") val from: Float,
-    @Column("to_time") val to: Float
+    @PartitionKey(0) @Column(name = "audio_file_name") val audioFileName: String,
+    @ClusteringColumn(0) @Column(name = "hours") val hours: Int,
+    @ClusteringColumn(1) @Column(name = "minutes") val minutes: Int,
+    @ClusteringColumn(2) @Column(name = "seconds") val seconds: Int,
+    @ClusteringColumn(3) @Column(name = "tenths_of_second") val tenthsOfSecond: Int,
+    @ClusteringColumn(4) @Column(name = "alternative_position") val alternativePosition: Int,
+    @ClusteringColumn(5) @Column(name = "alternative_word_position") val wordPosition: Int,
+    @Column(name = "word") val word: String,
+    @Column(name = "from_time") val from: Float,
+    @Column(name = "to_time") val to: Float
 ) {
     companion object {
         const val TABLE_NAME = "audio_transcription_alternative_word"
@@ -121,71 +149,38 @@ data class WordCassandraRecord(
         const val TENTHS_COLUMN = "tenths_of_second"
         const val ALTERNATIVE_POSITION_COLUMN = "alternative_position"
         const val ALTERNATIVE_WORD_POSITION_COLUMN = "alternative_word_position"
+        const val WORD_COLUMN = "word"
+        const val FROM_TIME_COLUMN = "from_time"
+        const val TO_TIME_COLUMN = "to_time"
 
-        fun fromEntity(primaryKey: WordPrimaryKey, wordInfo: WordInfo) = wordInfo.run {
-            WordCassandraRecord(primaryKey, word, from, to)
-        }
+        fun fromEntity(alternativeCassandraRecord: AlternativeCassandraRecord, wordInfo: WordInfo) =
+            WordCassandraRecord(
+                alternativeCassandraRecord.audioFileName,
+                alternativeCassandraRecord.hours,
+                alternativeCassandraRecord.minutes,
+                alternativeCassandraRecord.seconds,
+                alternativeCassandraRecord.tenthsOfSecond,
+                alternativeCassandraRecord.alternativePosition,
+                wordInfo.position,
+                wordInfo.word,
+                wordInfo.from,
+                wordInfo.to
+            )
+
+        fun fromCassandraRow(row: Row) =
+            WordCassandraRecord(
+                audioFileName = row.getString(AUDIO_FILE_NAME_COLUMN),
+                hours = row.getInt(HOURS_COLUMN),
+                minutes = row.getInt(MINUTES_COLUMN),
+                seconds = row.getInt(SECONDS_COLUMN),
+                tenthsOfSecond = row.getInt(TENTHS_COLUMN),
+                alternativePosition = row.getInt(ALTERNATIVE_POSITION_COLUMN),
+                wordPosition = row.getInt(ALTERNATIVE_WORD_POSITION_COLUMN),
+                word = row.getString(WORD_COLUMN),
+                from = row.getFloat(FROM_TIME_COLUMN),
+                to = row.getFloat(TO_TIME_COLUMN)
+            )
     }
 
-    fun translate() = WordInfo(primaryKey.wordPosition, word, from, to)
-}
-
-@PrimaryKeyClass
-data class TranscriptionPrimaryKey(
-    @PrimaryKeyColumn(name = "audio_file_name", ordinal = 0, type = PrimaryKeyType.PARTITIONED)
-    val audioFileName: String,
-    @PrimaryKeyColumn(name = "hours", ordinal = 1, type = PrimaryKeyType.CLUSTERED)
-    val hours: Int,
-    @PrimaryKeyColumn(name = "minutes", ordinal = 2, type = PrimaryKeyType.CLUSTERED)
-    val minutes: Int,
-    @PrimaryKeyColumn(name = "seconds", ordinal = 3, type = PrimaryKeyType.CLUSTERED)
-    val seconds: Int,
-    @PrimaryKeyColumn(name = "tenths_of_second", ordinal = 4, type = PrimaryKeyType.CLUSTERED)
-    val tenthsOfSecond: Int
-)
-
-@PrimaryKeyClass
-data class AlternativePrimaryKey(
-    @PrimaryKeyColumn(name = "audio_file_name", ordinal = 0, type = PrimaryKeyType.PARTITIONED)
-    val audioFileName: String,
-    @PrimaryKeyColumn(name = "hours", ordinal = 1, type = PrimaryKeyType.CLUSTERED)
-    val hours: Int,
-    @PrimaryKeyColumn(name = "minutes", ordinal = 2, type = PrimaryKeyType.CLUSTERED)
-    val minutes: Int,
-    @PrimaryKeyColumn(name = "seconds", ordinal = 3, type = PrimaryKeyType.CLUSTERED)
-    val seconds: Int,
-    @PrimaryKeyColumn(name = "tenths_of_second", ordinal = 4, type = PrimaryKeyType.CLUSTERED)
-    val tenthsOfSecond: Int,
-    @PrimaryKeyColumn(name = "alternative_position", ordinal = 5, type = PrimaryKeyType.CLUSTERED)
-    val alternativePosition: Int
-) {
-    companion object {
-        fun createNew(transcriptionPrimaryKey: TranscriptionPrimaryKey, alternativePosition: Int) = transcriptionPrimaryKey.run {
-            AlternativePrimaryKey(audioFileName, hours, minutes, seconds, tenthsOfSecond, alternativePosition)
-        }
-    }
-}
-
-@PrimaryKeyClass
-data class WordPrimaryKey(
-    @PrimaryKeyColumn(name = "audio_file_name", ordinal = 0, type = PrimaryKeyType.PARTITIONED)
-    val audioFileName: String,
-    @PrimaryKeyColumn(name = "hours", ordinal = 1, type = PrimaryKeyType.CLUSTERED)
-    val hours: Int,
-    @PrimaryKeyColumn(name = "minutes", ordinal = 2, type = PrimaryKeyType.CLUSTERED)
-    val minutes: Int,
-    @PrimaryKeyColumn(name = "seconds", ordinal = 3, type = PrimaryKeyType.CLUSTERED)
-    val seconds: Int,
-    @PrimaryKeyColumn(name = "tenths_of_second", ordinal = 4, type = PrimaryKeyType.CLUSTERED)
-    val tenthsOfSecond: Int,
-    @PrimaryKeyColumn(name = "alternative_position", ordinal = 5, type = PrimaryKeyType.CLUSTERED)
-    val alternativePosition: Int,
-    @PrimaryKeyColumn(name = "alternative_word_position", ordinal = 6, type = PrimaryKeyType.CLUSTERED)
-    val wordPosition: Int
-) {
-    companion object {
-        fun createNew(alternativePrimaryKey: AlternativePrimaryKey, wordPosition: Int) = alternativePrimaryKey.run {
-            WordPrimaryKey(audioFileName, hours, minutes, seconds, tenthsOfSecond, alternativePosition, wordPosition)
-        }
-    }
+    fun translate() = WordInfo(wordPosition, word, from, to)
 }

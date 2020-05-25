@@ -5,8 +5,6 @@ import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.audiosegments.
 
 interface AudioSegmentsRepository {
 
-    suspend fun findBy(sourceAudioFileName: String, segmentStartInSeconds: Float): AudioSegment
-
     suspend fun findSegmentsRange(sourceAudioFileName: String, segmentStartInSeconds: Float, segmentEndInSeconds: Float): List<AudioSegment>
 
     suspend fun findBasicSegmentsBy(sourceAudioFileName: String): List<BasicAudioSegment>

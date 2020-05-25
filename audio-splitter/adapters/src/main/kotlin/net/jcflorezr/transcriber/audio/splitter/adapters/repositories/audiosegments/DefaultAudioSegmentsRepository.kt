@@ -10,18 +10,15 @@ class DefaultAudioSegmentsRepository(
     private val basicAudioSegmentsCassandraDao: BasicAudioSegmentsCassandraDao
 ) : AudioSegmentsRepository {
 
-    override suspend fun findBy(sourceAudioFileName: String, segmentStartInSeconds: Float): AudioSegment =
-        audioSegmentsCassandraDao.findBy(sourceAudioFileName, segmentStartInSeconds).translate()
-
     override suspend fun findSegmentsRange(sourceAudioFileName: String, segmentStartInSeconds: Float, segmentEndInSeconds: Float) =
         audioSegmentsCassandraDao.findRange(sourceAudioFileName, segmentStartInSeconds, segmentEndInSeconds)
             .map { it.translate() }
             .toList()
 
+    // TODO: where should this method be used? (in the event handler?)
     override suspend fun findBasicSegmentsBy(sourceAudioFileName: String) =
         basicAudioSegmentsCassandraDao.findBy(sourceAudioFileName)
             .map { it.translate() }
-            .toList()
 
     override suspend fun save(audioSegment: AudioSegment) {
         audioSegmentsCassandraDao.save(audioSegmentsCassandraDao.toRecord(audioSegment))

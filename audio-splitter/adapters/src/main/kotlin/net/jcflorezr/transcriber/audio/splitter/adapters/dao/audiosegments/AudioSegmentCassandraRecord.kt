@@ -1,36 +1,51 @@
 package net.jcflorezr.transcriber.audio.splitter.adapters.dao.audiosegments
 
+import com.datastax.driver.core.Row
+import com.datastax.driver.mapping.annotations.ClusteringColumn
+import com.datastax.driver.mapping.annotations.Column
+import com.datastax.driver.mapping.annotations.PartitionKey
+import com.datastax.driver.mapping.annotations.Table
 import java.nio.ByteBuffer
 import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.audiosegments.AudioSegment
 import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.audiosegments.AudioSegmentBytes
 import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.audiosegments.AudioSegmentRms
-import org.springframework.data.cassandra.core.cql.PrimaryKeyType
-import org.springframework.data.cassandra.core.mapping.Column
-import org.springframework.data.cassandra.core.mapping.PrimaryKeyColumn
-import org.springframework.data.cassandra.core.mapping.Table
 
-@Table(value = "audio_segment")
+@Table(name = AudioSegmentCassandraRecord.TABLE_NAME)
 data class AudioSegmentCassandraRecord(
-    @PrimaryKeyColumn(name = "audio_file_name", ordinal = 0, type = PrimaryKeyType.PARTITIONED)
-    val sourceAudioFileName: String,
-    @PrimaryKeyColumn(name = "segment_start_in_seconds", ordinal = 1, type = PrimaryKeyType.CLUSTERED)
-    val segmentStartInSeconds: Float,
-    @Column("segment_end_in_seconds") val segmentEndInSeconds: Float,
-    @Column("segment_start") val segmentStart: Int,
-    @Column("segment_end") val segmentEnd: Int,
-    @Column("audio_segment_rms") val audioSegmentRms: Double,
-    @Column("audio_segment_bytes") val audioSegmentBytes: ByteBuffer
+    @PartitionKey(0) @Column(name = AUDIO_FILE_NAME_COLUMN) val sourceAudioFileName: String,
+    @ClusteringColumn(0) @Column(name = SEGMENT_START_IN_SECONDS_COLUMN) val segmentStartInSeconds: Float,
+    @Column(name = SEGMENT_END_IN_SECONDS_COLUMN) val segmentEndInSeconds: Float,
+    @Column(name = SEGMENT_START_COLUMN) val segmentStart: Int,
+    @Column(name = SEGMENT_END_COLUMN) val segmentEnd: Int,
+    @Column(name = SEGMENT_RMS_COLUMN) val audioSegmentRms: Double,
+    @Column(name = SEGMENT_BYTES_COLUMN) val audioSegmentBytes: ByteBuffer
 ) {
     companion object {
         const val TABLE_NAME = "audio_segment"
         const val AUDIO_FILE_NAME_COLUMN = "audio_file_name"
         const val SEGMENT_START_IN_SECONDS_COLUMN = "segment_start_in_seconds"
+        const val SEGMENT_END_IN_SECONDS_COLUMN = "segment_end_in_seconds"
+        const val SEGMENT_START_COLUMN = "segment_start"
+        const val SEGMENT_END_COLUMN = "segment_end"
+        const val SEGMENT_RMS_COLUMN = "audio_segment_rms"
+        const val SEGMENT_BYTES_COLUMN = "audio_segment_bytes"
 
         fun fromEntity(audioSegment: AudioSegment) = audioSegment.run {
             AudioSegmentCassandraRecord(
                 sourceAudioFileName, segmentStartInSeconds, segmentEndInSeconds, segmentStart,
                 segmentEnd, audioSegmentRms.rms, ByteBuffer.wrap(audioSegmentBytes.bytes))
         }
+
+        fun fromCassandraRow(row: Row) =
+            AudioSegmentCassandraRecord(
+                sourceAudioFileName = row.getString(AUDIO_FILE_NAME_COLUMN),
+                segmentStartInSeconds = row.getFloat(SEGMENT_START_IN_SECONDS_COLUMN),
+                segmentEndInSeconds = row.getFloat(SEGMENT_END_IN_SECONDS_COLUMN),
+                segmentStart = row.getInt(SEGMENT_START_COLUMN),
+                segmentEnd = row.getInt(SEGMENT_END_COLUMN),
+                audioSegmentRms = row.getDouble(SEGMENT_RMS_COLUMN),
+                audioSegmentBytes = row.getBytes(SEGMENT_BYTES_COLUMN)
+            )
     }
 
     fun translate() =

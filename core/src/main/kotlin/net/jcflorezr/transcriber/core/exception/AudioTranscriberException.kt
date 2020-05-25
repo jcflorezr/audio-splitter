@@ -11,14 +11,14 @@ open class TranscriberException(val errorCode: String) : RuntimeException()
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 open class InternalServerErrorException(
     errorCode: String = "internal_error",
-    val exception: Exception
+    val throwable: Throwable
 ) : TranscriberException(errorCode) {
 
-    override val message: String? = exception.message ?: exception.localizedMessage
+    override val message: String? = throwable.message ?: throwable.localizedMessage
     val simplifiedStackTrace: List<SimplifiedStackTraceElement>
 
     init {
-        simplifiedStackTrace = generateSimplifiedStackTrace(exception.stackTrace)
+        simplifiedStackTrace = generateSimplifiedStackTrace(throwable.stackTrace)
     }
 
     private fun generateSimplifiedStackTrace(
@@ -30,7 +30,7 @@ open class InternalServerErrorException(
         ).map { SimplifiedStackTraceElement(it.key, it.value) }
 
     override fun toString(): String {
-        return "InternalServerErrorException(ex=$exception, message=$message, simplifiedStackTrace=$simplifiedStackTrace)"
+        return "InternalServerErrorException(ex=$throwable, message=$message, simplifiedStackTrace=$simplifiedStackTrace)"
     }
 
     data class SimplifiedStackTraceElement(

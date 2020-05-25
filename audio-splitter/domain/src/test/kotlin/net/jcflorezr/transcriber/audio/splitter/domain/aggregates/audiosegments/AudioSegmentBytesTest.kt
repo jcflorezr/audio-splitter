@@ -3,9 +3,9 @@ package net.jcflorezr.transcriber.audio.splitter.domain.aggregates.audiosegments
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import java.io.File
-import org.hamcrest.CoreMatchers.`is` as Is
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
+import org.hamcrest.core.Is
 import org.junit.jupiter.api.Test
 
 internal class AudioSegmentBytesTest {

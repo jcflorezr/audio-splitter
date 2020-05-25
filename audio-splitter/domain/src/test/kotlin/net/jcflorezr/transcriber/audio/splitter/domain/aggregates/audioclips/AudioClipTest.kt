@@ -3,9 +3,10 @@ package net.jcflorezr.transcriber.audio.splitter.domain.aggregates.audioclips
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import java.io.File
-import org.hamcrest.CoreMatchers.`is` as Is
+import net.jcflorezr.transcriber.core.util.JsonUtils.fromJsonToList
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
+import org.hamcrest.core.Is
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -102,16 +103,9 @@ internal class AudioClipTest {
         assertThat(clipName, Is(equalTo("")))
     }
 
-    private fun getActiveSegments(): List<ActiveSegment> {
-        val audioSegmentsPath = "$audioClipsTestResourcesPath/$audioSegmentsFileName"
-        val audioSegmentsListType =
-            MAPPER.typeFactory.constructCollectionType(List::class.java, ActiveSegment::class.java)
-        return MAPPER.readValue(File(audioSegmentsPath), audioSegmentsListType)
-    }
+    private fun getActiveSegments() =
+        fromJsonToList<ActiveSegment>(File("$audioClipsTestResourcesPath/$audioSegmentsFileName"))
 
-    private fun getExpectedAudioClips(): List<AudioClip> {
-        val audioClipsPath = "$audioClipsTestResourcesPath/$audioClipsFileName"
-        val audioClipsListType = MAPPER.typeFactory.constructCollectionType(List::class.java, AudioClip::class.java)
-        return MAPPER.readValue(File(audioClipsPath), audioClipsListType)
-    }
+    private fun getExpectedAudioClips() =
+        fromJsonToList<AudioClip>(File("$audioClipsTestResourcesPath/$audioClipsFileName"))
 }

@@ -8,9 +8,6 @@ class DefaultAudioClipsRepository(
     private val audioClipsCassandraDao: AudioClipsCassandraDao
 ) : AudioClipsRepository {
 
-    override suspend fun findBy(sourceAudioFileName: String, hours: Int, minutes: Int, seconds: Int, tenthsOfSecond: Int): AudioClip =
-        audioClipsCassandraDao.findBy(sourceAudioFileName, hours, minutes, seconds, tenthsOfSecond).translate()
-
     override suspend fun findBy(sourceAudioFileName: String): List<AudioClip> =
         audioClipsCassandraDao.findBy(sourceAudioFileName).map { it.translate() }.toList()
 

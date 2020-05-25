@@ -1,31 +1,27 @@
 package net.jcflorezr.transcriber.audio.transcriber.adapters.di.cloud.speech
 
-import net.jcflorezr.transcriber.audio.transcriber.adapters.cloud.speech.GoogleCloudAudioTranscriptionsClient
-import net.jcflorezr.transcriber.audio.transcriber.adapters.cloud.speech.GoogleRecognitionAudioConfig
-import net.jcflorezr.transcriber.audio.transcriber.adapters.cloud.speech.GoogleRecognitionConfig
-import net.jcflorezr.transcriber.audio.transcriber.adapters.cloud.speech.GoogleSpeechApiClient
+import net.jcflorezr.transcriber.audio.transcriber.adapters.ports.cloud.speech.GoogleCloudAudioTranscriptionsClient
+import net.jcflorezr.transcriber.audio.transcriber.adapters.ports.cloud.speech.GoogleRecognitionAudioConfig
+import net.jcflorezr.transcriber.audio.transcriber.adapters.ports.cloud.speech.GoogleRecognitionConfig
+import net.jcflorezr.transcriber.audio.transcriber.adapters.ports.cloud.speech.GoogleSpeechApiClient
 import net.jcflorezr.transcriber.audio.transcriber.domain.ports.cloud.speech.AudioTranscriptionsClient
 import org.mockito.Mockito.mock
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.Lazy
 
-@Configuration
-@Lazy
-open class GoogleCloudSpeechClientTestDI {
+class GoogleCloudSpeechClientTestDI {
 
-    @Bean open fun googleCloudAudioTranscriptionsClientTest(): AudioTranscriptionsClient =
+    private val googleSpeechApiClientMock = mock(GoogleSpeechApiClient::class.java)
+    private val googleRecognitionConfigMock = mock(GoogleRecognitionConfig::class.java)
+    private val googleRecognitionAudioConfigMock = mock(GoogleRecognitionAudioConfig::class.java)
+
+    fun googleCloudAudioTranscriptionsClientTest(): AudioTranscriptionsClient =
         GoogleCloudAudioTranscriptionsClient(
-            googleSpeechApiClientTest(),
-            googleRecognitionConfigTest(),
-            googleRecognitionAudioConfigTest())
+            googleSpeechApiClientMock,
+            googleRecognitionConfigMock,
+            googleRecognitionAudioConfigMock)
 
-    @Bean open fun googleSpeechApiClientTest(): GoogleSpeechApiClient =
-        mock(GoogleSpeechApiClient::class.java)
+    fun googleSpeechApiClientMock() = googleSpeechApiClientMock
 
-    @Bean open fun googleRecognitionConfigTest(): GoogleRecognitionConfig =
-        mock(GoogleRecognitionConfig::class.java)
+    fun googleRecognitionConfigMock() = googleRecognitionConfigMock
 
-    @Bean open fun googleRecognitionAudioConfigTest(): GoogleRecognitionAudioConfig =
-        mock(GoogleRecognitionAudioConfig::class.java)
+    fun googleRecognitionAudioConfigMock() = googleRecognitionAudioConfigMock
 }

@@ -17,9 +17,10 @@ val codaHaleMetricsVersion: String by project
 val testContainersVersion: String by project
 val dockerJavaClientVersion: String by project
 val kotlinCoroutinesVersion: String by project
-val commonsIOVersion: String by project
 val groovyVersion: String by project
 val spockVersion: String by project
+val vertxVersion: String by project
+val awaitilityVersion: String by project
 
 plugins {
     kotlin("jvm") version "1.3.70"
@@ -46,7 +47,7 @@ allprojects {
     }
 
     afterEvaluate {
-        tasks["ktlintKotlinScriptCheck"].dependsOn(tasks["ktlintKotlinScriptFormat"])
+        tasks.ktlintKotlinScriptCheck { dependsOn(tasks.ktlintKotlinScriptFormat) }
     }
 }
 
@@ -71,6 +72,7 @@ subprojects {
         // Kotlin
         implementation(kotlin(module = "stdlib-jdk8", version = kotlinVersion))
         implementation(kotlin(module = "reflect", version = kotlinVersion))
+        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion")
 
         // Jackson
         implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
@@ -86,35 +88,19 @@ subprojects {
         testImplementation("org.hamcrest:hamcrest-core:$hamcrestVersion")
     }
 
+    configurations.all {
+        resolutionStrategy {
+            // TODO: we need to investigate how to apply this only to vert.x cassandra client
+            force("com.google.guava:guava:25.1-jre")
+        }
+    }
+
     /*
         Dependencies which are common between 'adapters' and 'application' sub projects
      */
     isAdaptersOrApplicationProject()?.apply {
         project(path) {
-
-            sourceSets {
-                create("integrationTest") {
-                    compileClasspath += sourceSets.main.get().output
-                    runtimeClasspath += sourceSets.main.get().output
-                }
-            }.also {
-                configurations["integrationTestImplementation"].extendsFrom(configurations.testImplementation.get())
-            }
-
-            val integrationTest = task<Test>("integrationTest") {
-                description = "Runs the integration tests"
-                group = "verification"
-                testClassesDirs = sourceSets["integrationTest"].output.classesDirs
-                classpath = sourceSets["integrationTest"].runtimeClasspath
-                mustRunAfter(tasks["test"])
-            }
-
-            tasks.check { dependsOn(integrationTest) }
-
             dependencies {
-                // Kotlin
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion")
-
                 // Spring
                 implementation("org.springframework:spring-core:$springVersion")
                 implementation("org.springframework:spring-context:$springVersion")
@@ -125,20 +111,53 @@ subprojects {
                 // Test
                 testImplementation("org.mockito:mockito-core:$mockitoVersion")
                 testImplementation("org.springframework:spring-test:$springVersion")
-
-                // Integration Test
-                testImplementation(project(":core", "testArtifacts"))
             }
 
             isAdaptersProject()?.apply {
                 project(path) {
+                    createIntegrationTestSourceSet()
                     dependencies {
                         // Cassandra
                         implementation("org.springframework.data:spring-data-cassandra:$springDataVersion")
+
+                        implementation("io.vertx:vertx-cassandra-client:$vertxVersion")
                         implementation("com.datastax.cassandra:cassandra-driver-core:$cassandraDriverVersion")
+                        implementation("com.datastax.cassandra:cassandra-driver-mapping:$cassandraDriverVersion")
                         implementation("com.codahale.metrics:metrics-core:$codaHaleMetricsVersion")
+
+                        // vert.x
+                        implementation("io.vertx:vertx-core:$vertxVersion")
+                        implementation("io.vertx:vertx-lang-kotlin:$vertxVersion")
+                        implementation("io.vertx:vertx-lang-kotlin-coroutines:$vertxVersion")
+                        implementation("io.vertx:vertx-web:$vertxVersion")
+                        implementation("io.vertx:vertx-kafka-client:$vertxVersion")
+                        testImplementation(project(":core", "integrationTestArtifact"))
                     }
                 }
+            }
+
+            isApplicationProject()?.apply {
+                project(path) {
+                    createComponentTestSourceSet()
+                    dependencies {
+                        implementation("io.vertx:vertx-core:$vertxVersion")
+                        implementation("io.vertx:vertx-lang-kotlin:$vertxVersion")
+                        implementation("io.vertx:vertx-lang-kotlin-coroutines:$vertxVersion")
+                        testImplementation(project(":core", "componentTestArtifact"))
+                    }
+                }
+            }
+        }
+    }
+
+    isCoreProject()?.apply {
+        project(path) {
+            createIntegrationTestSourceSet()
+            createComponentTestSourceSet()
+
+            dependencies {
+                implementation("io.vertx:vertx-lang-kotlin:$vertxVersion")
+                implementation("io.vertx:vertx-cassandra-client:$vertxVersion")
             }
         }
     }
@@ -146,8 +165,25 @@ subprojects {
     containsIntegrationTestsModule()?.apply {
         project(path) {
             dependencies {
+                testImplementation("io.vertx:vertx-junit5:$vertxVersion")
+                testImplementation("org.springframework.data:spring-data-cassandra:$springDataVersion")
+                testImplementation("io.vertx:vertx-cassandra-client:$vertxVersion")
+                testImplementation("io.vertx:vertx-lang-kotlin-coroutines:$vertxVersion")
+                testImplementation("org.testcontainers:cassandra:$testContainersVersion")
+                testImplementation("org.awaitility:awaitility:$awaitilityVersion")
+            }
+        }
+    }
+
+    containsComponentTestsModule()?.apply {
+        project(path) {
+            dependencies {
+                testImplementation("io.vertx:vertx-junit5:$vertxVersion")
+                testImplementation("io.vertx:vertx-cassandra-client:$vertxVersion")
                 testImplementation("org.springframework.data:spring-data-cassandra:$springDataVersion")
                 testImplementation("org.testcontainers:cassandra:$testContainersVersion")
+                testImplementation("org.testcontainers:kafka:$testContainersVersion")
+                testImplementation("org.awaitility:awaitility:$awaitilityVersion")
             }
         }
     }
@@ -166,10 +202,12 @@ subprojects {
     }
 
     afterEvaluate {
-        tasks["ktlintMainSourceSetCheck"].dependsOn(tasks["ktlintMainSourceSetFormat"])
-        tasks["ktlintTestSourceSetCheck"].dependsOn(tasks["ktlintTestSourceSetFormat"])
+        tasks.ktlintMainSourceSetCheck { dependsOn(tasks.ktlintMainSourceSetFormat) }
+        tasks.ktlintTestSourceSetCheck { dependsOn(tasks.ktlintTestSourceSetFormat) }
         tasks.findByPath("$path:ktlintIntegrationTestSourceSetCheck")
             ?.dependsOn(tasks["ktlintIntegrationTestSourceSetFormat"])
+        tasks.findByPath("$path:ktlintComponentTestSourceSetCheck")
+            ?.dependsOn(tasks["ktlintComponentTestSourceSetFormat"])
     }
 }
 
@@ -232,14 +270,50 @@ fun Project.isApplicationProject(): Project? = name.takeIf { it.contains("applic
 fun Project.isDomainProject(): Project? = name.takeIf { it.contains("domain") }?.run { this@isDomainProject }
 fun Project.isCoreProject(): Project? = name.takeIf { it.contains("core") }?.run { this@isCoreProject }
 
-fun Project.containsIntegrationTestsModule(): Project? = run {
-    isAdaptersProject() ?: isDomainProject() ?: isCoreProject()
-}?.run { this@containsIntegrationTestsModule }
-
 fun Project.isAdaptersOrApplicationProject(): Project? = run {
     isAdaptersProject() ?: isApplicationProject()
 }?.run { this@isAdaptersOrApplicationProject }
 
+// TODO: go away!
 fun Project.isAdaptersOrDomainProject(): Project? = run {
     isAdaptersProject() ?: isDomainProject()
 }?.run { this@isAdaptersOrDomainProject }
+
+fun Project.containsComponentTestsModule(): Project? =
+    sourceSets.findByName("componentTest")?.run { this@containsComponentTestsModule }
+
+fun Project.containsIntegrationTestsModule(): Project? =
+    sourceSets.findByName("integrationTest")?.run { this@containsIntegrationTestsModule }
+
+/*
+    Source Sets for special tests helpers
+ */
+fun Project.createIntegrationTestSourceSet() {
+    createSourceSetForSpecialTests(testFolderName = "integrationTest")
+}
+
+fun Project.createComponentTestSourceSet() {
+    createSourceSetForSpecialTests(testFolderName = "componentTest")
+}
+
+fun Project.createSourceSetForSpecialTests(testFolderName: String) {
+    sourceSets {
+        create(testFolderName) {
+            compileClasspath += sourceSets.main.get().output
+            runtimeClasspath += sourceSets.main.get().output
+        }
+    }.also {
+        configurations["${testFolderName}Implementation"].extendsFrom(configurations.implementation.get())
+        configurations["${testFolderName}Implementation"].extendsFrom(configurations.testImplementation.get())
+    }
+
+    val specialTest = task<Test>(testFolderName) {
+        description = "Runs the $testFolderName tests"
+        group = "verification"
+        testClassesDirs = sourceSets[testFolderName].output.classesDirs
+        classpath = sourceSets[testFolderName].runtimeClasspath
+        mustRunAfter(tasks["test"])
+    }
+
+    tasks.check { dependsOn(specialTest) }
+}

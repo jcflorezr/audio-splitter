@@ -13,7 +13,6 @@ class GenerateAudioClipInfo(
 
     override suspend fun execute(aggregateRoot: AudioClip) {
         audioClipsRepository.save(audioClip = aggregateRoot)
-        aggregateRoot.run { audioClipsRepository.findBy(sourceAudioFileName, hours, minutes, seconds, tenthsOfSecond) }
         eventDispatcher.publish(AudioClipInfoGenerated(aggregateRoot))
     }
 }

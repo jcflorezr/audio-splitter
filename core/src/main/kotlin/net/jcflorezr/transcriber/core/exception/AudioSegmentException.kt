@@ -5,7 +5,7 @@ import java.io.IOException
 class AudioSegmentException(
     errorCode: String,
     exception: Exception
-) : InternalServerErrorException(errorCode = errorCode, exception = exception) {
+) : InternalServerErrorException(errorCode = errorCode, throwable = exception) {
     companion object {
 
         fun unexpectedEndOfFile(requiredFrames: Int, initialPosition: Int, frameSize: Int) =

@@ -1,5 +1,6 @@
 package net.jcflorezr.transcriber.audio.splitter.domain.aggregates.audioclips
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import net.jcflorezr.transcriber.core.domain.AggregateRoot
 import net.jcflorezr.transcriber.core.util.FloatingPointUtils
 
@@ -29,6 +30,7 @@ data class AudioClip(
     fun flush() = this.copy(hours = 0, minutes = 0, seconds = 0, tenthsOfSecond = 0, duration = 0.0f,
         activeSegments = listOf(), previousSegment = null)
 
+    @JsonIgnore
     fun isFlushed() = hours == 0 && minutes == 0 && seconds == 0 && tenthsOfSecond == 0 &&
         duration == 0.0f && activeSegments.isEmpty() && previousSegment == null
 
@@ -95,6 +97,7 @@ data class AudioClip(
 
         other as AudioClip
 
+        if (sourceAudioFileName != other.sourceAudioFileName) return false
         if (duration != other.duration) return false
         if (hours != other.hours) return false
         if (minutes != other.minutes) return false
@@ -106,7 +109,8 @@ data class AudioClip(
     }
 
     override fun hashCode(): Int {
-        var result = duration.hashCode()
+        var result = sourceAudioFileName.hashCode()
+        result = 31 * result + duration.hashCode()
         result = 31 * result + hours
         result = 31 * result + minutes
         result = 31 * result + seconds

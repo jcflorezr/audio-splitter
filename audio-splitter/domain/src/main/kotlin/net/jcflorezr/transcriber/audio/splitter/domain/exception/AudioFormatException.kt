@@ -7,7 +7,7 @@ import net.jcflorezr.transcriber.core.exception.InternalServerErrorException
 class AudioFormatException(
     errorCode: String,
     exception: Exception
-) : InternalServerErrorException(errorCode = errorCode, exception = exception) {
+) : InternalServerErrorException(errorCode = errorCode, throwable = exception) {
     companion object {
 
         fun unsupportedFormatEncoding(formatEncoding: AudioFormat.Encoding, supportedFormatEncodingsList: Array<AudioFormatEncodings>) =

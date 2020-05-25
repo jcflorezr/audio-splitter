@@ -10,7 +10,7 @@ class AudioTranscriptionException(message: String) : RuntimeException(message) {
         fun duplicateAlternativesPositions(audioClipFileInfo: AudioClipFileInfo, duplicatePositions: Set<Int>) = audioClipFileInfo.run {
             InternalServerErrorException(
                 errorCode = "duplicate_alternatives_positions_in_transcription",
-                exception = AudioTranscriptionException(
+                throwable = AudioTranscriptionException(
                     "Transcription for $sourceAudioFileName located in (hours=$hours minutes=$minutes seconds=$seconds tenths=$tenthsOfSecond) " +
                     "has the following duplicate positions numbers in the list of alternatives: $duplicatePositions"))
         }
@@ -22,7 +22,7 @@ class AudioTranscriptionException(message: String) : RuntimeException(message) {
         ) = audioClipFileInfo.run {
             InternalServerErrorException(
                 errorCode = "duplicate_alternative_words_positions_in_transcription",
-                exception = AudioTranscriptionException(
+                throwable = AudioTranscriptionException(
                     "Transcription for $sourceAudioFileName located in (hours=$hours minutes=$minutes seconds=$seconds tenths=$tenthsOfSecond) " +
                     "has duplicate words positions in the alternative with position=$alternativePosition." +
                     "Duplicate words positions numbers: $duplicatePositions"))

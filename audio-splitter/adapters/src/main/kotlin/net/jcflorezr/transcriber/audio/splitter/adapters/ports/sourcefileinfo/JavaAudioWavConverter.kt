@@ -17,10 +17,12 @@ class JavaAudioWavConverter(
     private val logger = KotlinLogging.logger { }
     private val sampleSizeInBits = 16
 
-    override fun createAudioWavFile(originalAudioFile: File): File? =
-        SupportedAudioFormats.findFileType(Tika().detect(originalAudioFile.absolutePath))
+    override fun createAudioWavFile(originalAudioFile: File): File? {
+
+        return SupportedAudioFormats.findFileType(Tika().detect(originalAudioFile.absolutePath))
             .takeIf { it != SupportedAudioFormats.WAV && it != SupportedAudioFormats.WAVE }
             ?.let { createAudioWavFile(originalAudioFile.nameWithoutExtension, originalAudioFile.absolutePath) }
+    }
 
     private fun createAudioWavFile(audioFileName: String, audioFileLocation: String): File {
         logger.info { "[1][entry-point] Converting source audio file ($audioFileName) to ${SupportedAudioFormats.WAV}" }

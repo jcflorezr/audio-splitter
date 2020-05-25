@@ -1,0 +1,35 @@
+{
+  "originalAudioFile": "test-audio-mono.mp3",
+  "audioContentInfo": {
+    "channels": 1,
+    "sampleRate": 22050,
+    "sampleSizeInBits": 16,
+    "frameSize": 2,
+    "sampleSize": 2,
+    "bigEndian": false,
+    "encoding": "PCM_SIGNED",
+    "totalFrames": 74880,
+    "exactTotalFrames": 72765,
+    "totalFramesBySeconds": 66150,
+    "remainingFrames": 6615,
+    "framesPerSecond": 22050,
+    "audioSegmentLength": 2205,
+    "audioSegmentLengthInBytes": 4410,
+    "numOfAudioSegments": 33,
+    "audioSegmentsPerSecond": 10,
+    "remainingAudioSegments": 3
+  },
+  "metadata": {
+    "audioFileName": "test-audio-mono.mp3",
+    "title": "Presidential Candidacy Announcement",
+    "album": "Speeches",
+    "artist": "Barack Obama",
+    "trackNumber": "1",
+    "genre": "",
+    "comments": "Great president",
+    "duration": 3,
+    "sampleRate": "22050",
+    "channels": "Mono"
+  },
+  "convertedAudioFile" : "test-audio-mono.wav"
+}
