@@ -17,40 +17,21 @@ import org.hamcrest.core.Is
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mockito.`when` as When
 import org.mockito.Mockito.doNothing
 import org.mockito.Mockito.mock
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.test.context.ContextConfiguration
-import org.springframework.test.context.junit.jupiter.SpringExtension
 
-@ExtendWith(SpringExtension::class)
-@ContextConfiguration(classes = [GoogleCloudStorageClientTestDI::class])
 internal class GoogleCloudStorageClientTest {
 
-    @Autowired
-    private lateinit var googleCloudStorageClient: GoogleCloudStorageClient
-    @Autowired
-    private lateinit var storage: Storage
-    @Autowired
-    @Qualifier("bucketDirectory")
-    private lateinit var bucketDirectory: String
-    @Autowired
-    @Qualifier("bucketName")
-    private lateinit var bucketName: String
+    private val googleCloudStorageClient = GoogleCloudStorageClientTestDI.googleCloudStorageClientTest
+    private val storage: Storage = GoogleCloudStorageClientTestDI.storageClient
+    private val bucketDirectory = GoogleCloudStorageClientTestDI.bucketDirectory
+    private val bucketName = GoogleCloudStorageClientTestDI.bucketName
 
     private val thisClass: Class<GoogleCloudStorageClientTest> = this.javaClass
-    private val sourceFilePath: String
-    private val tempConvertedFilesPath: String
-    private val audioFileName: String
-
-    init {
-        sourceFilePath = thisClass.getResource("/source-file-info").path
-        tempConvertedFilesPath = thisClass.getResource("/temp-converted-files").path
-        audioFileName = "test-audio-mono.wav"
-    }
+    private val sourceFilePath: String = thisClass.getResource("/source-file-info").path
+    private val tempConvertedFilesPath: String = thisClass.getResource("/temp-converted-files").path
+    private val audioFileName: String = "test-audio-mono.wav"
 
     @Test
     fun downloadFileFromStorage() = runBlocking(Dispatchers.IO) {

@@ -25,11 +25,8 @@ class AudioTranscriptionGeneratedDummyHandler(
 
     private val audioTranscriptionsActor = AudioTranscriptionsActor()
     private val expectedAudioTranscriptions = mutableListOf<AudioTranscription>()
-    private val thisClass: Class<AudioTranscriptionGeneratedDummyHandler> = this.javaClass
-    private val transcriptionsFilesPath: String
 
     init {
-        transcriptionsFilesPath = thisClass.getResource("/audio-clips-transcriptions").path
         EventRouter.register(AudioTranscriptionGenerated::class.java, this)
     }
 
@@ -44,7 +41,8 @@ class AudioTranscriptionGeneratedDummyHandler(
         waitAtMostTenSecondsByOneSecondIntervals().untilAsserted {
             assertThat(
                 getMissingExpectedAudioTranscriptionsErrorMessage(actualAudioTranscriptions),
-                actualAudioTranscriptions.size, Is(equalTo(expectedAudioTranscriptions.size)))
+                actualAudioTranscriptions.size, Is(equalTo(expectedAudioTranscriptions.size))
+            )
         }
         expectedAudioTranscriptions
             .sortedWith(compareBy({ it.hours }, { it.minutes }, { it.seconds }, { it.tenthsOfSecond }))

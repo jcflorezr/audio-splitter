@@ -8,6 +8,7 @@ import net.jcflorezr.transcriber.audio.transcriber.domain.aggregates.audiotransc
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.core.Is
+import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 
 internal class AudioTranscriptionCassandraRecordTest {
@@ -16,7 +17,8 @@ internal class AudioTranscriptionCassandraRecordTest {
     private val testResourcesPath = this.javaClass.getResource("/audio-clips-transcriptions").path
 
     @Test
-    fun `from entity to record and then from record to entity`() {
+    @DisplayName("from entity to record and then from record to entity")
+    fun fromEntityToRecordAndBackToEntity() {
         val fileKeyword = "aggregate"
         val audioTranscriptionFile = File(testResourcesPath).listFiles()?.find { file -> file.name.contains(fileKeyword) }
             ?: throw FileNotFoundException("No suitable file found in '$testResourcesPath' to perform the tests")

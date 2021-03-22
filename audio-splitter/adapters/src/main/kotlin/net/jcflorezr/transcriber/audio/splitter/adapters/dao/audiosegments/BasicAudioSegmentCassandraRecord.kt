@@ -28,7 +28,8 @@ data class BasicAudioSegmentCassandraRecord(
         fun fromEntity(audioSegment: BasicAudioSegment) = audioSegment.run {
             BasicAudioSegmentCassandraRecord(
                 sourceAudioFileName, segmentStartInSeconds, segmentEndInSeconds,
-                segmentStart, segmentEnd, audioSegmentRms)
+                segmentStart, segmentEnd, audioSegmentRms
+            )
         }
 
         fun fromCassandraRow(row: Row) =
@@ -43,6 +44,8 @@ data class BasicAudioSegmentCassandraRecord(
     }
 
     fun translate() =
-        BasicAudioSegment(sourceAudioFileName, segmentStart, segmentStartInSeconds,
-            segmentEnd, segmentEndInSeconds, audioSegmentRms)
+        BasicAudioSegment(
+            sourceAudioFileName, segmentStart, segmentStartInSeconds,
+            segmentEnd, segmentEndInSeconds, audioSegmentRms
+        )
 }

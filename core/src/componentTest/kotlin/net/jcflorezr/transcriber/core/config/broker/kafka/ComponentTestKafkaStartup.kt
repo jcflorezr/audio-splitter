@@ -12,10 +12,17 @@ object ComponentTestKafkaStartup {
 
     private const val EXPECTED_EXISTING_KAFKA_CONTAINER_NAME = "/transcriber-component-test-kafka"
     private const val EXPECTED_EXISTING_ZOOKEEPER_CONTAINER_NAME = "/transcriber-component-test-zookeeper"
+    private const val IP_ADDRESS_ENV_NAME = "TRANSCRIBER_COMPONENT_KAFKA_IP_ADDRESS"
+    private const val PORT_ENV_NAME = "TRANSCRIBER_COMPONENT_KAFKA_PORT"
 
     private val ipAddressAndPortTuple = getKafkaContainer() ?: createNewKafkaContainer()
     val ipAddress = ipAddressAndPortTuple.first
     val port = ipAddressAndPortTuple.second
+
+    init {
+        System.setProperty(IP_ADDRESS_ENV_NAME, ipAddress)
+        System.setProperty(PORT_ENV_NAME, port.toString())
+    }
 
     private fun getKafkaContainer(): Pair<String, Int>? {
         val dockerConfig = DefaultDockerClientConfig.createDefaultConfigBuilder().build()
@@ -25,17 +32,21 @@ object ComponentTestKafkaStartup {
             .isZookeeperPresent()
             ?.isKafkaPresent()
             ?.also {
-                logger.info { "==== The expected existing container '$EXPECTED_EXISTING_ZOOKEEPER_CONTAINER_NAME' was found. " +
-                    "No need to create a new one to run the component tests :) ====" }
-                logger.info { "==== The expected existing container '$EXPECTED_EXISTING_KAFKA_CONTAINER_NAME' was found. " +
-                    "No need to create a new one to run the component tests :) ====" }
+                logger.info {
+                    "==== The expected existing container '$EXPECTED_EXISTING_ZOOKEEPER_CONTAINER_NAME' was found. " +
+                        "No need to create a new one to run the component tests :) ===="
+                }
+                logger.info {
+                    "==== The expected existing container '$EXPECTED_EXISTING_KAFKA_CONTAINER_NAME' was found. " +
+                        "No need to create a new one to run the component tests :) ===="
+                }
             }
             ?.run { "localhost" to 29092 } // confluent kafka container is created with network = host
     }
 
     private fun List<com.github.dockerjava.api.model.Container>.isZookeeperPresent() =
         find { it.names.contains(EXPECTED_EXISTING_ZOOKEEPER_CONTAINER_NAME) }
-        ?.let { this }
+            ?.let { this }
 
     private fun List<com.github.dockerjava.api.model.Container>.isKafkaPresent() =
         find { it.names.contains(EXPECTED_EXISTING_KAFKA_CONTAINER_NAME) }

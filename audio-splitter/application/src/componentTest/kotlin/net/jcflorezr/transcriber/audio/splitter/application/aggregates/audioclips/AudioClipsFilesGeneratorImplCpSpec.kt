@@ -16,6 +16,7 @@ import net.jcflorezr.transcriber.core.util.JsonUtils.fromJsonToList
 import net.jcflorezr.transcriber.core.util.JsonUtils.fromJsonToObject
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mockito.`when` as When
@@ -27,11 +28,10 @@ internal class AudioClipsFilesGeneratorImplCpSpec {
     private val audioClipsFilesPath = this.javaClass.getResource("/audio-clips").path
     private val audioSegmentsFilesPath = this.javaClass.getResource("/audio-segments").path
 
-    private val audioClipsFilesGeneratorImplCpSpecDI = AudioClipsFilesGeneratorImplCpSpecDI
-    private val eventHandler = audioClipsFilesGeneratorImplCpSpecDI.audioClipFileGeneratedEventHandler()
-    private val audioClipsFilesGenerator = audioClipsFilesGeneratorImplCpSpecDI.audioClipsFilesGenerator
-    private val sourceFileInfoRepository = audioClipsFilesGeneratorImplCpSpecDI.sourceFileInfoRepositoryMock()
-    private val audioSegmentsRepository = audioClipsFilesGeneratorImplCpSpecDI.audioSegmentsRepositoryMock()
+    private val eventHandler = AudioClipsFilesGeneratorImplCpSpecDI.audioClipFileGeneratedEventHandler()
+    private val audioClipsFilesGenerator = AudioClipsFilesGeneratorImplCpSpecDI.audioClipsFilesGenerator
+    private val sourceFileInfoRepository = AudioClipsFilesGeneratorImplCpSpecDI.sourceFileInfoRepositoryMock()
+    private val audioSegmentsRepository = AudioClipsFilesGeneratorImplCpSpecDI.audioSegmentsRepositoryMock()
 
     @BeforeAll
     fun setUp(vertx: Vertx, testContext: VertxTestContext) {
@@ -44,17 +44,20 @@ internal class AudioClipsFilesGeneratorImplCpSpec {
     }
 
     @Test
-    fun `generate audio clips files for 'background noise low volume' segments`(testContext: VertxTestContext) = runBlocking {
+    @DisplayName("generate audio clips files for 'background noise low volume' segments")
+    fun audioClipsFilesForBackgroundNoiseLowVolume(testContext: VertxTestContext) = runBlocking {
         generateAudioClipsFiles(sourceAudioFileName = "background-noise-low-volume", testContext = testContext)
     }
 
     @Test
-    fun `generate audio clips files for 'strong background noise' segments`(testContext: VertxTestContext) = runBlocking {
+    @DisplayName("generate audio clips files for 'strong background noise' segments")
+    fun audioClipsFilesForStrongBackgroundNoise(testContext: VertxTestContext) = runBlocking {
         generateAudioClipsFiles(sourceAudioFileName = "strong-background-noise", testContext = testContext)
     }
 
     @Test
-    fun `generate audio clips files for 'with applause' segments`(testContext: VertxTestContext) = runBlocking {
+    @DisplayName("generate audio clips files for 'with applause' segments")
+    fun audioClipsFilesForWithApplause(testContext: VertxTestContext) = runBlocking {
         generateAudioClipsFiles(sourceAudioFileName = "with-applause", testContext = testContext)
     }
 

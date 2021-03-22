@@ -15,11 +15,7 @@ internal class AudioSegmentRmsTest {
     }
 
     private val thisClass: Class<AudioSegmentRmsTest> = this.javaClass
-    private val audioSegmentsPath: String
-
-    init {
-        audioSegmentsPath = thisClass.getResource("/audio-segments").path
-    }
+    private val audioSegmentsPath: String = thisClass.getResource("/audio-segments").path
 
     @Test
     fun generateAudioSegmentRmsFromAudioSignal() {

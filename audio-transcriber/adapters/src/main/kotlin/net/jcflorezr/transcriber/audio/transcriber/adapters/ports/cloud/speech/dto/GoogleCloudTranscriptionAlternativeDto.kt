@@ -31,27 +31,32 @@ data class GoogleCloudTranscriptionAlternativeDto private constructor(
         fun from(index: Int, alternative: SpeechRecognitionAlternative) =
             Builder(position = index + 1, transcription = alternative.transcript)
                 .confidence(alternative.confidence)
-                .words(alternative.wordsList
-                    .mapIndexed { wordIndex, currentWord ->
-                        WordInfo(
-                            position = wordIndex + 1,
-                            word = currentWord.word,
-                            startTime = currentWord.takeIf { it.hasStartTime() }?.run { startTime.getTime() },
-                            endTime = currentWord.takeIf { it.hasEndTime() }?.run { endTime.getTime() })
-                    })
+                .words(
+                    alternative.wordsList
+                        .mapIndexed { wordIndex, currentWord ->
+                            WordInfo(
+                                position = wordIndex + 1,
+                                word = currentWord.word,
+                                startTime = currentWord.takeIf { it.hasStartTime() }?.run { startTime.getTime() },
+                                endTime = currentWord.takeIf { it.hasEndTime() }?.run { endTime.getTime() }
+                            )
+                        }
+                )
                 .build()
 
         private fun Duration.getTime() = Time(
             seconds = seconds,
             tenths = nanos / 100000000,
             millis = nanos / 1000000,
-            nanos = nanos)
+            nanos = nanos
+        )
     }
 
     fun toEntity() =
         Alternative.Builder(position, transcription)
             .confidence(confidence)
-            .words(words =
+            .words(
+                words =
                 words?.map {
                     val wordStartTimeSeconds = getWordTimeSeconds(it.startTime?.seconds)
                     val wordStartTimeTenths = wordTimeTenths(it.startTime?.tenths)
@@ -61,8 +66,10 @@ data class GoogleCloudTranscriptionAlternativeDto private constructor(
                         position = it.position,
                         word = it.word,
                         from = tenthsSecondsFormat(wordStartTimeSeconds + wordStartTimeTenths).toFloat(),
-                        to = tenthsSecondsFormat(wordEndTimeSeconds + wordEndTimeTenths).toFloat())
-                })
+                        to = tenthsSecondsFormat(wordEndTimeSeconds + wordEndTimeTenths).toFloat()
+                    )
+                }
+            )
             .build()
 
     private fun getWordTimeSeconds(timeSeconds: Long?) = timeSeconds?.toFloat() ?: 0.0f

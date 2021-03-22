@@ -27,12 +27,13 @@ class AudioFrameProcessorImpl(
             generateSequence(0) { framesStart ->
                 val requiredFrames = calculateCurrentRequiredFrames(framesStart)
                 val (frameBytesRead, framesBytesArray) = stream.readBytes(
-                    initialPosition = framesStart, frameSize = frameSize, bytesArrayLength = requiredFrames * frameSize)
+                    initialPosition = framesStart, frameSize = frameSize, bytesArrayLength = requiredFrames * frameSize
+                )
                 launch { processAudioSegment(framesStart, framesBytesArray, audioFile, this@run) }
                 calculateNextIteration(framesStart, frameBytesRead)
             }
-            .takeWhile { frameStart -> frameStart < exactTotalFrames }
-            .count()
+                .takeWhile { frameStart -> frameStart < exactTotalFrames }
+                .count()
         }
     }
 
@@ -56,7 +57,8 @@ class AudioFrameProcessorImpl(
                     sourceAudioFileName = audioFile.nameWithoutExtension,
                     audioContentInfo = audioContentInfo,
                     audioSegmentBytes = audioSegmentBytes.await(),
-                    audioSegmentRms = AudioSegmentRms.createNew(audioSegmentSignal.await()))
+                    audioSegmentRms = AudioSegmentRms.createNew(audioSegmentSignal.await())
+                )
                 launch { command.execute(audioSegment) }
             }
     }

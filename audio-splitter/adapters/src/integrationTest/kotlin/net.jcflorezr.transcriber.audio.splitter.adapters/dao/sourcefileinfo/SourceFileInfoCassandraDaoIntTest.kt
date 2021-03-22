@@ -18,6 +18,7 @@ import org.hamcrest.core.Is
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -26,27 +27,26 @@ internal class SourceFileInfoCassandraDaoIntTest {
 
     private val testResourcesPath: String = this.javaClass.getResource("/source-file-info").path
     private val mapper = ObjectMapper().registerKotlinModule()
-    private val sourceFileInfoCassandraDaoIntTestDI = SourceFileInfoCassandraDaoIntTestDI
-    private lateinit var sourceFileInfoCassandraDao: SourceFileInfoCassandraDao
+    private val sourceFileInfoCassandraDao = SourceFileInfoCassandraDaoIntTestDI.sourceFileInfoCassandraDao
 
     @BeforeAll
     fun setUp(vertx: Vertx, testContext: VertxTestContext) {
-        vertx.deployVerticle(sourceFileInfoCassandraDaoIntTestDI, testContext.completing())
-        sourceFileInfoCassandraDao = sourceFileInfoCassandraDaoIntTestDI.sourceFileInfoCassandraDao
+        vertx.deployVerticle(SourceFileInfoCassandraDaoIntTestDI, testContext.completing())
     }
 
     @AfterAll
     fun tearDown(testContext: VertxTestContext) {
-        sourceFileInfoCassandraDaoIntTestDI.cassandraClient.close()
         testContext.completeNow()
     }
 
     @Test
-    fun `save source file info to db and then retrieve it from db`(testContext: VertxTestContext) = runBlocking(Dispatchers.IO) {
+    @DisplayName("save source file info to db and then retrieve it from db")
+    fun saveSourceFileInfoToDb(testContext: VertxTestContext) = runBlocking(Dispatchers.IO) {
         val expectedSourceFileInfo =
             mapper.readValue(File("$testResourcesPath/audio-file-info.json"), AudioSourceFileInfo::class.java)
         sourceFileInfoCassandraDao.save(
-            sourceFileInfoCassandraRecord = SourceFileInfoCassandraRecord.fromEntity(expectedSourceFileInfo))
+            sourceFileInfoCassandraRecord = SourceFileInfoCassandraRecord.fromEntity(expectedSourceFileInfo)
+        )
         val actualSourceFileInfo =
             sourceFileInfoCassandraDao.findBy(expectedSourceFileInfo.originalAudioFile).translate()
         assertThat(actualSourceFileInfo, Is(equalTo(expectedSourceFileInfo)))
@@ -54,14 +54,16 @@ internal class SourceFileInfoCassandraDaoIntTest {
     }
 
     @Test
-    fun `should throw record not found exception`(testContext: VertxTestContext) {
+    @DisplayName("should throw record not found exception")
+    fun shouldThrowRecordNotFoundException(testContext: VertxTestContext) {
         val fakeAudioFileName = "any-audio-file-name"
         val actualException = Assertions.assertThrows(NotFoundException::class.java) {
             runBlocking { sourceFileInfoCassandraDao.findBy(fakeAudioFileName) }
         }
         val expectedException = PersistenceException.recordNotFoundInRepository(
             entityName = SourceFileMetadataCassandraRecord::class.java.simpleName,
-            keys = mapOf(SourceFileMetadataCassandraRecord.AUDIO_FILE_NAME_COLUMN to fakeAudioFileName))
+            keys = mapOf(SourceFileMetadataCassandraRecord.AUDIO_FILE_NAME_COLUMN to fakeAudioFileName)
+        )
         assertThat(actualException.errorCode, Is(equalTo(expectedException.errorCode)))
         assertThat(actualException.message, Is(equalTo(expectedException.message)))
         testContext.completeNow()

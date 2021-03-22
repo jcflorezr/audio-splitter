@@ -37,7 +37,8 @@ class AudioClipsFilesGeneratorImpl(
             val lastSegment = activeSegments.last()
             val audioContentInfo = sourceFileInfoRepository.findBy(firstSegment.sourceAudioFileName).audioContentInfo
             audioSegmentsRepository.findSegmentsRange(
-                    sourceAudioFileName, firstSegment.segmentStartInSeconds, lastSegment.segmentEndInSeconds)
+                sourceAudioFileName, firstSegment.segmentStartInSeconds, lastSegment.segmentEndInSeconds
+            )
                 .map { it.audioSegmentBytes.bytes }
                 .reduce { currentSegmentBytes, nextSegmentBytes -> currentSegmentBytes + nextSegmentBytes }
                 .let { byteArray ->

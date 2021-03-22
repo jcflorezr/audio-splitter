@@ -13,5 +13,6 @@ sealed class GoogleRecognitionConfig(val config: RecognitionConfig) {
                 .setLanguageCode(Locales.COLOMBIAN_SPANISH.toString())
                 .setEnableAutomaticPunctuation(true)
                 .setEnableWordTimeOffsets(true)
-                .build())
+                .build()
+        )
 }

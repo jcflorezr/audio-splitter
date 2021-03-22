@@ -25,6 +25,7 @@ data class AudioClipFileInfo(
             audioClipFileName: String,
             audioClipFileExtension: String
         ) = AudioClipFileInfo(
-            sourceAudioFileName, hours, minutes, seconds, tenthsOfSecond, audioClipFileName, audioClipFileExtension)
+            sourceAudioFileName, hours, minutes, seconds, tenthsOfSecond, audioClipFileName, audioClipFileExtension
+        )
     }
 }

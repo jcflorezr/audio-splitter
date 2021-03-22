@@ -34,9 +34,11 @@ internal class GoogleCloudAudioTranscriptionsClientTest {
                 // Given
                 val audioClipFilePath = audioClipFile.absolutePath
                 val alternativesDto = fromJsonToList<GoogleCloudTranscriptionAlternativeDto>(
-                    jsonFile = File("$audioClipsTranscriptionsPath/${audioClipFile.nameWithoutExtension}_dto.json"))
+                    jsonFile = File("$audioClipsTranscriptionsPath/${audioClipFile.nameWithoutExtension}_dto.json")
+                )
                 val expectedAlternatives = fromJsonToList<Alternative>(
-                    jsonFile = File("$audioClipsTranscriptionsPath/${audioClipFile.nameWithoutExtension}_entity.json"))
+                    jsonFile = File("$audioClipsTranscriptionsPath/${audioClipFile.nameWithoutExtension}_entity.json")
+                )
 
                 // When
                 When(googleSpeechApiClient.recognize(audioClipFilePath, googleRecognitionConfig, googleRecognitionAudioConfig))

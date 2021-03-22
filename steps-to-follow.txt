@@ -1,0 +1,65 @@
+
+======= Refactoring
+
+* (done) find a way to refactor the AudioClips saga, perhaps implementing state pattern
+* (done) remove spring framework from project (remove test folder from audio-splitter.application module)
+* (done when necessary) turn spock tests into junit 5 tests
+* (done) vertx context is not configured properly for integration and component tests, see how to create a shared context among all those tests
+* (hold) find the reason why java source set is being created when executing the gradle build process. It is a bug that might be resolved in some time  (https://github.com/JLLeitschuh/ktlint-gradle/issues/423)
+
+* create DI classes for classes in main modules
+* address TODOs
+* rename root folder from audio-splitter to transcriber
+* generate correlationId, go to Correlation Id section below
+* can we use just a GenericContainer of TestContainers so we are able to use the latest version of cassandra java driver? 
+  - does vertx allows us to use the latest driver version? as of Aug 2020, vertx only works with driver 3.9, however, this does not have anything to do with the cassandra docker instance lifted up through GenericContainer. UPDATE: vertx cassandra 4.0.3 already contains cassandra driver 4.9.0, however, testcontainers latest version still uses cassandra driver 3.7. Reference: https://mvnrepository.com/artifact/io.vertx/vertx-cassandra-client/4.0.3
+
+Not so urgent: 
+* (?) create logic to get back from detecting active segments with noisy background to non-noisy background (if inactiveCOunter > ?? then go back)
+* implement smoke tests (with kubernetes)
+
+
+======= Securing by design
+
+1. start analizing how to add security constraints to the core rules contained in the aggregates (SourceFileInfo, AudioSegment, AudioClip, AudioTranscription)
+	a. create value objects for: hours, minutes, seconds, tenths
+	b. create unit tests for AudioTranscription
+
+2. implement the best test practices suggested here: https://phauer.com/2018/best-practices-unit-testing-kotlin/ to empower the secure by design.
+	Some more articles:
+	- https://mkyong.com/junit5/junit-5-nested-test-examples/
+	- https://www.baeldung.com/junit-testinstance-annotation
+	- https://www.baeldung.com/parameterized-tests-junit-5
+	Some suggested libraries:
+	- https://mockk.io/
+	- https://github.com/kotest/kotest
+
+
+====== Correlation Id
+
+* correlation id with coroutines: https://vyvyd.medium.com/implementing-a-basic-mdc-based-tracing-in-vertx-web-api-microservices-6e152dfbb126
+
+
+
+
+
+docker run -d --name transcriber-integration-test-cassandra -p 19042:9042 cassandra:3.11.2
+
+docker run -d --name transcriber-component-test-cassandra -p 19043:9042 cassandra:3.11.2
+
+docker run -d \
+	--name=transcriber-component-test-zookeeper \
+	--net=host \
+	-e ZOOKEEPER_CLIENT_PORT=32181 \
+	-e ZOOKEEPER_TICK_TIME=2000 \
+	-e ZOOKEEPER_SYNC_LIMIT=2 \
+	confluentinc/cp-zookeeper:5.5.0
+
+docker run -d \
+    --name=transcriber-component-test-kafka \
+    --net=host \
+    -e KAFKA_ZOOKEEPER_CONNECT=localhost:32181 \
+    -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:29092 \
+    -e KAFKA_BROKER_ID=2 \
+    -e KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1 \
+    confluentinc/cp-kafka:5.5.0

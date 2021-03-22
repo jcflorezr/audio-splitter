@@ -28,8 +28,9 @@ object AudioBytesUnPacker {
         when (encoding) {
             AudioFormatEncodings.PCM_SIGNED -> {
                 unpackSignedInt(
-                    buf = bytesBuffer, pos = p0 + i * frameSize, bits = sampleSizeInBits, bigEndian = bigEndian)
-                .div(((1 shl sampleSizeInBits - 1) - 1).toFloat())
+                    buf = bytesBuffer, pos = p0 + i * frameSize, bits = sampleSizeInBits, bigEndian = bigEndian
+                )
+                    .div(((1 shl sampleSizeInBits - 1) - 1).toFloat())
             }
             AudioFormatEncodings.PCM_FLOAT -> unpackFloat(bytesBuffer, p0 + i * frameSize, bigEndian)
         }
@@ -43,12 +44,12 @@ object AudioBytesUnPacker {
             }
             24 -> if (bigEndian) {
                 buf[pos].toInt() shl 16 or
-                (buf[pos + 1].toInt() and 0xFF shl 8) or
-                (buf[pos + 2].toInt() and 0xFF)
+                    (buf[pos + 1].toInt() and 0xFF shl 8) or
+                    (buf[pos + 2].toInt() and 0xFF)
             } else {
                 buf[pos + 2].toInt() shl 16 or
-                (buf[pos + 1].toInt() and 0xFF shl 8) or
-                (buf[pos].toInt() and 0xFF)
+                    (buf[pos + 1].toInt() and 0xFF shl 8) or
+                    (buf[pos].toInt() and 0xFF)
             }
             32 -> unpackUnsignedInt(buf, pos, bigEndian)
             else -> throw AssertionError()
@@ -58,14 +59,14 @@ object AudioBytesUnPacker {
     private fun unpackUnsignedInt(buf: ByteArray, pos: Int, bigEndian: Boolean): Int {
         return if (bigEndian) {
             buf[pos].toInt() shl 24 or
-            (buf[pos + 1].toInt() and 0xFF shl 16) or
-            (buf[pos + 2].toInt() and 0xFF shl 8) or
-            (buf[pos + 3].toInt() and 0xFF)
+                (buf[pos + 1].toInt() and 0xFF shl 16) or
+                (buf[pos + 2].toInt() and 0xFF shl 8) or
+                (buf[pos + 3].toInt() and 0xFF)
         } else {
             buf[pos + 3].toInt() shl 24 or
-            (buf[pos + 2].toInt() and 0xFF shl 16) or
-            (buf[pos + 1].toInt() and 0xFF shl 8) or
-            (buf[pos].toInt() and 0xFF)
+                (buf[pos + 2].toInt() and 0xFF shl 16) or
+                (buf[pos + 1].toInt() and 0xFF shl 8) or
+                (buf[pos].toInt() and 0xFF)
         }
     }
 

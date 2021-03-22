@@ -48,16 +48,18 @@ class AudioClipFileGeneratedDummyHandler(
             ?: throw FileNotFoundException("Directory containing the generated audio clips files was not found: $tempLocalDirectory")
 
         assertThat(actualAudioClipsFilesList.size, Is(equalTo(expectedAudioClipsFiles.size)))
-            actualAudioClipsFilesList
-                .sortedWith(compareBy({ it.hours }, { it.minutes }, { it.seconds }, { it.tenthsOfSecond }))
-                .forEach { actualAudioClip ->
-                    val actualAudioClipFile = actualAudioClip.run {
-                        File("$tempLocalDirectory/$audioFileName/$audioClipFileName.$audioClipFileExtension") }
-                    val expectedAudioClipFile = expectedAudioClipsFiles.find { it.name == actualAudioClipFile.name }
-                        ?: throw FileNotFoundException("Expected audio clip file was not found: ${actualAudioClipFile.name}")
-                    assertTrue(
-                        IOUtils.contentEquals(FileInputStream(actualAudioClipFile), FileInputStream(expectedAudioClipFile)))
+        actualAudioClipsFilesList
+            .sortedWith(compareBy({ it.hours }, { it.minutes }, { it.seconds }, { it.tenthsOfSecond }))
+            .forEach { actualAudioClip ->
+                val actualAudioClipFile = actualAudioClip.run {
+                    File("$tempLocalDirectory/$audioFileName/$audioClipFileName.$audioClipFileExtension")
                 }
+                val expectedAudioClipFile = expectedAudioClipsFiles.find { it.name == actualAudioClipFile.name }
+                    ?: throw FileNotFoundException("Expected audio clip file was not found: ${actualAudioClipFile.name}")
+                assertTrue(
+                    IOUtils.contentEquals(FileInputStream(actualAudioClipFile), FileInputStream(expectedAudioClipFile))
+                )
+            }
         testContext.completeNow()
     }
 

@@ -3,28 +3,15 @@ package net.jcflorezr.transcriber.audio.splitter.adapters.di.cloud.storage
 import com.google.cloud.storage.Storage
 import net.jcflorezr.transcriber.audio.splitter.adapters.cloud.storage.GoogleCloudStorageClient
 import org.mockito.Mockito.mock
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.Lazy
 
-@Configuration
-@Lazy
-open class GoogleCloudStorageClientTestDI {
+object GoogleCloudStorageClientTestDI {
 
     private val thisClass: Class<GoogleCloudStorageClientTestDI> = this.javaClass
+    val storageClient: Storage = mock(Storage::class.java)
+    const val bucketName = "any-bucket-name"
+    const val bucketDirectory = "any-bucket-directory"
 
-    @Bean open fun googleCloudStorageClientTest() =
-        GoogleCloudStorageClient(
-            storageClient = storageClient(),
-            bucketName = bucketName(),
-            bucketDirectory = bucketDirectory(),
-            tempLocalDirectory = tempLocalDirectory())
-
-    @Bean open fun storageClient(): Storage = mock(Storage::class.java)
-
-    @Bean open fun bucketName() = "any-bucket-name"
-
-    @Bean open fun bucketDirectory() = "any-bucket-directory"
+    val googleCloudStorageClientTest = GoogleCloudStorageClient(bucketName, bucketDirectory, tempLocalDirectory(), storageClient)
 
     private fun tempLocalDirectory() = thisClass.getResource("/temp-converted-files").path
 }

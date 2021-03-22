@@ -15,11 +15,7 @@ internal class AudioSegmentBytesTest {
     }
 
     private val thisClass: Class<AudioSegmentBytesTest> = this.javaClass
-    private val audioSegmentsPath: String
-
-    init {
-        audioSegmentsPath = thisClass.getResource("/audio-segments").path
-    }
+    private val audioSegmentsPath: String = thisClass.getResource("/audio-segments").path
 
     @Test
     fun generateBytesForAudioSegment() {
@@ -38,7 +34,7 @@ internal class AudioSegmentBytesTest {
 
             subArrayStart + subArraysSize
         }
-        .takeWhile { subArrayStart -> subArrayStart < bytesArray.size }
-        .count()
+            .takeWhile { subArrayStart -> subArrayStart < bytesArray.size }
+            .count()
     }
 }

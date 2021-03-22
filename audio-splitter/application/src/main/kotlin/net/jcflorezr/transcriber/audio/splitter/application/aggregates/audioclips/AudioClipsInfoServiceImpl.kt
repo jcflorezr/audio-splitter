@@ -2,10 +2,10 @@ package net.jcflorezr.transcriber.audio.splitter.application.aggregates.audiocli
 
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.audioclips.ActiveSegment
 import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.audioclips.AudioClip
-import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.audioclips.CurrentSegment
-import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.audioclips.CurrentSegmentWithNoisyBackground
+import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.audioclips.activesegment.Segment
+import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.audioclips.activesegment.SegmentInNoise
+import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.audioclips.activesegment.SegmentInSilence
 import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.audiosegments.BasicAudioSegment
 import net.jcflorezr.transcriber.audio.splitter.domain.ports.aggregates.audioclips.application.AudioClipsInfoService
 import net.jcflorezr.transcriber.audio.splitter.domain.ports.repositories.sourcefileinfo.SourceFileInfoRepository
@@ -17,79 +17,38 @@ class AudioClipsInfoServiceImpl(
 ) : AudioClipsInfoService {
 
     override suspend fun generateActiveSegments(audioSegments: List<BasicAudioSegment>) {
-        var audioClip = AudioClip.createNew()
-        audioSegments.asSequence()
-            .foldIndexed(CurrentSegment.createNew()) { i, segmentProcessed, currentSegment ->
-                segmentProcessed.process(audioSegment = currentSegment, isLastSegment = i == audioSegments.size - 1)
-                .run {
-                    when {
-                        activeSegmentEnd > activeSegmentStart -> {
-                            audioClip = audioClip.generateActiveSegmentInfo(
-                                activeSegmentStart, activeSegmentEnd, currentSegment.sourceAudioFileName)
-                            this.copy(activeSegmentEnd = 0)
-                        }
-                        segmentWithNoisyBackgroundDetected -> {
-                            val segmentLength = currentSegment.segmentEnd - currentSegment.segmentStart
-                            generateActiveSegmentsWithNoisyBackground(
-                                audioSegments = audioSegments,
-                                fromIndex = activeSegmentStart / segmentLength,
-                                toIndex = i,
-                                _audioClip = audioClip)
-                            audioClip = audioClip.flush()
-                            this.copy(segmentWithNoisyBackgroundDetected = false)
-                        }
-                        else -> this
+        val audioContentInfo = sourceFileInfoRepository.findBy(audioSegments.first().sourceAudioFileName).audioContentInfo
+        audioSegments
+            .fold(Segment.createNewSegmentInSilence(audioSegments, audioContentInfo) as Segment) { segmentProcessed, _ ->
+                segmentProcessed.process().let { segment ->
+                    when (segment) {
+                        is SegmentInNoise -> generateActiveSegmentsWithNoisyBackground(segment)
+                        else -> (segment as SegmentInSilence).copy(audioClip = segment.sendAudioClipIfReady())
                     }
                 }
-            }
-        audioClip.takeIf { !it.isFlushed() }?.also { processLastClip(audioClip = it) }
+            }.also { it.processLastClip() }
     }
 
-    private suspend fun generateActiveSegmentsWithNoisyBackground(
-        audioSegments: List<BasicAudioSegment>,
-        fromIndex: Int,
-        toIndex: Int,
-        _audioClip: AudioClip
-    ) {
-        var audioClip = _audioClip
-        val initialCurrentSegment = CurrentSegmentWithNoisyBackground.createNew(audioSegments, fromIndex)
-        audioSegments.subList(fromIndex, toIndex).asSequence()
-            .foldIndexed(initialCurrentSegment) { i, segmentProcessed, currentSegment ->
-                segmentProcessed.process(audioSegment = currentSegment, currentIndex = i)
-                .run {
-                    when {
-                        activeSegmentEnd > activeSegmentStart -> {
-                            audioClip = audioClip.generateActiveSegmentInfo(
-                                activeSegmentStart, activeSegmentEnd, currentSegment.sourceAudioFileName)
-                            this.copy(activeSegmentEnd = 0)
-                        }
-                        else -> this
-                    }
-                }
+    private suspend fun generateActiveSegmentsWithNoisyBackground(initialSegment: SegmentInNoise): Segment =
+        initialSegment.audioSegments.subList(initialSegment.fromIndex, initialSegment.toIndex)
+            .fold(initialSegment) { segmentProcessed, _ ->
+                segmentProcessed.process().let { it.copy(audioClip = it.sendAudioClipIfReady()) }
             }
-        audioClip.takeIf { !it.isFlushed() }?.also { processLastClip(audioClip = it) }
-    }
+            .also { it.processLastClip() }
+            .segmentInSilence
 
-    private suspend fun AudioClip.generateActiveSegmentInfo(
-        startActiveSegment: Int,
-        endActiveSegment: Int,
-        audioFileName: String
-    ): AudioClip {
-        val sourceFileInfo = sourceFileInfoRepository.findBy(audioFileName)
-        val activeSegment =
-            ActiveSegment.createNew(audioFileName, startActiveSegment, endActiveSegment, sourceFileInfo.audioContentInfo)
-        val audioClip = processActiveSegment(activeSegment)
-        return when {
+    private suspend fun Segment.sendAudioClipIfReady(): AudioClip =
+        when {
             audioClip.duration > 0 -> {
-                coroutineScope { launch { command.execute(aggregateRoot = audioClip) } }
+                coroutineScope { launch { command.execute(aggregateRoot = this@sendAudioClipIfReady.audioClip) } }
                 audioClip.reset()
             }
             else -> audioClip
         }
-    }
 
-    private suspend fun processLastClip(audioClip: AudioClip) =
-        coroutineScope { launch { println("-----> last audioClip: $audioClip")
-            command.execute(aggregateRoot = audioClip.finish())
-        } }
+    private suspend fun Segment.processLastClip() {
+        if (!audioClip.isFlushed()) {
+            coroutineScope { launch { command.execute(aggregateRoot = this@processLastClip.audioClip.finish()) } }
+        }
+    }
 }

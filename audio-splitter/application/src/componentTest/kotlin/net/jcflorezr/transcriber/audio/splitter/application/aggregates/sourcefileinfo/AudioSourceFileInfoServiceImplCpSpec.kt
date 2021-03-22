@@ -20,6 +20,7 @@ import org.hamcrest.core.Is
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -32,14 +33,13 @@ internal class AudioSourceFileInfoServiceImplCpSpec {
     private val sourceFilesPath = this.javaClass.getResource("/source-file-info").path
     private val tempSourceFilesPath = this.javaClass.getResource("/temp-converted-files/source-file-info").path
 
-    private val audioSourceFileInfoServiceImplCpSpecDI = AudioSourceFileInfoServiceImplCpSpecDI
-    private val eventHandler = audioSourceFileInfoServiceImplCpSpecDI.sourceFileInfoGeneratedEventHandler()
-    private val audioSourceFileInfoServiceImpl = audioSourceFileInfoServiceImplCpSpecDI.audioSourceFileInfoServiceTest
-    private val cloudStorageClient = audioSourceFileInfoServiceImplCpSpecDI.googleCloudStorageClientTest
+    private val eventHandler = AudioSourceFileInfoServiceImplCpSpecDI.sourceFileInfoGeneratedEventHandler()
+    private val audioSourceFileInfoServiceImpl = AudioSourceFileInfoServiceImplCpSpecDI.audioSourceFileInfoServiceTest
+    private val cloudStorageClient = AudioSourceFileInfoServiceImplCpSpecDI.googleCloudStorageClientTest
 
     @BeforeAll
     fun setUp(vertx: Vertx, testContext: VertxTestContext) {
-        vertx.deployVerticle(audioSourceFileInfoServiceImplCpSpecDI, testContext.completing())
+        vertx.deployVerticle(AudioSourceFileInfoServiceImplCpSpecDI, testContext.completing())
     }
 
     @AfterAll
@@ -51,17 +51,20 @@ internal class AudioSourceFileInfoServiceImplCpSpec {
     inner class SuccessScenarios {
 
         @Test
-        fun `extract audio info from mp3 source file`(testContext: VertxTestContext) = runBlocking {
+        @DisplayName("extract audio info from mp3 source file")
+        fun extractAudioInfoFromMp3File(testContext: VertxTestContext) = runBlocking {
             extractAudioInfoFromSourceFile(SupportedAudioFormats.MP3.extension, testContext)
         }
 
         @Test
-        fun `extract audio info from flac source file`(testContext: VertxTestContext) = runBlocking {
+        @DisplayName("extract audio info from flac source file")
+        fun extractAudioInfoFromFlacFile(testContext: VertxTestContext) = runBlocking {
             extractAudioInfoFromSourceFile(SupportedAudioFormats.FLAC.extension, testContext)
         }
 
         @Test
-        fun `extract audio info from wav source file`(testContext: VertxTestContext) = runBlocking {
+        @DisplayName("extract audio info from wav source file")
+        fun extractAudioInfoFromWavFile(testContext: VertxTestContext) = runBlocking {
             extractAudioInfoFromSourceFile(SupportedAudioFormats.WAV.extension, testContext)
         }
 
@@ -90,7 +93,8 @@ internal class AudioSourceFileInfoServiceImplCpSpec {
     inner class FailedScenarios {
 
         @Test
-        fun `downloaded audio file was not found`() = runBlocking {
+        @DisplayName("downloaded audio file was not found")
+        fun downloadedAudioFileWasNotFound() = runBlocking {
             val audioFileName = "any-audio-file-name"
             When(cloudStorageClient.retrieveFileFromStorage(audioFileName))
                 .thenThrow(FileException.fileNotFound(audioFileName))
@@ -105,7 +109,8 @@ internal class AudioSourceFileInfoServiceImplCpSpec {
         }
 
         @Test
-        fun `audio file was not found in cloud storage`() = runBlocking {
+        @DisplayName("audio file was not found in cloud storage")
+        fun audioFileWasNotFoundInCloudStorage() = runBlocking {
             val audioFileName = "any-audio-file-name-2"
             When(cloudStorageClient.retrieveFileFromStorage(audioFileName))
                 .thenThrow(CloudStorageFileException.fileNotFoundInCloudStorage(audioFileName))
@@ -120,7 +125,8 @@ internal class AudioSourceFileInfoServiceImplCpSpec {
         }
 
         @Test
-        fun `downloaded audio file is too short`() = runBlocking(Dispatchers.IO) {
+        @DisplayName("downloaded audio file is too short")
+        fun downloadedAudioFileIsTooShort() = runBlocking(Dispatchers.IO) {
             // Given
             val audioFileName = "too-short-test-audio-mono.wav"
             val sourceFile = File("$sourceFilesPath/$audioFileName")

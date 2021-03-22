@@ -12,7 +12,7 @@ class JAudioTaggerMetadataGeneratorTest extends Specification {
 
     private JAudioTaggerMetadataGenerator jAudioTaggerMetadataGenerator = new JAudioTaggerMetadataGenerator()
 
-    private static Class<? extends JAudioTaggerMetadataGeneratorTest> thisClass = this.class
+    private static Class<JAudioTaggerMetadataGeneratorTest> thisClass = JAudioTaggerMetadataGeneratorTest.class
     private static ObjectMapper mapper = new ObjectMapper().registerModule(new KotlinModule())
 
     def @Shared mp3AudioFileMetadata = "Retrieve metadata from MP3 audio file"

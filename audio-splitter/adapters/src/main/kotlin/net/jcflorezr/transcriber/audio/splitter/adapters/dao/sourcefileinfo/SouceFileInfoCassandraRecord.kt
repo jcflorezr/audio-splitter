@@ -18,16 +18,18 @@ data class SourceFileInfoCassandraRecord(
         fun fromEntity(audioSourceFileInfo: AudioSourceFileInfo) =
             SourceFileInfoCassandraRecord(
                 sourceFileMetadataCassandraRecord =
-                    SourceFileMetadataCassandraRecord.fromEntity(audioSourceFileInfo),
+                SourceFileMetadataCassandraRecord.fromEntity(audioSourceFileInfo),
                 sourceFileContentInfoCassandraRecord =
-                    SourceFileContentInfoCassandraRecord.fromEntity(audioSourceFileInfo))
+                SourceFileContentInfoCassandraRecord.fromEntity(audioSourceFileInfo)
+            )
     }
 
     fun translate() =
         AudioSourceFileInfo(
             originalAudioFile = sourceFileMetadataCassandraRecord.audioFileName,
             audioContentInfo = sourceFileContentInfoCassandraRecord.translate(),
-            metadata = sourceFileMetadataCassandraRecord.translate())
+            metadata = sourceFileMetadataCassandraRecord.translate()
+        )
 }
 
 @Table(name = SourceFileMetadataCassandraRecord.TABLE_NAME)
@@ -57,8 +59,10 @@ data class SourceFileMetadataCassandraRecord(
         const val COMMENTS_COLUMN = "comments"
 
         fun fromEntity(audioSourceFileInfo: AudioSourceFileInfo) = audioSourceFileInfo.metadata.run {
-            SourceFileMetadataCassandraRecord(audioFileName, title, album, artist, trackNumber,
-                genre, duration, sampleRate, channels, comments)
+            SourceFileMetadataCassandraRecord(
+                audioFileName, title, album, artist, trackNumber,
+                genre, duration, sampleRate, channels, comments
+            )
         }
 
         fun fromCassandraRow(row: Row) =
@@ -76,8 +80,10 @@ data class SourceFileMetadataCassandraRecord(
             )
     }
 
-    fun translate() = AudioSourceFileMetadata(audioFileName, title, album, artist, trackNumber,
-        genre, comments, duration, sampleRate, channels)
+    fun translate() = AudioSourceFileMetadata(
+        audioFileName, title, album, artist, trackNumber,
+        genre, comments, duration, sampleRate, channels
+    )
 }
 
 @Table(name = SourceFileContentInfoCassandraRecord.TABLE_NAME)
@@ -126,7 +132,8 @@ data class SourceFileContentInfoCassandraRecord(
             SourceFileContentInfoCassandraRecord(
                 audioSourceFileInfo.originalAudioFile, channels, sampleRate, sampleSizeInBits, frameSize, sampleSize, bigEndian,
                 encoding.name, totalFrames, exactTotalFrames, totalFramesBySeconds, remainingFrames, framesPerSecond,
-                numOfAudioSegments, audioSegmentLength, audioSegmentLengthInBytes, audioSegmentsPerSecond, remainingAudioSegments)
+                numOfAudioSegments, audioSegmentLength, audioSegmentLengthInBytes, audioSegmentsPerSecond, remainingAudioSegments
+            )
         }
 
         fun fromCassandraRow(row: Row) =
@@ -158,5 +165,6 @@ data class SourceFileContentInfoCassandraRecord(
             bigEndian, AudioFormatEncodings.getEncoding(encoding),
             totalFrames, exactTotalFrames, totalFramesBySeconds, remainingFrames,
             framesPerSecond, numOfAudioSegments, audioSegmentLength, audioSegmentLengthInBytes,
-            audioSegmentsPerSecond, remainingAudioSegments)
+            audioSegmentsPerSecond, remainingAudioSegments
+        )
 }

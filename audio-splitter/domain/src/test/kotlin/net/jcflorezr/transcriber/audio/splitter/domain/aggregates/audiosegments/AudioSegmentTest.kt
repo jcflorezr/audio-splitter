@@ -17,13 +17,8 @@ internal class AudioSegmentTest {
     }
 
     private val thisClass: Class<AudioSegmentTest> = this.javaClass
-    private val audioSegmentsPath: String
-    private val audioContentInfoPath: String
-
-    init {
-        audioSegmentsPath = thisClass.getResource("/audio-segments").path
-        audioContentInfoPath = thisClass.getResource("/source-file-info").path
-    }
+    private val audioSegmentsPath: String = thisClass.getResource("/audio-segments").path
+    private val audioContentInfoPath: String = thisClass.getResource("/source-file-info").path
 
     @Test
     fun generateAudioSegment() {
@@ -40,7 +35,8 @@ internal class AudioSegmentTest {
             sourceAudioFileName = "any-audio-fie-name",
             audioSegmentBytes = AudioSegmentBytes.of(bytes = bytes, from = 0, to = bytes.size),
             audioSegmentRms = AudioSegmentRms.createNew(signal = listOf(audioSegmentSignal)),
-            audioContentInfo = audioContentInfo)
+            audioContentInfo = audioContentInfo
+        )
 
         // Then
         val expectedAudioSegment = MAPPER.readValue<AudioSegment>(File("$audioSegmentsPath/audio-segment.json"))

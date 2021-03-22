@@ -15,6 +15,7 @@ import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.sourcefileinfo
 import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.sourcefileinfo.AudioSourceFileInfo
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mockito.`when` as When
@@ -26,8 +27,7 @@ internal class AudioSegmentsServiceImplCpSpec {
     private val mapper = ObjectMapper().registerKotlinModule()
     private val audioSegmentsPath = this.javaClass.getResource("/audio-segments").path
 
-    private val audioSegmentsServiceImplCpSpecDI = AudioSegmentsServiceImplCpSpecDI
-    private val eventHandler = audioSegmentsServiceImplCpSpecDI.audioSegmentsGeneratedEventHandler()
+    private val eventHandler = AudioSegmentsServiceImplCpSpecDI.audioSegmentsGeneratedEventHandler()
     private val audioSegmentsService = AudioSegmentsServiceImplCpSpecDI.audioSegmentsServiceImpl
     private val sourceFileInfoRepository = AudioSegmentsServiceImplCpSpecDI.sourceFileInfoRepositoryMock()
 
@@ -42,30 +42,36 @@ internal class AudioSegmentsServiceImplCpSpec {
     }
 
     @Test
-    fun `generate audio segments for 'background noise low volume' file`(testContext: VertxTestContext) = runBlocking {
+    @DisplayName("generate audio segments for 'background noise low volume' file")
+    fun generateAudioSegmentsFor(testContext: VertxTestContext) = runBlocking {
         generateAudioSegments(
             sourceAudioFileInfoForTest = File("$audioSegmentsPath/background-noise-low-volume-file-info.json"),
             audioContentInfoFileForTest = File("$audioSegmentsPath/background-noise-low-volume-content-info.json"),
             sourceAudioFileForTest = File("$audioSegmentsPath/background-noise-low-volume.wav"),
-            testContext = testContext)
+            testContext = testContext
+        )
     }
 
     @Test
-    fun `generate audio segments for 'strong background noise' file`(testContext: VertxTestContext) = runBlocking {
+    @DisplayName("generate audio segments for 'strong background noise' file")
+    fun generateAudioSegmentsForStrongBackgroundNoise(testContext: VertxTestContext) = runBlocking {
         generateAudioSegments(
             sourceAudioFileInfoForTest = File("$audioSegmentsPath/strong-background-noise-file-info.json"),
             audioContentInfoFileForTest = File("$audioSegmentsPath/strong-background-noise-content-info.json"),
             sourceAudioFileForTest = File("$audioSegmentsPath/strong-background-noise.wav"),
-            testContext = testContext)
+            testContext = testContext
+        )
     }
 
     @Test
-    fun `generate audio segments for 'with applause' file`(testContext: VertxTestContext) = runBlocking {
+    @DisplayName("generate audio segments for 'with applause' file")
+    fun generateAudioSegmentsForWithApplause(testContext: VertxTestContext) = runBlocking {
         generateAudioSegments(
             sourceAudioFileInfoForTest = File("$audioSegmentsPath/with-applause-file-info.json"),
             audioContentInfoFileForTest = File("$audioSegmentsPath/with-applause-content-info.json"),
             sourceAudioFileForTest = File("$audioSegmentsPath/with-applause.wav"),
-            testContext = testContext)
+            testContext = testContext
+        )
     }
 
     private suspend fun generateAudioSegments(
@@ -80,7 +86,8 @@ internal class AudioSegmentsServiceImplCpSpec {
 
         audioSegmentsService.generateAudioSegments(
             audioContentInfo = mapper.readValue(audioContentInfoFileForTest, AudioContentInfo::class.java),
-            audioFile = sourceAudioFileForTest)
+            audioFile = sourceAudioFileForTest
+        )
         eventHandler.assertAudioSegments(sourceAudioFileForTest.nameWithoutExtension, testContext)
     }
 }

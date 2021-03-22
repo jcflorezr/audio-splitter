@@ -8,6 +8,7 @@ import net.jcflorezr.transcriber.core.util.JsonUtils.fromJsonToList
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.core.Is
+import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 
 internal class GoogleCloudAlternativeAlternativeDtoTest {
@@ -16,21 +17,24 @@ internal class GoogleCloudAlternativeAlternativeDtoTest {
     private val audioClipsTranscriptionsPath = this.javaClass.getResource("/audio-clips-transcriptions").path
 
     @Test
-    fun `translate from dto to entity`() {
+    @DisplayName("translate from dto to entity")
+    fun fromDtoToEntity() {
         File(audioClipsFilesPath)
-        .takeIf { it.exists() }
-        ?.listFiles()
-        ?.asSequence()
-        ?.forEach { audioClipFile ->
-            val alternativesDto = fromJsonToList<GoogleCloudTranscriptionAlternativeDto>(
-                jsonFile = File("$audioClipsTranscriptionsPath/${audioClipFile.nameWithoutExtension}_dto.json"))
-            val expectedAlternatives = fromJsonToList<Alternative>(
-                jsonFile = File("$audioClipsTranscriptionsPath/${audioClipFile.nameWithoutExtension}_entity.json"))
+            .takeIf { it.exists() }
+            ?.listFiles()
+            ?.asSequence()
+            ?.forEach { audioClipFile ->
+                val alternativesDto = fromJsonToList<GoogleCloudTranscriptionAlternativeDto>(
+                    jsonFile = File("$audioClipsTranscriptionsPath/${audioClipFile.nameWithoutExtension}_dto.json")
+                )
+                val expectedAlternatives = fromJsonToList<Alternative>(
+                    jsonFile = File("$audioClipsTranscriptionsPath/${audioClipFile.nameWithoutExtension}_entity.json")
+                )
 
-            assertThat(alternativesDto.size, Is(equalTo(expectedAlternatives.size)))
-            alternativesDto.forEachIndexed { index, alternativeDto ->
-                assertThat(alternativeDto.toEntity(), Is(equalTo(expectedAlternatives[index])))
-            }
-        } ?: throw FileException.fileNotFound(audioClipsFilesPath)
+                assertThat(alternativesDto.size, Is(equalTo(expectedAlternatives.size)))
+                alternativesDto.forEachIndexed { index, alternativeDto ->
+                    assertThat(alternativeDto.toEntity(), Is(equalTo(expectedAlternatives[index])))
+                }
+            } ?: throw FileException.fileNotFound(audioClipsFilesPath)
     }
 }

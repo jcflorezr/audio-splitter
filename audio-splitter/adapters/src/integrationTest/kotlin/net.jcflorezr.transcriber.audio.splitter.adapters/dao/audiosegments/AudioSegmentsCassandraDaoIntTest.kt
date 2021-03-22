@@ -15,6 +15,7 @@ import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.core.Is
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -22,29 +23,28 @@ import org.junit.jupiter.api.extension.ExtendWith
 internal class AudioSegmentsCassandraDaoIntTest {
 
     private val testResourcesPath: String = this.javaClass.getResource("/audio-segments").path
-    private val audioSegmentsCassandraDaoIntTestDI = AudioSegmentsCassandraDaoIntTestDI
-    private lateinit var audioSegmentsCassandraDao: AudioSegmentsCassandraDao
+    private val audioSegmentsCassandraDaoIntTestDI = AudioSegmentsCassandraDaoIntTestDI()
+    private val audioSegmentsCassandraDao = audioSegmentsCassandraDaoIntTestDI.audioSegmentsCassandraDao
 
     @BeforeAll
     fun setUp(vertx: Vertx, testContext: VertxTestContext) {
         vertx.deployVerticle(audioSegmentsCassandraDaoIntTestDI, testContext.completing())
-        audioSegmentsCassandraDao = audioSegmentsCassandraDaoIntTestDI.audioSegmentsCassandraDao
     }
 
     @AfterAll
     fun tearDown(testContext: VertxTestContext) {
-        audioSegmentsCassandraDaoIntTestDI.cassandraClient.close()
         testContext.completeNow()
     }
 
     @Test
-    fun `save audio segments to db and then retrieve them from db`(testContext: VertxTestContext) = runBlocking {
+    @DisplayName("save audio segments to db and then retrieve them from db")
+    fun saveAudioSegmentsToDb(testContext: VertxTestContext) = runBlocking {
         val testDirectory = File(testResourcesPath).takeIf { it.exists() } ?: throw FileException.fileNotFound(testResourcesPath)
         val expectedAudioSegmentsFiles =
             testDirectory
                 .listFiles { file -> !file.isDirectory }
                 ?.takeIf { it.isNotEmpty() }
-            ?: throw FileNotFoundException("No expected files were found in directory '$testResourcesPath'")
+                ?: throw FileNotFoundException("No expected files were found in directory '$testResourcesPath'")
 
         expectedAudioSegmentsFiles
             .flatMap { fromJsonToList<AudioSegment>(jsonFile = it) }

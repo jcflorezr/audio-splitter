@@ -17,7 +17,8 @@ class AudioTranscriptionsServiceImpl(
 
     override suspend fun transcribe(audioClipFileInfo: AudioClipFileInfo) = coroutineScope<Unit> {
         val audioClipFile = audioClipFileInfo.run {
-            File("$clipsFilesDirectory/$audioClipFileName.$audioClipFileExtension") }
+            File("$clipsFilesDirectory/$audioClipFileName.$audioClipFileExtension")
+        }
         val transcriptionAlternatives =
             audioTranscriptionsClient.getAudioTranscriptionAlternatives(audioClipFile.absolutePath)
         val audioTranscription = AudioTranscription.createNew(audioClipFileInfo, transcriptionAlternatives)

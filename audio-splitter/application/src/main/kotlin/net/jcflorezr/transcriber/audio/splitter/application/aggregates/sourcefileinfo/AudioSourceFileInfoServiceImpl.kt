@@ -29,7 +29,8 @@ class AudioSourceFileInfoServiceImpl(
             originalAudioFile = audioFile.name,
             audioContentInfo = audioFileContentInfo,
             convertedAudioFile = wavFile?.name,
-            metadata = audioMetadata.await())
+            metadata = audioMetadata.await()
+        )
         launch { command.execute(audioSourceFileInfo) }
     }
 }

@@ -60,6 +60,7 @@ class GenerateAudioSegments(
                                     .send(IncrementNumOfAudioSegmentsReceived(audioFileName))
                             }
                     }
+                    is IncrementNumOfAudioSegmentsReceived -> throw AssertionError("this should not be happening")
                 }
             }
         }
@@ -74,6 +75,7 @@ class GenerateAudioSegments(
                             eventDispatcher.publish(AudioSegmentsGenerated(BasicAudioSegments(audioSegments)))
                             audioFilesSegmentsActors.remove(msg.audioFileName)
                         }
+                    is StoreAudioSegmentReceived -> throw AssertionError("this should not be happening")
                 }
             }
         }

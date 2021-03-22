@@ -12,6 +12,7 @@ class DefaultSourceFileInfoRepository(
 
     override suspend fun save(audioSourceFileInfo: AudioSourceFileInfo) {
         sourceFileInfoCassandraDao.save(
-            sourceFileInfoCassandraRecord = sourceFileInfoCassandraDao.toRecord(audioSourceFileInfo))
+            sourceFileInfoCassandraRecord = sourceFileInfoCassandraDao.toRecord(audioSourceFileInfo)
+        )
     }
 }

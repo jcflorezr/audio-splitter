@@ -53,10 +53,10 @@ class SourceFileInfoCassandraDao(private val cassandraClient: CassandraClient) :
             .bind(audioFileName)
             .let { audioClipsStatement -> cassandraClient.executeAwait(audioClipsStatement).oneAwait() }
             ?.let { row -> SourceFileMetadataCassandraRecord.fromCassandraRow(row) }
-        ?: throw PersistenceException.recordNotFoundInRepository(
-            SourceFileMetadataCassandraRecord::class.java.simpleName,
-            mapOf(SourceFileMetadataCassandraRecord.AUDIO_FILE_NAME_COLUMN to audioFileName)
-        )
+            ?: throw PersistenceException.recordNotFoundInRepository(
+                SourceFileMetadataCassandraRecord::class.java.simpleName,
+                mapOf(SourceFileMetadataCassandraRecord.AUDIO_FILE_NAME_COLUMN to audioFileName)
+            )
 
     private suspend fun findSourceFileContentInfo(audioFileName: String): SourceFileContentInfoCassandraRecord =
         sourceFileInfoQueries.getSourceFileContentInfoQuery.toString()

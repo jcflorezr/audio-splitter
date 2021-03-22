@@ -17,7 +17,8 @@ class GoogleCloudSpeechClientTestDI {
         GoogleCloudAudioTranscriptionsClient(
             googleSpeechApiClientMock,
             googleRecognitionConfigMock,
-            googleRecognitionAudioConfigMock)
+            googleRecognitionAudioConfigMock
+        )
 
     fun googleSpeechApiClientMock() = googleSpeechApiClientMock
 

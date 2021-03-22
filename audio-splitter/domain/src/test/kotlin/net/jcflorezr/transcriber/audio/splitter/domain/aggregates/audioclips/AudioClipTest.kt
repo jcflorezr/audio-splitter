@@ -1,7 +1,5 @@
 package net.jcflorezr.transcriber.audio.splitter.domain.aggregates.audioclips
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import java.io.File
 import net.jcflorezr.transcriber.core.util.JsonUtils.fromJsonToList
 import org.hamcrest.CoreMatchers.equalTo
@@ -12,10 +10,6 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 internal class AudioClipTest {
-
-    companion object {
-        private val MAPPER = ObjectMapper().registerKotlinModule()
-    }
 
     private val thisClass: Class<AudioClipTest> = this.javaClass
     private val audioClipsTestResourcesPath = thisClass.getResource("/audio-clips").path
@@ -41,10 +35,8 @@ internal class AudioClipTest {
         activeSegments
             .foldIndexed(AudioClip.createNew()) { i, currentClip, activeSegment ->
                 currentClip
-                    .also { clip ->
-                        assertThat("assertion error in audio clip number: $i", clip, Is(equalTo(expectedAudioClips[i])))
-                    }
                     .processActiveSegment(activeSegment)
+                    .also { clip -> assertThat("assertion error in audio clip number: $i", clip, Is(equalTo(expectedAudioClips[i]))) }
             }
     }
 
@@ -92,7 +84,7 @@ internal class AudioClipTest {
         expectedAudioClips.forEach { audioClip ->
             val expectedAudioClipName =
                 audioClip.activeSegments.takeIf { it.isEmpty() }?.let { "" }
-                ?: activeSegments.first().segmentStartInSeconds.toString().replace(".", "_")
+                    ?: activeSegments.first().segmentStartInSeconds.toString().replace(".", "_")
             assertThat(audioClip.audioClipFileName(), Is(equalTo(expectedAudioClipName)))
         }
     }

@@ -8,7 +8,7 @@ import spock.lang.Unroll
 
 class ActiveSegmentTest extends Specification {
 
-    private static Class<ActiveSegmentTest> thisClass = this.class
+    private static Class<ActiveSegmentTest> thisClass = ActiveSegmentTest.class
     private static String testResourcesPath = thisClass.getResource("/source-file-info").getPath()
     private static String expectedAudioContentFileName = "audio-content-info.json"
     private static ObjectMapper mapper = new ObjectMapper().registerModule(new KotlinModule())

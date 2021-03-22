@@ -20,15 +20,21 @@ data class AudioClip(
 ) : AggregateRoot {
 
     companion object {
-        fun createNew() = AudioClip(sourceAudioFileName = "", duration = 0.0f, hours = 0, minutes = 0, seconds = 0,
-            tenthsOfSecond = 0, audioClipFileName = "", activeSegments = listOf(), previousSegment = null)
+        fun createNew() = AudioClip(
+            sourceAudioFileName = "", duration = 0.0f, hours = 0, minutes = 0, seconds = 0,
+            tenthsOfSecond = 0, audioClipFileName = "", activeSegments = listOf(), previousSegment = null
+        )
     }
 
-    fun reset() = this.copy(hours = 0, minutes = 0, seconds = 0, tenthsOfSecond = 0, duration = 0.0f,
-        activeSegments = listOf())
+    fun reset() = this.copy(
+        hours = 0, minutes = 0, seconds = 0, tenthsOfSecond = 0, duration = 0.0f,
+        activeSegments = listOf()
+    )
 
-    fun flush() = this.copy(hours = 0, minutes = 0, seconds = 0, tenthsOfSecond = 0, duration = 0.0f,
-        activeSegments = listOf(), previousSegment = null)
+    fun flush() = this.copy(
+        hours = 0, minutes = 0, seconds = 0, tenthsOfSecond = 0, duration = 0.0f,
+        activeSegments = listOf(), previousSegment = null
+    )
 
     @JsonIgnore
     fun isFlushed() = hours == 0 && minutes == 0 && seconds == 0 && tenthsOfSecond == 0 &&
@@ -44,15 +50,17 @@ data class AudioClip(
             seconds = firstSegment.seconds,
             tenthsOfSecond = firstSegment.tenthsOfSecond,
             duration = FloatingPointUtils.tenthsSecondsFormat(
-                lastSegment.segmentEndInSeconds - firstSegment.segmentStartInSeconds).toFloat(),
+                lastSegment.segmentEndInSeconds - firstSegment.segmentStartInSeconds
+            ).toFloat(),
             activeSegments = currentActiveSegments,
-            previousSegment = null)
+            previousSegment = null
+        )
     }
 
     fun processActiveSegment(currentSegment: ActiveSegment): AudioClip {
         val currentActiveSegments = previousSegment?.let { activeSegments + it } ?: activeSegments
         if (currentActiveSegments.isEmpty()) {
-            return this.copy(previousSegment = currentSegment)
+            return this.copy(sourceAudioFileName = currentSegment.sourceAudioFileName, previousSegment = currentSegment)
         }
         val firstSegment = currentActiveSegments.first()
         val lastSegment = currentActiveSegments.last()
@@ -71,7 +79,8 @@ data class AudioClip(
                     duration = previousDuration,
                     activeSegments = currentActiveSegments,
                     previousSegment = currentSegment,
-                    audioClipFileName = audioClipFileName().takeIf { it.isNotBlank() } ?: firstSegment.audioClipFileName())
+                    audioClipFileName = audioClipFileName().takeIf { it.isNotBlank() } ?: firstSegment.audioClipFileName()
+                )
             else -> this.copy(activeSegments = currentActiveSegments, previousSegment = currentSegment)
         }
     }
@@ -85,11 +94,11 @@ data class AudioClip(
 
     private fun Float.isEnoughForAudioClipCreation(previousDuration: Float) =
         this > 3 ||
-        this > 0.5f && previousDuration > 5 ||
-        this == 0.5f && previousDuration > 6 ||
-        this == 0.4f && previousDuration > 7 ||
-        this == 0.3f && previousDuration > 8 ||
-        this == 0.2f && previousDuration > 10
+            this > 0.5f && previousDuration > 5 ||
+            this == 0.5f && previousDuration > 6 ||
+            this == 0.4f && previousDuration > 7 ||
+            this == 0.3f && previousDuration > 8 ||
+            this == 0.2f && previousDuration > 10
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

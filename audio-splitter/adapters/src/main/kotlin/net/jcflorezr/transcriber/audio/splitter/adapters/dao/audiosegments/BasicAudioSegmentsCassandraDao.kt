@@ -10,7 +10,6 @@ import io.vertx.kotlin.coroutines.CoroutineVerticle
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import net.jcflorezr.transcriber.audio.splitter.domain.aggregates.audiosegments.BasicAudioSegment
-import org.springframework.data.cassandra.core.select
 
 class BasicAudioSegmentsCassandraDao(private val cassandraClient: CassandraClient) : CoroutineVerticle() {
 
@@ -46,12 +45,12 @@ class BasicAudioSegmentsQueries {
     val getMultipleBasicAudioSegmentsQuery: Select.Where =
         QueryBuilder
             .select()
-                .column(BasicAudioSegmentCassandraRecord.AUDIO_FILE_NAME_COLUMN)
-                .column(BasicAudioSegmentCassandraRecord.SEGMENT_START_IN_SECONDS_COLUMN)
-                .column(BasicAudioSegmentCassandraRecord.SEGMENT_END_IN_SECONDS_COLUMN)
-                .column(BasicAudioSegmentCassandraRecord.SEGMENT_START_COLUMN)
-                .column(BasicAudioSegmentCassandraRecord.SEGMENT_END_COLUMN)
-                .column(BasicAudioSegmentCassandraRecord.AUDIO_SEGMENT_RMS_COLUMN)
+            .column(BasicAudioSegmentCassandraRecord.AUDIO_FILE_NAME_COLUMN)
+            .column(BasicAudioSegmentCassandraRecord.SEGMENT_START_IN_SECONDS_COLUMN)
+            .column(BasicAudioSegmentCassandraRecord.SEGMENT_END_IN_SECONDS_COLUMN)
+            .column(BasicAudioSegmentCassandraRecord.SEGMENT_START_COLUMN)
+            .column(BasicAudioSegmentCassandraRecord.SEGMENT_END_COLUMN)
+            .column(BasicAudioSegmentCassandraRecord.AUDIO_SEGMENT_RMS_COLUMN)
             .from(BasicAudioSegmentCassandraRecord.TABLE_NAME)
             .where(QueryBuilder.eq(BasicAudioSegmentCassandraRecord.AUDIO_FILE_NAME_COLUMN, QUESTION_MARK))
 }

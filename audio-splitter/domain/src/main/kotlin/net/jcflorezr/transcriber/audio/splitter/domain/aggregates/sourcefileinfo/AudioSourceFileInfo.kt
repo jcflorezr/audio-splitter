@@ -81,7 +81,8 @@ data class AudioSourceFileMetadata(
         fun channels(channels: String) = apply { this.channels = channels }
 
         fun build() = AudioSourceFileMetadata(
-            audioFileName, title, album, artist, trackNumber, genre, comments, duration, sampleRate, channels)
+            audioFileName, title, album, artist, trackNumber, genre, comments, duration, sampleRate, channels
+        )
     }
 }
 
@@ -137,7 +138,8 @@ data class AudioContentInfo(
                 audioSegmentLength = format.calculateAudioSegmentLength(),
                 audioSegmentLengthInBytes = format.calculateAudioSegmentLengthInBytes(),
                 audioSegmentsPerSecond = calculateAudioSegmentsPerSecond(sampleRate),
-                remainingAudioSegments = remainingAudioSegments)
+                remainingAudioSegments = remainingAudioSegments
+            )
         }
 
         private fun AudioFormat.validateFormatEncoding() =
@@ -172,7 +174,7 @@ data class AudioContentInfo(
 
         private fun calculateNumOfAudioSegments(exactTotalFrames: Int, sampleRate: Int) =
             (exactTotalFrames / (sampleRate / AUDIO_SEGMENTS_PER_SECOND))
-            .let { it to it % AUDIO_SEGMENTS_PER_SECOND }
+                .let { it to it % AUDIO_SEGMENTS_PER_SECOND }
 
         private fun AudioFormat.calculateAudioSegmentLength() = sampleRate.roundToInt() / AUDIO_SEGMENTS_PER_SECOND
 

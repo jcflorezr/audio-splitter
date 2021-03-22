@@ -24,10 +24,10 @@ open class InternalServerErrorException(
     private fun generateSimplifiedStackTrace(
         stackTraceElements: Array<StackTraceElement>
     ) = stackTraceElements.asSequence().groupByTo(
-            destination = LinkedHashMap(),
-            keySelector = { it.className },
-            valueTransform = { it.lineNumber }
-        ).map { SimplifiedStackTraceElement(it.key, it.value) }
+        destination = LinkedHashMap(),
+        keySelector = { it.className },
+        valueTransform = { it.lineNumber }
+    ).map { SimplifiedStackTraceElement(it.key, it.value) }
 
     override fun toString(): String {
         return "InternalServerErrorException(ex=$throwable, message=$message, simplifiedStackTrace=$simplifiedStackTrace)"

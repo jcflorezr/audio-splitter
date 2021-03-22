@@ -12,7 +12,7 @@ import java.util.stream.Collectors
 
 class JavaAudioWavConverterTest extends Specification {
 
-    private static Class<? extends JavaAudioWavConverterTest> thisClass = this.class
+    private static Class<JavaAudioWavConverterTest> thisClass = JavaAudioWavConverterTest.class
     private static tempLocalDirectoryPath = thisClass.getResource("/temp-converted-files/").getPath()
     private JavaAudioWavConverter javaAudioWavConverter = new JavaAudioWavConverter(tempLocalDirectoryPath)
 

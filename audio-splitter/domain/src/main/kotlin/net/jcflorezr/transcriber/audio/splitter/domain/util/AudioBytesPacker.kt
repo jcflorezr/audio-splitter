@@ -34,7 +34,8 @@ class AudioBytesPacker(
     init {
         bytesSignedInt16 = listOf(
             { i -> (i and 0xFF).toByte() },
-            { i -> (i.ushr(8) and 0xFF).toByte() })
+            { i -> (i.ushr(8) and 0xFF).toByte() }
+        )
         bytesSignedInt24 = bytesSignedInt16 + listOf { i -> (i.ushr(16) and 0xFF).toByte() }
         bytesUnsignedInt = bytesSignedInt24 + listOf { i -> (i.ushr(24) and 0xFF).toByte() }
         bytesSignedInt16Reversed = bytesSignedInt16.reversed()
@@ -81,14 +82,16 @@ class AudioBytesPacker(
                             buffer = outBuffer,
                             position = p0 + i * frameSize,
                             bits = sampleSizeBits,
-                            isBigEndian = bigEndian)
+                            isBigEndian = bigEndian
+                        )
                     }
                     AudioFormatEncodings.PCM_FLOAT ->
                         packUnsignedInt(
                             i = java.lang.Float.floatToIntBits(bitsAsFloat),
                             buffer = outBuffer,
                             position = p0 + i * frameSize,
-                            isBigEndian = bigEndian)
+                            isBigEndian = bigEndian
+                        )
                 }
             }
         }

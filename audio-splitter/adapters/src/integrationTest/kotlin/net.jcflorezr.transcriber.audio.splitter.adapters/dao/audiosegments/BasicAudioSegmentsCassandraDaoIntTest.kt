@@ -14,6 +14,7 @@ import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.core.Is
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -21,31 +22,25 @@ import org.junit.jupiter.api.extension.ExtendWith
 internal class BasicAudioSegmentsCassandraDaoIntTest {
 
     private val testResourcesPath: String = this.javaClass.getResource("/audio-segments").path
-    private val audioSegmentsCassandraDaoIntTestDI = AudioSegmentsCassandraDaoIntTestDI
-    private lateinit var audioSegmentsCassandraDao: AudioSegmentsCassandraDao
-    private lateinit var basicAudioSegmentsCassandraDao: BasicAudioSegmentsCassandraDao
+    private val audioSegmentsCassandraDaoIntTestDI = AudioSegmentsCassandraDaoIntTestDI()
+    private val audioSegmentsCassandraDao = audioSegmentsCassandraDaoIntTestDI.audioSegmentsCassandraDao
+    private val basicAudioSegmentsCassandraDao = audioSegmentsCassandraDaoIntTestDI.basicAudioSegmentsCassandraDao
 
     @BeforeAll
     fun setUp(vertx: Vertx, testContext: VertxTestContext) {
         vertx.deployVerticle(audioSegmentsCassandraDaoIntTestDI, testContext.completing())
-        audioSegmentsCassandraDao = audioSegmentsCassandraDaoIntTestDI.audioSegmentsCassandraDao
-        basicAudioSegmentsCassandraDao = audioSegmentsCassandraDaoIntTestDI.basicAudioSegmentsCassandraDao
     }
 
     @AfterAll
     fun tearDown(testContext: VertxTestContext) {
-        audioSegmentsCassandraDaoIntTestDI.cassandraClient.close()
         testContext.completeNow()
     }
 
     @Test
-    fun `save audio segments to db and then retrieve them from db as basic audio segments`(
-        testContext: VertxTestContext
-    ) = runBlocking {
+    @DisplayName("save audio segments to db and then retrieve them from db as basic audio segments")
+    fun saveAudioSegmentsAndRetrieveThemAsBasicAudioSegments(testContext: VertxTestContext) = runBlocking {
         fromJsonToList<AudioSegment>(jsonFile = File("$testResourcesPath/basic-audio-segments/test-audio-segments.json"))
-            .onEach { audioSegmentToStore ->
-                audioSegmentsCassandraDao.save(AudioSegmentCassandraRecord.fromEntity(audioSegmentToStore))
-            }
+            .onEach { audioSegmentsCassandraDao.save(AudioSegmentCassandraRecord.fromEntity(audioSegment = it)) }
             .let { storedAudioSegments ->
                 val audioFileName = storedAudioSegments.first().sourceAudioFileName
                 val actualBasicAudioSegments = basicAudioSegmentsCassandraDao.findBy(audioFileName).map { it.translate() }

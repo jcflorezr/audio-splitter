@@ -14,6 +14,7 @@ import net.jcflorezr.transcriber.core.exception.FileException
 import net.jcflorezr.transcriber.core.util.JsonUtils.fromJsonToList
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mockito.`when` as When
@@ -23,15 +24,14 @@ import org.mockito.Mockito.`when` as When
 internal class AudioTranscriptionsServiceImplCpSpec {
 
     private val audioClipsTranscriptionsPath = this.javaClass.getResource("/audio-clips-transcriptions").path
-    private val audioTranscriptionServiceImplCpSpecDI = AudioTranscriptionsServiceImplCpSpecDI
-    private val audioClipsFilesPath = audioTranscriptionServiceImplCpSpecDI.clipsDirectory()
-    private val audioTranscriptionsClient = audioTranscriptionServiceImplCpSpecDI.audioTranscriptionsMockClient()
-    private val audioTranscriptionsService = audioTranscriptionServiceImplCpSpecDI.audioTranscriptionsServiceTest()
-    private val audioTranscriptionDummyEvent = audioTranscriptionServiceImplCpSpecDI.audioTranscriptionGeneratedEventHandler()
+    private val audioClipsFilesPath = AudioTranscriptionsServiceImplCpSpecDI.clipsDirectory()
+    private val audioTranscriptionsClient = AudioTranscriptionsServiceImplCpSpecDI.audioTranscriptionsMockClient()
+    private val audioTranscriptionsService = AudioTranscriptionsServiceImplCpSpecDI.audioTranscriptionsServiceTest()
+    private val audioTranscriptionDummyEvent = AudioTranscriptionsServiceImplCpSpecDI.audioTranscriptionGeneratedEventHandler()
 
     @BeforeAll
     fun setUp(vertx: Vertx, testContext: VertxTestContext) {
-        vertx.deployVerticle(audioTranscriptionServiceImplCpSpecDI, testContext.completing())
+        vertx.deployVerticle(AudioTranscriptionsServiceImplCpSpecDI, testContext.completing())
     }
 
     @AfterAll
@@ -40,15 +40,14 @@ internal class AudioTranscriptionsServiceImplCpSpec {
     }
 
     @Test
-    fun `generate AudioTranscriptionGenerated events, receive them and store their content in db`(
-        testContext: VertxTestContext
-    ) = runBlocking {
+    @DisplayName("generate AudioTranscriptionGenerated events, receive them and store their content in db")
+    fun storeGeneratedAudioTranscriptionGeneratedEventsToDb(testContext: VertxTestContext) = runBlocking {
         val filesKeyword = "aggregate"
         val testDirectory = File(audioClipsTranscriptionsPath).takeIf { it.exists() }
             ?: throw FileException.fileNotFound(audioClipsTranscriptionsPath)
         val expectedAudioTranscriptionsFiles =
             testDirectory.listFiles { file -> !file.nameWithoutExtension.contains(filesKeyword) }?.takeIf { it.isNotEmpty() }
-            ?: throw FileNotFoundException("No files with keyword '$filesKeyword' were found in directory '$audioClipsTranscriptionsPath'")
+                ?: throw FileNotFoundException("No files with keyword '$filesKeyword' were found in directory '$audioClipsTranscriptionsPath'")
 
         expectedAudioTranscriptionsFiles
             .map { generatedAudioClipFile ->
@@ -59,8 +58,11 @@ internal class AudioTranscriptionsServiceImplCpSpec {
                 )
 
                 // When
-                When(audioTranscriptionsClient.getAudioTranscriptionAlternatives(
-                    "$audioClipsFilesPath/${generatedAudioClipFile.name}"))
+                When(
+                    audioTranscriptionsClient.getAudioTranscriptionAlternatives(
+                        "$audioClipsFilesPath/${generatedAudioClipFile.name}"
+                    )
+                )
                     .thenReturn(alternatives)
 
                 // Then
@@ -85,6 +87,7 @@ internal class AudioTranscriptionsServiceImplCpSpec {
             seconds = seconds,
             tenthsOfSecond = tenths,
             audioClipFileName = clipFileName,
-            audioClipFileExtension = clipFileExtension)
+            audioClipFileExtension = clipFileExtension
+        )
     }
 }

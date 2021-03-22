@@ -13,8 +13,6 @@
     </root>
 
     <logger name="org.testcontainers" level="INFO"/>
-    <logger name="org.springframework.data" level="INFO"/>
-    <logger name="org.springframework.context" level="INFO"/>
     <logger name="com.datastax.driver.core" level="INFO"/>
 
 </configuration>

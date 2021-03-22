@@ -2,8 +2,8 @@ package net.jcflorezr.transcriber.audio.splitter.application.di.events
 
 import io.vertx.core.Vertx
 import io.vertx.kotlin.coroutines.CoroutineVerticle
-import net.jcflorezr.transcriber.audio.splitter.adapters.events.AudioSplitterKafkaEventConsumer
 import net.jcflorezr.transcriber.core.config.broker.kafka.ComponentTestKafkaStartup
+import net.jcflorezr.transcriber.core.config.broker.kafka.KafkaEventConsumer
 
 object AudioSplitterKafkaEventConsumerDI : CoroutineVerticle() {
 
@@ -12,7 +12,7 @@ object AudioSplitterKafkaEventConsumerDI : CoroutineVerticle() {
     }
 
     private fun audioSplitterKafkaEventConsumerTest() =
-        AudioSplitterKafkaEventConsumer(
+        KafkaEventConsumer(
             ipAddress = ComponentTestKafkaStartup.ipAddress,
             port = ComponentTestKafkaStartup.port,
             topic = "mono-log",

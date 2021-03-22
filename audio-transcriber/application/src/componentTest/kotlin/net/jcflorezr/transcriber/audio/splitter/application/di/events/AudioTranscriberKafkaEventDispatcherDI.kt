@@ -1,12 +1,12 @@
 package net.jcflorezr.transcriber.audio.splitter.application.di.events
 
-import net.jcflorezr.transcriber.audio.transcriber.adapters.events.AudioTranscriberKafkaEventDispatcher
 import net.jcflorezr.transcriber.core.config.broker.kafka.ComponentTestKafkaStartup
+import net.jcflorezr.transcriber.core.config.broker.kafka.KafkaEventDispatcher
 
 object AudioTranscriberKafkaEventDispatcherDI {
 
     val audioTranscriberTestKafkaDispatcher =
-        AudioTranscriberKafkaEventDispatcher(
+        KafkaEventDispatcher(
             ipAddress = ComponentTestKafkaStartup.ipAddress,
             port = ComponentTestKafkaStartup.port,
             topic = "mono-log",

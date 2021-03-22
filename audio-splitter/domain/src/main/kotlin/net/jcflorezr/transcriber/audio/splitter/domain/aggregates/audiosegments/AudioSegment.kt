@@ -37,7 +37,8 @@ data class AudioSegment(
                 segmentEnd = segmentStart + framesToRead,
                 segmentEndInSeconds = calculateSegmentEndInSeconds(segmentStart, framesToRead, sampleRate),
                 audioSegmentRms = audioSegmentRms,
-                audioSegmentBytes = audioSegmentBytes)
+                audioSegmentBytes = audioSegmentBytes
+            )
         }
 
         private fun calculateSegmentStartInSeconds(segmentStart: Int, sampleRate: Int) =
@@ -51,23 +52,27 @@ data class AudioSegment(
             byteArray: ByteArray,
             audioContentInfo: AudioContentInfo
         ) = AudioSegmentBytes.of(
-                bytes = byteArray,
-                from = segmentStart * audioContentInfo.audioSegmentLengthInBytes,
-                to = (segmentStart * audioContentInfo.audioSegmentLengthInBytes) + audioContentInfo.audioSegmentLengthInBytes)
+            bytes = byteArray,
+            from = segmentStart * audioContentInfo.audioSegmentLengthInBytes,
+            to = (segmentStart * audioContentInfo.audioSegmentLengthInBytes) + audioContentInfo.audioSegmentLengthInBytes
+        )
 
         fun generateAudioSegmentSignal(
             segmentStart: Int,
             byteArray: ByteArray,
             audioContentInfo: AudioContentInfo
         ) = AudioBytesUnPacker.generateAudioSignal(
-                audioContentInfo = audioContentInfo,
-                bytesBuffer = byteArray,
-                from = segmentStart * audioContentInfo.audioSegmentLength,
-                to = (segmentStart * audioContentInfo.audioSegmentLength) + audioContentInfo.audioSegmentLength)
+            audioContentInfo = audioContentInfo,
+            bytesBuffer = byteArray,
+            from = segmentStart * audioContentInfo.audioSegmentLength,
+            to = (segmentStart * audioContentInfo.audioSegmentLength) + audioContentInfo.audioSegmentLength
+        )
     }
 
-    fun toBasicAudioSegment() = BasicAudioSegment(sourceAudioFileName, segmentStart, segmentStartInSeconds,
-        segmentEnd, segmentEndInSeconds, audioSegmentRms.rms)
+    fun toBasicAudioSegment() = BasicAudioSegment(
+        sourceAudioFileName, segmentStart, segmentStartInSeconds,
+        segmentEnd, segmentEndInSeconds, audioSegmentRms.rms
+    )
 }
 
 /*
@@ -107,7 +112,8 @@ data class AudioSegmentRms(val rms: Double) {
 
         private fun List<Float>.calculateSegmentRms() =
             FloatingPointUtils.millisecondsFormat(
-                value = sqrt(fold(0.0) { a, b -> a + (b * b) }.toDouble() / size))
+                value = sqrt(fold(0.0) { a, b -> a + (b * b) }.toDouble() / size)
+            )
     }
 }
 
@@ -136,6 +142,7 @@ data class BasicAudioSegment(
                 segmentStartInSeconds = audioSegment.segmentStartInSeconds,
                 segmentEnd = audioSegment.segmentEnd,
                 segmentEndInSeconds = audioSegment.segmentEndInSeconds,
-                audioSegmentRms = audioSegment.audioSegmentRms.rms)
+                audioSegmentRms = audioSegment.audioSegmentRms.rms
+            )
     }
 }

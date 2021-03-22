@@ -26,11 +26,12 @@ data class AudioTranscription(
 
         private fun List<Alternative>.checkDuplicatePositions(audioClipFileInfo: AudioClipFileInfo) {
             onEach { alternative -> alternative.checkDuplicateWordsPositions(audioClipFileInfo) }
-            .map { alternative -> alternative.position }
-            .let { alternativesPositions -> CollectionUtils.findDuplicates(alternativesPositions) }
-            .takeIf { duplicates -> duplicates.keys.isNotEmpty() }
-            ?.also { duplicates ->
-                throw AudioTranscriptionException.duplicateAlternativesPositions(audioClipFileInfo, duplicates.keys) }
+                .map { alternative -> alternative.position }
+                .let { alternativesPositions -> CollectionUtils.findDuplicates(alternativesPositions) }
+                .takeIf { duplicates -> duplicates.keys.isNotEmpty() }
+                ?.also { duplicates ->
+                    throw AudioTranscriptionException.duplicateAlternativesPositions(audioClipFileInfo, duplicates.keys)
+                }
         }
     }
 }
@@ -64,10 +65,13 @@ data class Alternative private constructor(
             ?.map { wordInfo -> wordInfo.position }
             ?.let { wordsPositions -> CollectionUtils.findDuplicates(wordsPositions) }
             ?.takeIf { duplicates -> duplicates.keys.isNotEmpty() }
-            ?.also { duplicates -> throw AudioTranscriptionException.duplicateAlternativeWordsPositions(
-                audioClipFileInfo = audioClipFileInfo,
-                alternativePosition = this.position,
-                duplicatePositions = duplicates.keys) }
+            ?.also { duplicates ->
+                throw AudioTranscriptionException.duplicateAlternativeWordsPositions(
+                    audioClipFileInfo = audioClipFileInfo,
+                    alternativePosition = this.position,
+                    duplicatePositions = duplicates.keys
+                )
+            }
     }
 }
 

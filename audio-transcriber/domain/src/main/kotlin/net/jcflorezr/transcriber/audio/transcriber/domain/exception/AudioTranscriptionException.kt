@@ -12,7 +12,9 @@ class AudioTranscriptionException(message: String) : RuntimeException(message) {
                 errorCode = "duplicate_alternatives_positions_in_transcription",
                 throwable = AudioTranscriptionException(
                     "Transcription for $sourceAudioFileName located in (hours=$hours minutes=$minutes seconds=$seconds tenths=$tenthsOfSecond) " +
-                    "has the following duplicate positions numbers in the list of alternatives: $duplicatePositions"))
+                        "has the following duplicate positions numbers in the list of alternatives: $duplicatePositions"
+                )
+            )
         }
 
         fun duplicateAlternativeWordsPositions(
@@ -24,8 +26,10 @@ class AudioTranscriptionException(message: String) : RuntimeException(message) {
                 errorCode = "duplicate_alternative_words_positions_in_transcription",
                 throwable = AudioTranscriptionException(
                     "Transcription for $sourceAudioFileName located in (hours=$hours minutes=$minutes seconds=$seconds tenths=$tenthsOfSecond) " +
-                    "has duplicate words positions in the alternative with position=$alternativePosition." +
-                    "Duplicate words positions numbers: $duplicatePositions"))
+                        "has duplicate words positions in the alternative with position=$alternativePosition." +
+                        "Duplicate words positions numbers: $duplicatePositions"
+                )
+            )
         }
     }
 }

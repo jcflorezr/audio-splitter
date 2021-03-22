@@ -4,8 +4,6 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val kotlinVersion: String by project
 val jacksonVersion: String by project
-val springVersion: String by project
-val springDataVersion: String by project
 val jUnitVersion: String by project
 val mockitoVersion: String by project
 val hamcrestVersion: String by project
@@ -23,7 +21,7 @@ val vertxVersion: String by project
 val awaitilityVersion: String by project
 
 plugins {
-    kotlin("jvm") version "1.3.70"
+    kotlin("jvm") version "1.4.30"
     `groovy-base`
     war
     id("org.jlleitschuh.gradle.ktlint") version "9.2.1"
@@ -101,16 +99,11 @@ subprojects {
     isAdaptersOrApplicationProject()?.apply {
         project(path) {
             dependencies {
-                // Spring
-                implementation("org.springframework:spring-core:$springVersion")
-                implementation("org.springframework:spring-context:$springVersion")
-
                 // Logging
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-slf4j:$slf4jKotlinCoroutinesVersion")
 
                 // Test
                 testImplementation("org.mockito:mockito-core:$mockitoVersion")
-                testImplementation("org.springframework:spring-test:$springVersion")
             }
 
             isAdaptersProject()?.apply {
@@ -118,8 +111,6 @@ subprojects {
                     createIntegrationTestSourceSet()
                     dependencies {
                         // Cassandra
-                        implementation("org.springframework.data:spring-data-cassandra:$springDataVersion")
-
                         implementation("io.vertx:vertx-cassandra-client:$vertxVersion")
                         implementation("com.datastax.cassandra:cassandra-driver-core:$cassandraDriverVersion")
                         implementation("com.datastax.cassandra:cassandra-driver-mapping:$cassandraDriverVersion")
@@ -130,7 +121,6 @@ subprojects {
                         implementation("io.vertx:vertx-lang-kotlin:$vertxVersion")
                         implementation("io.vertx:vertx-lang-kotlin-coroutines:$vertxVersion")
                         implementation("io.vertx:vertx-web:$vertxVersion")
-                        implementation("io.vertx:vertx-kafka-client:$vertxVersion")
                         testImplementation(project(":core", "integrationTestArtifact"))
                     }
                 }
@@ -157,7 +147,10 @@ subprojects {
 
             dependencies {
                 implementation("io.vertx:vertx-lang-kotlin:$vertxVersion")
+                implementation("io.vertx:vertx-lang-kotlin-coroutines:$vertxVersion")
                 implementation("io.vertx:vertx-cassandra-client:$vertxVersion")
+                implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$jacksonVersion")
+                implementation("io.vertx:vertx-kafka-client:$vertxVersion")
             }
         }
     }
@@ -166,7 +159,6 @@ subprojects {
         project(path) {
             dependencies {
                 testImplementation("io.vertx:vertx-junit5:$vertxVersion")
-                testImplementation("org.springframework.data:spring-data-cassandra:$springDataVersion")
                 testImplementation("io.vertx:vertx-cassandra-client:$vertxVersion")
                 testImplementation("io.vertx:vertx-lang-kotlin-coroutines:$vertxVersion")
                 testImplementation("org.testcontainers:cassandra:$testContainersVersion")
@@ -180,7 +172,6 @@ subprojects {
             dependencies {
                 testImplementation("io.vertx:vertx-junit5:$vertxVersion")
                 testImplementation("io.vertx:vertx-cassandra-client:$vertxVersion")
-                testImplementation("org.springframework.data:spring-data-cassandra:$springDataVersion")
                 testImplementation("org.testcontainers:cassandra:$testContainersVersion")
                 testImplementation("org.testcontainers:kafka:$testContainersVersion")
                 testImplementation("org.awaitility:awaitility:$awaitilityVersion")
@@ -274,7 +265,6 @@ fun Project.isAdaptersOrApplicationProject(): Project? = run {
     isAdaptersProject() ?: isApplicationProject()
 }?.run { this@isAdaptersOrApplicationProject }
 
-// TODO: go away!
 fun Project.isAdaptersOrDomainProject(): Project? = run {
     isAdaptersProject() ?: isDomainProject()
 }?.run { this@isAdaptersOrDomainProject }

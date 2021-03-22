@@ -12,6 +12,7 @@ target/
 # Gradle cache directory #
 ##########################
 .gradle
+out/
 
 # Eclipse IDE generated files #
 ###############################
@@ -24,7 +25,6 @@ target/
 ###############################
 .idea/
 *.iml
-out/
 
 # OS generated files #
 ######################

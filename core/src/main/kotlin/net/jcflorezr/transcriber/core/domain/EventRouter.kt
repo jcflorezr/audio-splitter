@@ -30,6 +30,6 @@ object EventRouter {
         }.let { event ->
             registeredEventHandlers[event::class.java]?.execute(event)
                 ?: throw RuntimeException("No event handler found for event: ${event::class.java.name}")
-                // TODO: create exception class for this
+            // TODO: create exception class for this
         }
 }

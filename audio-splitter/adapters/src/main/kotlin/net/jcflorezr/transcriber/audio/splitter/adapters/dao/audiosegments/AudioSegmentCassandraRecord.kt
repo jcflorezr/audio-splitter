@@ -33,7 +33,8 @@ data class AudioSegmentCassandraRecord(
         fun fromEntity(audioSegment: AudioSegment) = audioSegment.run {
             AudioSegmentCassandraRecord(
                 sourceAudioFileName, segmentStartInSeconds, segmentEndInSeconds, segmentStart,
-                segmentEnd, audioSegmentRms.rms, ByteBuffer.wrap(audioSegmentBytes.bytes))
+                segmentEnd, audioSegmentRms.rms, audioSegmentBytes = ByteBuffer.wrap(audioSegmentBytes.bytes)
+            )
         }
 
         fun fromCassandraRow(row: Row) =
@@ -51,7 +52,8 @@ data class AudioSegmentCassandraRecord(
     fun translate() =
         AudioSegment(
             sourceAudioFileName, segmentStart, segmentStartInSeconds, segmentEnd, segmentEndInSeconds,
-            AudioSegmentRms(audioSegmentRms), AudioSegmentBytes(audioSegmentBytes.array()))
+            AudioSegmentRms(audioSegmentRms), AudioSegmentBytes(audioSegmentBytes.array())
+        )
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

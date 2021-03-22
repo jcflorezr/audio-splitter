@@ -1,22 +1,29 @@
 [
-  {"sourceAudioFileName":"background-noise-low-volume","duration":0.0,"hours":0,"minutes":0,"seconds":0,"tenthsOfSecond":0,"audioClipFileName":"0_0","activeSegments":[]},
-  {"sourceAudioFileName":"background-noise-low-volume","duration":0.0,"hours":0,"minutes":0,"seconds":0,"tenthsOfSecond":0,"audioClipFileName":"0_0","activeSegments":[]},
-  {"sourceAudioFileName":"background-noise-low-volume","duration":0.0,"hours":0,"minutes":0,"seconds":0,"tenthsOfSecond":0,"audioClipFileName":"0_2",
-    "activeSegments": [
+  {"sourceAudioFileName":"background-noise-low-volume","duration":0.0,"hours":0,"minutes":0,"seconds":0,"tenthsOfSecond":0,"audioClipFileName":"","activeSegments":[]},
+  {"sourceAudioFileName":"background-noise-low-volume","duration":0.0,"hours":0,"minutes":0,"seconds":0,"tenthsOfSecond":0,"audioClipFileName":"",
+    "activeSegments":[
       {"sourceAudioFileName":"background-noise-low-volume","segmentStartInSeconds":0.2,"segmentEndInSeconds":3.4,"duration":3.2,"hours":0,"minutes":0,"seconds":0,"tenthsOfSecond":2}
     ]
   },
-  {"sourceAudioFileName":"background-noise-low-volume","duration":0.0,"hours":0,"minutes":0,"seconds":0,"tenthsOfSecond":0,"audioClipFileName":"0_2",
-    "activeSegments": [
+  {"sourceAudioFileName":"background-noise-low-volume","duration":0.0,"hours":0,"minutes":0,"seconds":0,"tenthsOfSecond":0,"audioClipFileName":"",
+    "activeSegments":[
       {"sourceAudioFileName":"background-noise-low-volume","segmentStartInSeconds":0.2,"segmentEndInSeconds":3.4,"duration":3.2,"hours":0,"minutes":0,"seconds":0,"tenthsOfSecond":2},
       {"sourceAudioFileName":"background-noise-low-volume","segmentStartInSeconds":3.5,"segmentEndInSeconds":4.4,"duration":0.9,"hours":0,"minutes":0,"seconds":3,"tenthsOfSecond":5}
     ]
   },
   {"sourceAudioFileName":"background-noise-low-volume","duration":6.8,"hours":0,"minutes":0,"seconds":0,"tenthsOfSecond":2,"audioClipFileName":"0_2",
-    "activeSegments": [
+    "activeSegments":[
       {"sourceAudioFileName":"background-noise-low-volume","segmentStartInSeconds":0.2,"segmentEndInSeconds":3.4,"duration":3.2,"hours":0,"minutes":0,"seconds":0,"tenthsOfSecond":2},
       {"sourceAudioFileName":"background-noise-low-volume","segmentStartInSeconds":3.5,"segmentEndInSeconds":4.4,"duration":0.9,"hours":0,"minutes":0,"seconds":3,"tenthsOfSecond":5},
       {"sourceAudioFileName":"background-noise-low-volume","segmentStartInSeconds":4.5,"segmentEndInSeconds":7.0,"duration":2.5,"hours":0,"minutes":0,"seconds":4,"tenthsOfSecond":5}
+    ]
+  },
+  {"sourceAudioFileName":"background-noise-low-volume","duration":9.0,"hours":0,"minutes":0,"seconds":0,"tenthsOfSecond":2,"audioClipFileName":"0_2",
+    "activeSegments":[
+      {"sourceAudioFileName":"background-noise-low-volume","segmentStartInSeconds":0.2,"segmentEndInSeconds":3.4,"duration":3.2,"hours":0,"minutes":0,"seconds":0,"tenthsOfSecond":2},
+      {"sourceAudioFileName":"background-noise-low-volume","segmentStartInSeconds":3.5,"segmentEndInSeconds":4.4,"duration":0.9,"hours":0,"minutes":0,"seconds":3,"tenthsOfSecond":5},
+      {"sourceAudioFileName":"background-noise-low-volume","segmentStartInSeconds":4.5,"segmentEndInSeconds":7.0,"duration":2.5,"hours":0,"minutes":0,"seconds":4,"tenthsOfSecond":5},
+      {"sourceAudioFileName":"background-noise-low-volume","segmentStartInSeconds":8.0,"segmentEndInSeconds":9.2,"duration":1.2,"hours":0,"minutes":0,"seconds":8,"tenthsOfSecond":0}
     ]
   }
 ]

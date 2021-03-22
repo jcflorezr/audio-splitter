@@ -12,7 +12,8 @@ class CloudStorageFileException(
         fun fileNotFoundInCloudStorage(filePath: String) =
             CloudStorageFileException(
                 errorCode = "file_not_found_in_cloud_storage",
-                message = "File '$filePath' was not found in the implemented cloud storage.")
+                message = "File '$filePath' was not found in the implemented cloud storage."
+            )
     }
 }
 
@@ -26,6 +27,8 @@ class FileException(
             FileException(
                 errorCode = "file_not_found_in_current_storage",
                 exception = FileNotFoundException(
-                    "The file placed in the current storage (cloud storage or local storage) was not found. File path: $filePath"))
+                    "The file placed in the current storage (cloud storage or local storage) was not found. File path: $filePath"
+                )
+            )
     }
 }

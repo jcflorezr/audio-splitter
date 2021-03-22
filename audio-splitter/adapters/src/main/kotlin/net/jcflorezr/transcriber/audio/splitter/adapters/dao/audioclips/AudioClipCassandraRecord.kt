@@ -18,7 +18,8 @@ data class AudioClipInfoCassandraRecord(
             AudioClipInfoCassandraRecord(
                 audioClipCassandraRecord = audioClipRecord,
                 activeSegmentsCassandraRecords = audioClip.activeSegments
-                    .map { ActiveSegmentCassandraRecord.fromEntity(audioClipRecord, it) })
+                    .map { ActiveSegmentCassandraRecord.fromEntity(audioClipRecord, it) }
+            )
         }
     }
 
@@ -48,7 +49,8 @@ data class AudioClipCassandraRecord(
 
         fun fromEntity(audioClip: AudioClip) = audioClip.run {
             AudioClipCassandraRecord(
-                sourceAudioFileName, hours, minutes, seconds, tenthsOfSecond, duration, audioClipFileName)
+                sourceAudioFileName, hours, minutes, seconds, tenthsOfSecond, duration, audioClipFileName
+            )
         }
 
         fun fromCassandraRow(row: Row) =
@@ -110,7 +112,8 @@ data class ActiveSegmentCassandraRecord(
                 activeSegment.hours,
                 activeSegment.minutes,
                 activeSegment.seconds,
-                activeSegment.tenthsOfSecond)
+                activeSegment.tenthsOfSecond
+            )
 
         fun fromCassandraRow(row: Row) =
             ActiveSegmentCassandraRecord(
@@ -131,5 +134,6 @@ data class ActiveSegmentCassandraRecord(
 
     fun translate() = ActiveSegment(
         audioFileName, segmentStartInSeconds, segmentEndInSeconds, duration,
-        segmentHours, segmentMinutes, segmentSeconds, segmentTenthsOfSecond)
+        segmentHours, segmentMinutes, segmentSeconds, segmentTenthsOfSecond
+    )
 }

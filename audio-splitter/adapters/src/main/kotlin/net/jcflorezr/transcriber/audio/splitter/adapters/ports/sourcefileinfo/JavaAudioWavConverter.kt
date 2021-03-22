@@ -30,7 +30,8 @@ class JavaAudioWavConverter(
         val audioSourceInputStream = AudioSystem.getAudioInputStream(file)
         val baseFormat = audioSourceInputStream.format
         val decodedFormat = AudioFormat(
-            PCM_SIGNED, baseFormat.sampleRate, sampleSizeInBits, baseFormat.channels, baseFormat.channels * 2, baseFormat.sampleRate, false)
+            PCM_SIGNED, baseFormat.sampleRate, sampleSizeInBits, baseFormat.channels, baseFormat.channels * 2, baseFormat.sampleRate, false
+        )
         val audioWavInputStream = AudioSystem.getAudioInputStream(decodedFormat, audioSourceInputStream)
         val audioWavFile = File("$tempLocalDirectory/$audioFileName.${SupportedAudioFormats.WAV.extension}")
         AudioSystem.write(audioWavInputStream, AudioFileFormat.Type.WAVE, audioWavFile)
